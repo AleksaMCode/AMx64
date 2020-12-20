@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-
 namespace AMx64
 {
     public partial class SimComputer
