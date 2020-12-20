@@ -43,11 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembler\AssemblerResult.cs" />
+    <Compile Include="Assembler\DataHole.cs" />
+    <Compile Include="Assembler\Expression.cs" />
+    <Compile Include="Assembler\LinkerResult.cs" />
+    <Compile Include="Assembler\ObjectFile.cs" />
+    <Compile Include="Memory\CPURegister.cs" />
+    <Compile Include="Memory\Registers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
