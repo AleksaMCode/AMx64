@@ -1,16 +1,16 @@
 # AMx64
-<p align="justify">AMx64 is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around NASM.<br><br>
-AMx64 was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
+<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>.<br><br>
+<b>AMx64</b> was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
 
 ## The AMASM Language
 ### Layout of a AMASM Source Line
-<p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields <p>
+<p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
 
 `label: instruction operands ; comment`
 
-<p align="justify">It doesn't support labels and multiline commands that are available in NASM using the backslash character (\) as the line continuation character. </p>
+<p align="justify">It doesn't support multiline commands that are available in NASM using the backslash character (\) as the line continuation character. </p>
 
-<p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
+<p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
 ### Numeric Constants
 <p align="justify">A numeric constant is simply a number. AMASM allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
@@ -65,11 +65,28 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 11 | 0x0800 | OF | Overflow flag | <p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p> | OV (Overflow) | NV (Not Overflow) | ☒
 12-13 | 0x3000 | IOPL | I/O privilege level | <p align="justify">I/O Privilege Level of the current process.</p> | | | ☒
 
-### Adressing modes
-<p align="justify">The addressing mode indicates the manner in which the operand is presented. <p>
+### Adressing modes for data
+<p align="justify">The addressing mode indicates the manner in which the operand is presented.<p>
 
-#### Register Addressing
-#### Immediate
+#### Register (Direct) Addressing
+```
++------+-----+-----+
+| mov  | reg1| reg2| reg1:=reg2
++------+-----+-----+
+```
+<p align="justify">This "addressing mode" does not have an effective address and is not considered to be an addressing mode on some computers. In this example, all the operands are in registers, and the result is placed in a register.<p>
+
+#### Immediate (literal)
+```
++------+-----+----------------+
+| add  | reg1|    constant    |    reg1 := reg1 + constant;
++------+-----+----------------+
+```
+<p align="justify">This "addressing mode" does not have an effective address, and is not considered to be an addressing mode on some computers. For example,<p>
+
+`mov ax, 1` 
+
+<p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
 
 **NOTE:** Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
