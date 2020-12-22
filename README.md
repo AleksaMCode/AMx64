@@ -4,7 +4,7 @@ AMx64 was created for a <i>Computer Architecture</i> course project, as taught a
 
 ## The AMASM Language
 ### Layout of a AMASM Source Line
-<p align="justify">Like most assemblers, each **AMASM** source line contains some combination of the four fields <p>
+<p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields <p>
 
 `label: instruction operands ; comment`
 
@@ -53,7 +53,7 @@ Some examples (all producing exactly the same code):
 <p align="justify">Status register in AMx64 processor that contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers.</p>
 
 Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
-| :- | - | :-: | - | - | - | - | :-:
+| :- | - | :-: | - | ----------------------- | - | - | :-:
 0 | 0x0001 | CF | Carry flag | <p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p> | CY (Carry) | NC (No Carry) | ☑
 2 | 0x0004 | PF | Parity flag | <p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p> | PE (Parity Even) | PO (Parity Odd) | ☑
 4 | 0x0010 | AF | Adjust flag | <p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p> | AC (Auxiliary Carry) | NA (No Auxiliary Carry) | ☒
