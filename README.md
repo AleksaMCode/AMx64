@@ -5,9 +5,11 @@ AMx64 was created for a *Computer Architecture* course project, as taught at the
 
 ## The AMASM Language
 ### Layout of a AMASM Source Line
-Like most assemblers, each **AMASM** source line contains some combination of the four fields\
-`instruction operands ; comment`\
-It doesn't support labels and multiline commands that are created in NASM using the backslash character (\\) as the line continuation character.
+<p align="justify">Like most assemblers, each **AMASM** source line contains some combination of the four fields <p>
+
+`instruction operands ; comment`
+
+<p align="justify">It doesn't support labels and multiline commands that are created in NASM using the backslash character (\\) as the line continuation character. </p>
 
 <p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
