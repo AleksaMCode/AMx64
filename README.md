@@ -13,9 +13,8 @@ AMx64 was created for a <i>Computer Architecture</i> course project, as taught a
 <p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
 ### Numeric Constants
-<p align="justify">A numeric constant is simply a number. AMASM allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!</p>
-
-Numeric constants can have underscores (_) interspersed to break up long strings.
+<p align="justify">A numeric constant is simply a number. AMASM allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
+Numeric constants can have underscores (_) interspersed to break up long strings.</p>
 
 Some examples (all producing exactly the same code):
  ```
@@ -40,6 +39,8 @@ Some examples (all producing exactly the same code):
 
 ## Memory
 ### Registers
+<p align="justify">AMASM uses the following names for general-purpose registers in 64-bit mode This is consistent with the AMD/Intel documentation and most other assemblers.</p>
+
 #### General-Purpose Registers
  Naming conventions | 64 bits | 32 bits | 16 bits | 8 bits | 8 bits |
 | - | - | - | - | - | - |
@@ -47,6 +48,7 @@ Some examples (all producing exactly the same code):
 | Base | RBX | EBX | BX | BH | BL 
 | Counter | RCX | ECX | CX | CH | CL 
 | Data | RDX | EDX | DX | DH | DL 
+
 #### FLAGS register
 <p align="justify">Status register in AMx64 processor that contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers.</p>
 
@@ -62,3 +64,18 @@ Bit | Mask | Abbreviation | Description | =1 | =0
 10 | 0x0400 | DF | Direction flag | DN (Down) | UP (Up)
 11 | 0x0800 | OF | Overflow flag | OV (Overflow) | NV (Not Overflow)
 12-13 | 0x3000 | IOPL | I/O privilege level
+
+### Adressing modes
+<p align="justify">The addressing mode indicates the manner in which the operand is presented. <p>
+
+#### Register Addressing
+#### Immediate
+
+**NOTE:** Direct memory, Direct offset and Register indirect addressing is not currently supported.
+
+## Debug - AMDB
+
+## To-Do List
+- [ ] Add Direct memory addressing.
+- [ ] Add Direct offset addressing.
+- [ ] Add Register indirect addressing.
