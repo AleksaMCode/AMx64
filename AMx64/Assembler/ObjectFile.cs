@@ -150,7 +150,7 @@ namespace AMx64
                 symbols.Clear();
                 for (int i = 0; i < count; ++i)
                 {
-                    string key = file.ReadString();
+                    string key = obj.ReadString();
                     Expression.ReadFrom(obj, out Expression value);
 
                     symbols.Add(key, value);
