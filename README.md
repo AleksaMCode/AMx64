@@ -16,6 +16,8 @@
       - [NOT - Bitwise NOT](#not---bitwise-not)
       - [MOV - Move](#mov---move)
       - [CMP - Compare](#cmp---compare)
+      - [JMP - Unconditional Jump](#jmp---unconditional-jump)
+      - [Jcc - Jump if Condition Is Met (Conditional Jump)](#jcc---jump-if-condition-is-met-conditional-jump)
   - [Memory <a name="memory"></a>](#memory-)
     - [Registers <a name="memory_reg"></a>](#registers-)
       - [General-Purpose Registers <a name="memory_reg-general"></a>](#general-purpose-registers-)
@@ -153,13 +155,35 @@ Flags affected:
 4. **CF** is set if the subtraction caused a borrow from the low 4 bits; it's cleared otherwise.
 5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
+#### JMP - Unconditional Jump
+<p align="justify">Jumps execution to the provided address. This instruction does not depend on the current conditions of theflag bits in the flag register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
+
+```
+JMP label
+JMP rel_location
+```
+<p align="justify">The JMP instruction provides a label name where the flow of control is transferred immediately. It can use a relative location, that can be a positive or a negative integer, while the transfer of control is moving forwards or backwards, respectively.</p>
+
+**NOTE:** It doesn't affect flags.
+
+#### Jcc - Jump if Condition Is Met (Conditional Jump)
+<p align="justify">Jcc is not a single instruction, it  describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.</p>
+
+Intruction | Description | Flags tested | Condition
+| - | - | :-: | :-:
+JE | Jump Equal | ZF | ZF == 1
+JNE | Jump not Equal | ZF | ZF == 0
+JGE | Jump Greater/Equal | OF, SF | SF == 0
+JL | Jump Less | OF, SF | SF != 0
+<br>**NOTE:** It doesn't affect flags.
+
 ## Memory <a name="memory"></a>
 ### Registers <a name="memory_reg"></a>
 <p align="justify"><b>AMASM</b> uses the following names for general-purpose registers in 64-bit mode This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
 #### General-Purpose Registers <a name="memory_reg-general"></a>
- Naming conventions | 64 bits | 32 bits | 16 bits | High 8 bits | Low 8 bits |
-| - | :-: | :-: | :-: | :-: | :-: |
+ Naming conventions | 64 bits | 32 bits | 16 bits | High 8 bits | Low 8 bits
+| - | :-: | :-: | :-: | :-: | :-:
 | Accumulator | RAX | EAX | AX | AH | AL
 | Base | RBX | EBX | BX | BH | BL 
 | Counter | RCX | ECX | CX | CH | CL 
