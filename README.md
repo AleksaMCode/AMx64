@@ -175,6 +175,7 @@ JE | Jump Equal | ZF | ZF == 1
 JNE | Jump not Equal | ZF | ZF == 0
 JGE | Jump Greater/Equal | OF, SF | SF == 0
 JL | Jump Less | OF, SF | SF != 0
+
 <br>**NOTE:** It doesn't affect flags.
 
 ## Memory <a name="memory"></a>
