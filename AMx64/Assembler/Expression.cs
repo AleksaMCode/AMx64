@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using static AMx64.Utility;
 
-namespace AMx64.Assembler
+namespace AMx64
 {
     internal class Expression
     {
@@ -374,8 +374,5 @@ namespace AMx64.Assembler
                 }
             }
         }
-
-
-
     }
 }

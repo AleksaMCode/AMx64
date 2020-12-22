@@ -25,7 +25,7 @@ namespace AMx64
 
         internal List<byte> text = new List<byte>();
         internal List<byte> data = new List<byte>();
-        internal Uint32 bssLen = 0;
+        internal UInt32 bssLen = 0;
 
         internal BinaryLiterals literals = new BinaryLiterals();
 
