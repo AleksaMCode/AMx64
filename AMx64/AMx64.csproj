@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembler\Assembler.cs" />
     <Compile Include="Assembler\AssemblerResult.cs" />
     <Compile Include="Assembler\DataHole.cs" />
     <Compile Include="Assembler\Expression.cs" />
