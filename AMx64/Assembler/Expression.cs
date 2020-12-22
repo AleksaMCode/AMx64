@@ -231,7 +231,7 @@ namespace AMx64.Assembler
                             retValue = false;
                         }
 
-                        result = isZero(Left) ? 1 : 0ul;
+                        result = ~Left;
                         break;
                     }
             }
