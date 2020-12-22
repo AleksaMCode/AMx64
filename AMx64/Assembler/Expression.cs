@@ -13,11 +13,11 @@ namespace AMx64.Assembler
         {
             None,
 
-            Add, Sub,
+            Add, Sub, // binary operations
 
-            BitAnd, BitOr, 
-            
-            BitNot,
+            BitAnd, BitOr, // binary operations
+
+            BitNot, //unary operation
         }
 
         public Operations Op = Operations.None;
@@ -43,9 +43,70 @@ namespace AMx64.Assembler
         }
 
         private UInt64 cachedResult = 0;
-        private bool floatingCR = false;
 
         public bool IsLeaf => Op == Operations.None;
         public bool IsEvaluated => Op == Operations.None && Token == null;
+
+        public UInt64 IntResult
+        {
+            set => CacheResult(value);
+        }
+
+        private void CacheResult(UInt64 result)
+        {
+            Op = Operations.None;
+            Left = Right = null;
+            token = null;
+            cachedResult = result;
+        }
+
+        private bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
+        {
+            result = 0;
+
+            UInt64 Left, Right;
+            bool Lf, Rg;
+
+            switch (Op)
+            {
+                case Operations.None:
+                    {
+                        if (token == null)
+                        {
+                            result = cachedResult;
+                            return true;
+                        }
+
+                        if (char.IsDigit(token[0]))
+                        {
+                            string token = this.token.Replace("_", "").ToLower();
+
+                            // Int parsing
+
+                            if (token.StartsWith("0x"))
+                            {
+                                if (token.Substring(2).TryParseUInt64(out result, 16))
+                                {
+                                    break;
+                                }
+                            }
+                            else if (token[token.Length - 1] == 'h')
+                            {
+                                if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 16))
+                                {
+                                    break;
+                                }
+                            }
+                            else if(token[token.Length-1]=='o')
+                            {
+                                if(token.Substring(0,token.Length-1).TryParseUInt64(out result,8))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+            }
+        }
     }
 }
