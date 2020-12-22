@@ -9,7 +9,7 @@ Like most assemblers, each **AMASM** source line contains some combination of th
 `instruction operands ; comment`\
 It doesn't support labels and multiline commands that are created in NASM using the backslash character (\\) as the line continuation character.
 
-AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.
+<p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
 ## Memory
 ### Registers
@@ -21,7 +21,7 @@ AMASM places no restrictions on white space within a line: labels may have white
 | Counter | RCX | ECX | CX | CH | CL 
 | Data | RDX | EDX | DX | DH | DL 
 #### FLAGS register
-Status register in AMx64 processor that contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers.
+<p align="justify">Status register in AMx64 processor that contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers.</p>
 
 Bit | Mask | Abbreviation | Description | =1 | =0
 | :- | - | :-: | - | - | - 
