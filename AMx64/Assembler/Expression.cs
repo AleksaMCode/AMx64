@@ -78,12 +78,10 @@ namespace AMx64.Assembler
                             return true;
                         }
 
-                        // check for numbers (hex, oct, dec)
+                        // check for numbers (hex, oct, dec) - Int parsing
                         if (char.IsDigit(this.token[0]))
                         {
                             string token = this.token.Replace("_", "").ToLower(); // removing underscores
-
-                            // Int parsing
 
                             if (token.StartsWith("0x")) // hex number - prefix
                             {
@@ -235,6 +233,9 @@ namespace AMx64.Assembler
                         break;
                     }
             }
+
+            CacheResult(result); // result caching
+            return true;
         }
     }
 }
