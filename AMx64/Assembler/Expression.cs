@@ -65,46 +65,174 @@ namespace AMx64.Assembler
             result = 0;
 
             UInt64 Left, Right;
-            bool Lf, Rg;
+
+            bool retValue = true;
 
             switch (Op)
             {
                 case Operations.None:
                     {
-                        if (token == null)
+                        if (this.token == null)
                         {
                             result = cachedResult;
                             return true;
                         }
 
-                        if (char.IsDigit(token[0]))
+                        // check for numbers (hex, oct, dec)
+                        if (char.IsDigit(this.token[0]))
                         {
-                            string token = this.token.Replace("_", "").ToLower();
+                            string token = this.token.Replace("_", "").ToLower(); // removing underscores
 
                             // Int parsing
 
-                            if (token.StartsWith("0x"))
+                            if (token.StartsWith("0x")) // hex number - prefix
                             {
                                 if (token.Substring(2).TryParseUInt64(out result, 16))
                                 {
                                     break;
                                 }
                             }
-                            else if (token[token.Length - 1] == 'h')
+                            else if (token[token.Length - 1] == 'h') // hex number - suffix
                             {
                                 if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 16))
                                 {
                                     break;
                                 }
                             }
-                            else if(token[token.Length-1]=='o')
+                            else if (token[token.Length - 1] == 'o') // octal number - suffix
                             {
-                                if(token.Substring(0,token.Length-1).TryParseUInt64(out result,8))
+                                if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 8))
+                                {
+                                    break;
+                                }
+                            }
+                            else if (token.StartsWith("0b")) // binary number - prefix
+                            {
+                                if (token.Substring(2).TryParseUInt64(out result, 2))
+                                {
+                                    break;
+                                }
+                            }
+                            else if (token[token.Length - 1] == 'b') // binary number - suffix
+                            {
+                                if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 2))
+                                {
+                                    break;
+                                }
+                            }
+                            else // decimal number
+                            {
+                                if(token.TryParseUInt64(out result))
                                 {
                                     break;
                                 }
                             }
                         }
+                        // check for constants
+                        else if (this.token[0] == '"' || this.token[0] == '\'' || this.token[0]=='`')
+                        {
+                            break;
+                        }
+                        else if (!visitedNodes.Contains(this.token) && symbols.TryGetValue(this.token, out Expression expr))
+                        {
+                            visitedNodes.Push(this.token);
+
+                            if(expr.Evaluate(symbols,out result,ref error,visitedNodes))
+                            {
+                                error = $"Failed to evaluate symbol \"{this.token}\" -> {error}";
+                                return false;
+                            }
+
+                            visitedNodes.Pop();
+                            break;
+                        }
+                        else
+                        {
+                            error = $"Failed to evaluate symbol \"{this.token}\"";
+                            return false;
+                        }
+                    }
+                case Operations.Add:
+                    {
+                        if(!this.Left.Evaluate(symbols,out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if(!this.Right.Evaluate(symbols,out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left + Right;
+                        break;
+                    }
+                case Operations.Sub:
+                    {
+                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left - Right;
+                        break;
+                    }
+                case Operations.BitAnd:
+                    {
+                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left & Right;
+                        break;
+                    }
+                case Operations.BitOr:
+                    {
+                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left | Right;
+                        break;
+                    }
+                case Operations.BitNot:
+                    {
+                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+
+                        result = isZero(Left) ? 1 : 0ul;
+                        break;
                     }
             }
         }
