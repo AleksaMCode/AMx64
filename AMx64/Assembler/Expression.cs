@@ -72,16 +72,16 @@ namespace AMx64.Assembler
             {
                 case Operations.None:
                     {
-                        if (this.token == null)
+                        if (Token == null)
                         {
                             result = cachedResult;
                             return true;
                         }
 
                         // check for numbers (hex, oct, dec) - Int parsing
-                        if (char.IsDigit(this.token[0]))
+                        if (char.IsDigit(Token[0]))
                         {
-                            string token = this.token.Replace("_", "").ToLower(); // removing underscores
+                            string token = Token.Replace("_", "").ToLower(); // removing underscores
 
                             if (token.StartsWith("0x")) // hex number - prefix
                             {
@@ -268,14 +268,14 @@ namespace AMx64.Assembler
 
             if (Op == Operations.None) // leaf test
             {
-                if ((upper ? token?.ToUpper() : token) == value) // we found the value
+                if ((upper ? Token?.ToUpper() : Token) == value) // we found the value
                 {
                     return true;
                 }
             }
             else
             {
-                if(Left.FindPath(value,path,upper) || Right != null && Right.FindPath(value,path,upper))
+                if (Left.FindPath(value, path, upper) || Right != null && Right.FindPath(value, path, upper))
                 {
                     return true;
                 }
@@ -293,9 +293,9 @@ namespace AMx64.Assembler
 
         public Expression FindExprThree(string value, bool upper = false)
         {
-            if(Op==Operations.None)
+            if (Op == Operations.None)
             {
-                return (upper ? token?.ToUpper() : token) == value ? this : null;
+                return (upper ? Token?.ToUpper() : Token) == value ? this : null;
             }
             else
             {
@@ -305,9 +305,9 @@ namespace AMx64.Assembler
 
         public void ExpressionResolver(string expr, UInt64 result)
         {
-            if(Op==Operations.None)
+            if (Op == Operations.None)
             {
-                if(token == expr)
+                if (token == expr)
                 {
                     CacheResult(result);
                 }
@@ -318,6 +318,64 @@ namespace AMx64.Assembler
                 Right?.ExpressionResolver(expr, result);
             }
         }
+
+        public static void WriteTo(BinaryWriter writer, Expression expr)
+        {
+            writer.Write((byte)((expr.token != null ? 128 : 0) | (expr.Right != null ? 32 : 0) | (int)expr.Op));
+
+            if (expr.Op == Operations.None)
+            {
+                if (expr.token != null)
+                {
+                    writer.Write(expr.token);
+                }
+                else
+                {
+                    writer.Write(expr.cachedResult);
+                }
+            }
+            else
+            {
+                WriteTo(writer, expr.Left);
+                if (expr.Right != null)
+                {
+                    WriteTo(writer, expr.Right);
+                }
+            }
+        }
+
+        public static void ReadFrom(BinaryReader reader, out Expression expr)
+        {
+            expr = new Expression();
+            int type = reader.ReadByte();
+            expr.Op = (Operations)(type & 0x1f);
+
+            if (expr.Op == Operations.None)
+            {
+                if ((type & 128) != 0)
+                {
+                    expr.token = reader.ReadString();
+                }
+                else
+                {
+                    expr.cachedResult = reader.ReadUInt64();
+                }
+            }
+            else
+            {
+                ReadFrom(reader, out expr.Left);
+                if((type&32) != 0)
+                {
+                    ReadFrom(reader, out expr.Right);
+                }
+                else
+                {
+                    expr.Right = null;
+                }
+            }
+        }
+
+
 
     }
 }
