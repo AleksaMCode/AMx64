@@ -9,6 +9,13 @@
     - [Layout of a AMASM Source Line <a name="amasm_layout"></a>](#layout-of-a-amasm-source-line-)
     - [Numeric Constants <a name="amasm_num-const"></a>](#numeric-constants-)
     - [Supported instructions <a name="amasm_instr"></a>](#supported-instructions-)
+      - [ADD - Add](#add---add)
+      - [SUB - Subtract](#sub---subtract)
+      - [AND - Bitwise AND](#and---bitwise-and)
+      - [OR - Bitwise OR](#or---bitwise-or)
+      - [NOT - Bitwise NOT](#not---bitwise-not)
+      - [MOV - Move](#mov---move)
+      - [CMP - Compare](#cmp---compare)
   - [Memory <a name="memory"></a>](#memory-)
     - [Registers <a name="memory_reg"></a>](#registers-)
       - [General-Purpose Registers <a name="memory_reg-general"></a>](#general-purpose-registers-)
@@ -66,6 +73,85 @@ Some examples (all producing exactly the same code):
 ```
 
 ### Supported instructions <a name="amasm_instr"></a>
+#### ADD - Add
+Adds the second argument (source) to the destination (first argument).
+```
+ADD reg, value
+ADD reg1, reg2
+```
+Flags affected:
+1. **ZF** is set if the result is zero; it's cleared otherwise.
+2. **SF** is set if the result is negative; it's cleared otherwise.
+3. **PF** is set if the result has even parity in the low 8 bits; it's cleared otherwise.
+4. **CF** is set if the addition caused a carry out from the high bit; it's cleared otherwise.
+5. **OF** is set if the addition resulted in arithmetic under/overflow; it's cleared otherwise.
+
+#### SUB - Subtract
+Subtracts the source (second argument) from the destination (first argument).
+```
+SUB reg, value
+SUB reg1, reg2
+```
+Flags affected:
+1. **ZF** is set if the result is zero; it's cleared otherwise.
+2. **SF** is set if the result is negative; it's cleared otherwise.
+3. **PF** is set if the result has even parity in the low 8 bits; it's cleared otherwise.
+4. **CF** is set if the subtraction caused a borrow from the low 4 bits; it's cleared otherwise.
+5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
+
+#### AND - Bitwise AND
+ANDs the destination with the source.
+```
+SUB reg, value
+SUB reg1, reg2
+```
+Flags affected:
+1. **ZF** is set if the result is zero; it's cleared otherwise.
+2. **SF** is set if the result is negative; it's cleared otherwise.
+3. **PF** is set if the result has even parity in the low 8 bits; it's cleared. otherwise.
+4. **CF** and **OF** are cleared.
+
+#### OR - Bitwise OR
+ORs the destination with the source.
+```
+SUB reg, value
+SUB reg1, reg2
+```
+Flags affected:
+1. **ZF** is set if the result is zero; it's cleared otherwise.
+2. **SF** is set if the result is negative; it's cleared otherwise.
+3. **PF** is set if the result has even parity in the low 8 bits; it's cleared
+4. **CF** and **OF** are cleared.
+
+#### NOT - Bitwise NOT
+Performs a bitwise NOT on the destination.
+```
+NOT reg
+```
+**NOTE:** It doesn't affect flags.
+
+#### MOV - Move
+<p align="justify">Copies a value from some source to a destination. Does not support  memory-to-memory transfers.</p>
+
+```
+MOV reg, value
+MOV reg1, reg2
+```
+**NOTE:** It doesn't affect flags.
+
+#### CMP - Compare
+<p align="justify">CMP performs a 'mental' subtraction of its second operand from its first operand, and affects the flags as if the subtraction had taken place, but does not store the result of the subtraction anywhere. This operation is identical to SUB (result is discarded); SUB should be used in place of CMP when the result is needed. CMP is often used with <i>conditional jump</i>.</p>
+
+```
+CMP reg, value
+CMP reg1, reg2
+```
+Flags affected:
+1. **ZF** is set if the result is zero; it's cleared otherwise.
+2. **SF** is set if the result is negative; it's cleared otherwise.
+3. **PF** is set if the result has even parity in the low 8 bits; it's cleared otherwise.
+4. **CF** is set if the subtraction caused a borrow from the low 4 bits; it's cleared otherwise.
+5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
 ## Memory <a name="memory"></a>
 ### Registers <a name="memory_reg"></a>
