@@ -13,6 +13,32 @@ AMx64 was created for a *Computer Architecture* course project, as taught at the
 
 <p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
+### Numeric Constants
+<p align="justify">A numeric constant is simply a number. AMASM allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!</p>
+
+Numeric constants can have underscores (_) interspersed to break up long strings.
+
+Some examples (all producing exactly the same code):
+ ```
+        mov     ax,200          ; decimal 
+        mov     ax,0200         ; still decimal 
+        mov     ax,0200d        ; explicitly decimal 
+        mov     ax,0d200        ; also decimal 
+        mov     ax,0c8h         ; hex 
+        mov     ax,$0c8         ; hex again: the 0 is required 
+        mov     ax,0xc8         ; hex yet again 
+        mov     ax,0hc8         ; still hex 
+        mov     ax,310q         ; octal 
+        mov     ax,310o         ; octal again 
+        mov     ax,0o310        ; octal yet again 
+        mov     ax,0q310        ; octal yet again 
+        mov     ax,11001000b    ; binary 
+        mov     ax,1100_1000b   ; same binary constant 
+        mov     ax,1100_1000y   ; same binary constant once more 
+        mov     ax,0b1100_1000  ; same binary constant yet again 
+        mov     ax,0y1100_1000  ; same binary constant yet again
+```
+
 ## Memory
 ### Registers
 #### General-Purpose Registers
