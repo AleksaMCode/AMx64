@@ -30,7 +30,7 @@ Bit | Mask | Abbreviation | Description | =1 | =0
 4 | 0x0010 | AF | Adjust flag | AC (Auxiliary Carry) | NA (No Auxiliary Carry)
 6 | 0x0040 | ZF | Zero flag | ZR (Zero) | NZ (Not Zero)
 7 | 0x0080 | SF | Sign flag | NG (Negative) | PL (Positive)
-8 | 0x1000 | TF | Trap flag | 
+8 | 0x1000 | TF | Trap flag | <td colspan=2>
 9 | 0x0200 | IF | Interrupt enable flag | EI (Enable Interrupt) | DI (Disable Interrupt)
 10 | 0x0400 | DF | Direction flag | DN (Down) | UP (Up)
 11 | 0x0800 | OF | Overflow flag | OV (Overflow) | NV (Not Overflow)
