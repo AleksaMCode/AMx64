@@ -18,6 +18,7 @@
       - [CMP - Compare](#cmp---compare)
       - [JMP - Unconditional Jump](#jmp---unconditional-jump)
       - [Jcc - Jump if Condition Is Met (Conditional Jump)](#jcc---jump-if-condition-is-met-conditional-jump)
+      - [END](#end)
   - [Memory <a name="memory"></a>](#memory-)
     - [Registers <a name="memory_reg"></a>](#registers-)
       - [General-Purpose Registers <a name="memory_reg-general"></a>](#general-purpose-registers-)
@@ -45,7 +46,7 @@ General-purpose registers are used for processing integral instructions (the mos
 
 `label: instruction operands ; comment`
 
-<p align="justify">It doesn't support multiline commands that are available in NASM using the backslash character (\) as the line continuation character. </p>
+<p align="justify">As usual, most of these fields are optional; the presence or absence of any combination of a label, an instruction and a comment is allowed. Of course, the operand field is either required or forbidden by the presence and nature of the instruction field. It doesn't support multiline commands that are available in <b>NASM</b> using the backslash character (\) as the line continuation character. </p>
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
@@ -177,6 +178,9 @@ JGE | Jump Greater/Equal | OF, SF | SF == 0
 JL | Jump Less | OF, SF | SF != 0
 
 <br>**NOTE:** It doesn't affect flags.
+
+#### END
+<p align="justify">This instruction indicates that the program ends correctly. If the program terminates without this instruction it should return the value different from 0.</p>
 
 ## Memory <a name="memory"></a>
 ### Registers <a name="memory_reg"></a>
