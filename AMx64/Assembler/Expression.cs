@@ -60,7 +60,7 @@ namespace AMx64.Assembler
             cachedResult = result;
         }
 
-        private bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
+        private bool EvaluateHelper(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
         {
             result = 0;
 
@@ -120,14 +120,14 @@ namespace AMx64.Assembler
                             }
                             else // decimal number
                             {
-                                if(token.TryParseUInt64(out result))
+                                if (token.TryParseUInt64(out result))
                                 {
                                     break;
                                 }
                             }
                         }
                         // check for constants
-                        else if (this.token[0] == '"' || this.token[0] == '\'' || this.token[0]=='`')
+                        else if (this.token[0] == '"' || this.token[0] == '\'' || this.token[0] == '`')
                         {
                             break;
                         }
@@ -135,7 +135,7 @@ namespace AMx64.Assembler
                         {
                             visitedNodes.Push(this.token);
 
-                            if(expr.Evaluate(symbols,out result,ref error,visitedNodes))
+                            if (expr.EvaluateHelper(symbols, out result, ref error, visitedNodes))
                             {
                                 error = $"Failed to evaluate symbol \"{this.token}\" -> {error}";
                                 return false;
@@ -152,11 +152,11 @@ namespace AMx64.Assembler
                     }
                 case Operations.Add:
                     {
-                        if(!this.Left.Evaluate(symbols,out Left, ref error, visitedNodes))
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
-                        if(!this.Right.Evaluate(symbols,out Right, ref error, visitedNodes))
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
@@ -170,11 +170,11 @@ namespace AMx64.Assembler
                     }
                 case Operations.Sub:
                     {
-                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
-                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
@@ -188,11 +188,11 @@ namespace AMx64.Assembler
                     }
                 case Operations.BitAnd:
                     {
-                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
-                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
@@ -206,11 +206,11 @@ namespace AMx64.Assembler
                     }
                 case Operations.BitOr:
                     {
-                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
-                        if (!this.Right.Evaluate(symbols, out Right, ref error, visitedNodes))
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
@@ -224,7 +224,7 @@ namespace AMx64.Assembler
                     }
                 case Operations.BitNot:
                     {
-                        if (!this.Left.Evaluate(symbols, out Left, ref error, visitedNodes))
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
                         {
                             retValue = false;
                         }
@@ -237,5 +237,87 @@ namespace AMx64.Assembler
             CacheResult(result); // result caching
             return true;
         }
+
+        public bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error)
+        {
+            return EvaluateHelper(symbols, out result, ref error, new Stack<string>());
+        }
+
+        public bool IsEvaluatable(Dictionary<string, Expression> sybmols)
+        {
+            string error = null;
+            return Evaluate(sybmols, out UInt64 result, ref error);
+        }
+
+        public Expression CreateDuplicate()
+        {
+            return new Expression()
+            {
+                Op = Op,
+                Left = Left?.CreateDuplicate(),
+                Right = Right?.CreateDuplicate(),
+
+                token = token,
+                cachedResult = cachedResult
+            };
+        }
+
+        private bool FindPath(string value, Stack<Expression> path, bool upper)
+        {
+            path.Push(this);
+
+            if (Op == Operations.None) // leaf test
+            {
+                if ((upper ? token?.ToUpper() : token) == value) // we found the value
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if(Left.FindPath(value,path,upper) || Right != null && Right.FindPath(value,path,upper))
+                {
+                    return true;
+                }
+            }
+
+            path.Pop();
+            return false;
+        }
+
+        public bool FindPathClearPath(string value, Stack<Expression> path, bool upper)
+        {
+            path.Clear();
+            return FindPath(value, path, upper);
+        }
+
+        public Expression FindExprThree(string value, bool upper = false)
+        {
+            if(Op==Operations.None)
+            {
+                return (upper ? token?.ToUpper() : token) == value ? this : null;
+            }
+            else
+            {
+                return Left.FindExprThree(value, upper) ?? Right?.FindExprThree(value, upper);
+            }
+        }
+
+        public void ExpressionResolver(string expr, UInt64 result)
+        {
+            if(Op==Operations.None)
+            {
+                if(token == expr)
+                {
+                    CacheResult(result);
+                }
+            }
+            else
+            {
+                Left.ExpressionResolver(expr, result);
+                Right?.ExpressionResolver(expr, result);
+            }
+        }
+
     }
 }
