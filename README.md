@@ -8,7 +8,7 @@ AMx64 was created for a <i>Computer Architecture</i> course project, as taught a
 
 `instruction operands ; comment`
 
-<p align="justify">It doesn't support labels and multiline commands that are created in NASM using the backslash character (\) as the line continuation character. </p>
+<p align="justify">It doesn't support labels and multiline commands that are available in NASM using the backslash character (\) as the line continuation character. </p>
 
 <p align="justify">AMASM places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
