@@ -6,7 +6,7 @@ AMx64 was created for a <i>Computer Architecture</i> course project, as taught a
 ### Layout of a AMASM Source Line
 <p align="justify">Like most assemblers, each **AMASM** source line contains some combination of the four fields <p>
 
-`instruction operands ; comment`
+`label: instruction operands ; comment`
 
 <p align="justify">It doesn't support labels and multiline commands that are available in NASM using the backslash character (\) as the line continuation character. </p>
 
