@@ -1,9 +1,37 @@
 # AMx64
-<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>.<br><br>
+
+## Table of contents
+- [AMx64](#amx64)
+  - [Table of contents](#table-of-contents)
+  - [Introduction <a name="introduction"></a>](#introduction-)
+  - [CPU details <a name="cpu_details"></a>](#cpu-details-)
+  - [The AMASM Language <a name="amasm"></a>](#the-amasm-language-)
+    - [Layout of a AMASM Source Line <a name="amasm_layout"></a>](#layout-of-a-amasm-source-line-)
+    - [Numeric Constants <a name="amasm_num-const"></a>](#numeric-constants-)
+    - [Supported instructions <a name="amasm_instr"></a>](#supported-instructions-)
+  - [Memory <a name="memory"></a>](#memory-)
+    - [Registers <a name="memory_reg"></a>](#registers-)
+      - [General-Purpose Registers <a name="memory_reg-general"></a>](#general-purpose-registers-)
+      - [FLAGS register <a name="memory_reg-flags"></a>](#flags-register-)
+    - [Addressing modes for data <a name="memory_address"></a>](#addressing-modes-for-data-)
+      - [Register (Direct) Addressing <a name="memory_address-direct"></a>](#register-direct-addressing-)
+      - [Immediate (literal) Addressing <a name="memory_address-literal"></a>](#immediate-literal-addressing-)
+  - [Debug - AMDB <a name="debug"></a>](#debug---amdb-)
+  - [To-Do List <a name="todo"></a>](#to-do-list-)
+
+
+## Introduction <a name="introduction"></a>
+<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations.<br><br>
 <b>AMx64</b> was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
 
-## The AMASM Language
-### Layout of a AMASM Source Line
+## CPU details <a name="cpu_details"></a>
+<p align="justify">Registers are small storage cells built directly into a processor that are vastly faster than main memory (RAM) but are also more expensive per byte. Because of this price factor, there is not typically much room in a processor for storing data. The execution of a typical program is: move data from memory to registers, perform computations, move processed data from registers to memory and repeat.<br><br>
+General-purpose registers are used for processing integral instructions (the most common type) and are under the complete control of the programmer.
+<br><br><b>NOTE:</b> If you modify a subdivision of a register, the other subdivisions of that register will see the change.
+</p>
+
+## The AMASM Language <a name="amasm"></a>
+### Layout of a AMASM Source Line <a name="amasm_layout"></a>
 <p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
 
 `label: instruction operands ; comment`
@@ -12,7 +40,7 @@
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
-### Numeric Constants
+### Numeric Constants <a name="amasm_num-const"></a>
 <p align="justify">A numeric constant is simply a number. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
 Numeric constants can have underscores (_) interspersed to break up long strings.</p>
 
@@ -37,20 +65,22 @@ Some examples (all producing exactly the same code):
         mov     ax,0y1100_1000  ; same binary constant yet again
 ```
 
-## Memory
-### Registers
+### Supported instructions <a name="amasm_instr"></a>
+
+## Memory <a name="memory"></a>
+### Registers <a name="memory_reg"></a>
 <p align="justify"><b>AMASM</b> uses the following names for general-purpose registers in 64-bit mode This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
-#### General-Purpose Registers
- Naming conventions | 64 bits | 32 bits | 16 bits | 8 bits | 8 bits |
-| - | - | - | - | - | - |
+#### General-Purpose Registers <a name="memory_reg-general"></a>
+ Naming conventions | 64 bits | 32 bits | 16 bits | High 8 bits | Low 8 bits |
+| - | :-: | :-: | :-: | :-: | :-: |
 | Accumulator | RAX | EAX | AX | AH | AL
 | Base | RBX | EBX | BX | BH | BL 
 | Counter | RCX | ECX | CX | CH | CL 
 | Data | RDX | EDX | DX | DH | DL 
 
-#### FLAGS register
-<p align="justify">Status register in AMx64 processor that contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers.</p>
+#### FLAGS register <a name="memory_reg-flags"></a>
+<p align="justify">Status register contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
 
 Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 | :- | - | :-: | - | ----------------------- | - | - | :-:
@@ -65,10 +95,10 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 11 | 0x0800 | OF | Overflow flag | <p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p> | OV (Overflow) | NV (Not Overflow) | ☒
 12-13 | 0x3000 | IOPL | I/O privilege level | <p align="justify">I/O Privilege Level of the current process.</p> | | | ☒
 
-### Adressing modes for data
+### Addressing modes for data <a name="memory_address"></a>
 <p align="justify">The addressing mode indicates the manner in which the operand is presented.<p>
 
-#### Register (Direct) Addressing
+#### Register (Direct) Addressing <a name="memory_address-direct"></a>
 ```
 +------+-----+-----+
 | mov  | reg1| reg2| reg1:=reg2
@@ -76,7 +106,7 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 ```
 <p align="justify">This "addressing mode" does not have an effective address and is not considered to be an addressing mode on some computers. In this example, all the operands are in registers, and the result is placed in a register.<p>
 
-#### Immediate (literal)
+#### Immediate (literal) Addressing <a name="memory_address-literal"></a>
 ```
 +------+-----+----------------+
 | add  | reg1|    constant    |    reg1 := reg1 + constant;
@@ -90,9 +120,10 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 
 **NOTE:** Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
-## Debug - AMDB
+## Debug - AMDB <a name="debug"></a>
 
-## To-Do List
+## To-Do List <a name="todo"></a>
 - [ ] Add Direct memory addressing.
 - [ ] Add Direct offset addressing.
 - [ ] Add Register indirect addressing.
+- [ ] Implement Stack memory structure.
