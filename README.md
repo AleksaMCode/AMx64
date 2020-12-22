@@ -1,7 +1,6 @@
 # AMx64
-AMx64 is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around NASM.
-
-AMx64 was created for a *Computer Architecture* course project, as taught at the Faculty of Electrical Engineering Banja Luka.
+<p align="justify">AMx64 is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around NASM.<br><br>
+AMx64 was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
 
 ## The AMASM Language
 ### Layout of a AMASM Source Line
