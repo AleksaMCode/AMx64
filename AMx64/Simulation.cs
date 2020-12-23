@@ -51,7 +51,7 @@ namespace AMx64
         /// <summary>
         /// Print out a string that contains all cpu registers/flag states.
         /// </summary>
-        public void getCPUStateDebug()
+        public void getCPUStateDebugMode()
         {
             Console.WriteLine(
                 $"RAX:      {RAX:x16}\n" +
@@ -63,7 +63,7 @@ namespace AMx64
                 $"PF:   {(PF ? 1 : 0)}\n" +
                 $"ZF    {(ZF ? 1 : 0)}\n" +
                 $"SF    {(SF ? 1 : 0)}\n" +
-                $"OF    {(OF ? 1 : 0)}"
+                $"OF    {(OF ? 1 : 0)}\n"
                 );
         }
     }
