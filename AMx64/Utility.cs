@@ -8,11 +8,6 @@ namespace AMx64
 {
     public static class Utility
     {
-        public static bool IsPowerOf2(this UInt32 val)
-        {
-            return val != 0 && (val & (val - 1)) == 0;
-        }
-
         public static bool TryParseUInt64(this string str, out UInt64 value, uint radix = 10)
         {
             if (radix < 2 || radix > 36)
