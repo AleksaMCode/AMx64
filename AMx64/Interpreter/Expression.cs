@@ -249,60 +249,6 @@ namespace AMx64
             return Evaluate(sybmols, out UInt64 result, ref error);
         }
 
-        public Expression CreateDuplicate()
-        {
-            return new Expression()
-            {
-                Op = Op,
-                Left = Left?.CreateDuplicate(),
-                Right = Right?.CreateDuplicate(),
-
-                token = token,
-                cachedResult = cachedResult
-            };
-        }
-
-        private bool FindPath(string value, Stack<Expression> path, bool upper)
-        {
-            path.Push(this);
-
-            if (Op == Operations.None) // leaf test
-            {
-                if ((upper ? Token?.ToUpper() : Token) == value) // we found the value
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                if (Left.FindPath(value, path, upper) || Right != null && Right.FindPath(value, path, upper))
-                {
-                    return true;
-                }
-            }
-
-            path.Pop();
-            return false;
-        }
-
-        public bool FindPathClearPath(string value, Stack<Expression> path, bool upper)
-        {
-            path.Clear();
-            return FindPath(value, path, upper);
-        }
-
-        public Expression FindExprThree(string value, bool upper = false)
-        {
-            if (Op == Operations.None)
-            {
-                return (upper ? Token?.ToUpper() : Token) == value ? this : null;
-            }
-            else
-            {
-                return Left.FindExprThree(value, upper) ?? Right?.FindExprThree(value, upper);
-            }
-        }
-
         public void ExpressionResolver(string expr, UInt64 result)
         {
             if (Op == Operations.None)
@@ -316,62 +262,6 @@ namespace AMx64
             {
                 Left.ExpressionResolver(expr, result);
                 Right?.ExpressionResolver(expr, result);
-            }
-        }
-
-        public static void WriteTo(BinaryWriter writer, Expression expr)
-        {
-            writer.Write((byte)((expr.token != null ? 128 : 0) | (expr.Right != null ? 32 : 0) | (int)expr.Op));
-
-            if (expr.Op == Operations.None)
-            {
-                if (expr.token != null)
-                {
-                    writer.Write(expr.token);
-                }
-                else
-                {
-                    writer.Write(expr.cachedResult);
-                }
-            }
-            else
-            {
-                WriteTo(writer, expr.Left);
-                if (expr.Right != null)
-                {
-                    WriteTo(writer, expr.Right);
-                }
-            }
-        }
-
-        public static void ReadFrom(BinaryReader reader, out Expression expr)
-        {
-            expr = new Expression();
-            int type = reader.ReadByte();
-            expr.Op = (Operations)(type & 0x1f);
-
-            if (expr.Op == Operations.None)
-            {
-                if ((type & 128) != 0)
-                {
-                    expr.token = reader.ReadString();
-                }
-                else
-                {
-                    expr.cachedResult = reader.ReadUInt64();
-                }
-            }
-            else
-            {
-                ReadFrom(reader, out expr.Left);
-                if((type&32) != 0)
-                {
-                    ReadFrom(reader, out expr.Right);
-                }
-                else
-                {
-                    expr.Right = null;
-                }
             }
         }
     }
