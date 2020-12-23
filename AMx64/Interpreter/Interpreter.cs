@@ -12,6 +12,8 @@ namespace AMx64
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
 
+        private short currentLine = -1;
+
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
         /// </summary>
