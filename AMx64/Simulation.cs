@@ -70,7 +70,7 @@ namespace AMx64
         /// <summary>
         /// Print out a string that contains all cpu registers/flag states.
         /// </summary>
-        public void getCPUStateDebugMode()
+        public void getCPUDebugStats()
         {
             Console.WriteLine(
                 $"RAX:      {RAX:x16}\n" +
