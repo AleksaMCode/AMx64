@@ -52,6 +52,8 @@ namespace AMx64
                 CPURegisters[i].x64 = randomValue.NextUInt64();
             }
 
+            // Implement and create User memory x64 space!
+
             Error = ErrorCode.None;
 
             // if we have arguments simulation can start
