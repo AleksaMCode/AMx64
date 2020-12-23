@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using System.Text;
 using static AMx64.Utility;
 
@@ -6,8 +8,25 @@ namespace AMx64
 {
     public enum ErrorCode
     {
-        None, OutOfBound, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort,
-        NotImplemented, StackOverflow, UnknownOp
+        None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort,
+        NotImplemented, StackOverflow, AccessViolation, UnknownOp
+    }
+
+    public class ErrorCodeWrapper
+    {
+        public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
+        {
+            {ErrorCode.None,""},
+            {ErrorCode.OutOfBounds, "Out of Bounds"},
+            {ErrorCode.UnhandledSyscall, "Unhandled Syscall"},
+            {ErrorCode.UndefinedBehavior, "Undefined Behavior"},
+            {ErrorCode.ArithmeticError, "Arithmetic Error"},
+            {ErrorCode.Abort, "Abort"},
+            {ErrorCode.AccessViolation, "Access Violation"},
+            {ErrorCode.NotImplemented, "Not Implemented"},
+            {ErrorCode.StackOverflow, "Stack Overflow"},
+            {ErrorCode.UnknownOp, "Unknown Operation"}
+        };
     }
 
     public partial class AMX64
