@@ -52,5 +52,15 @@ namespace AMx64
             }
             return true;
         }
+
+        /// <summary>
+        /// Get a UInt64 random value.
+        /// </summary>
+        /// <param name="rndValue"></param>
+        /// <returns></returns>
+        public static UInt64 NextUInt64(this Random rndValue)
+        {
+            return ((UInt64)(UInt32)rndValue.Next() << 32) | (UInt32)rndValue.Next();
+        }
     }
 }
