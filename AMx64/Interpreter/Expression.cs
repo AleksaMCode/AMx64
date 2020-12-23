@@ -9,7 +9,7 @@ namespace AMx64
 {
     internal class Expression
     {
-        internal enum Operations
+        internal enum Instructions
         {
             None,
 
@@ -18,11 +18,20 @@ namespace AMx64
             BitAnd, BitOr, // binary operations
 
             BitNot, //unary operation
+
+            Mov,
+
+            Cmp,
+
+            Jmp,
+            Je, Jne, Jge, Jl,
+
+            End
         }
 
-        public Operations Op = Operations.None;
+        public Instructions Instruction = Instructions.None;
 
-        public Expression Left = null, Right = null;
+        public string LeftOp = null, RightOp = null;
 
         private string token = null;
 
@@ -37,28 +46,12 @@ namespace AMx64
             {
                 token = value ?? throw new ArgumentNullException("Token can't be a null value.");
 
-                Op = Operations.None;
-                Left = Right = null;
+                Instruction = Instructions.None;
+                LeftOp = RightOp = null;
             }
         }
 
-        private UInt64 cachedResult = 0;
-
-        public bool IsLeaf => Op == Operations.None;
-        public bool IsEvaluated => Op == Operations.None && Token == null;
-
-        public UInt64 IntResult
-        {
-            set => CacheResult(value);
-        }
-
-        private void CacheResult(UInt64 result)
-        {
-            Op = Operations.None;
-            Left = Right = null;
-            token = null;
-            cachedResult = result;
-        }
+        public bool IsEvaluated => Instruction == Instructions.None && Token == null;
 
         private bool EvaluateHelper(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
         {
