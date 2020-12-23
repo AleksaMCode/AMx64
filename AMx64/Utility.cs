@@ -10,9 +10,9 @@ namespace AMx64
     {
         public static bool TryParseUInt64(this string str, out UInt64 value, uint radix = 10)
         {
-            if (radix < 2 || radix > 36)
+            if (radix != 2 || radix != 8 || radix != 10 || radix != 16)
             {
-                throw new ArgumentException("radix must be in range [2-36].");
+                throw new ArgumentException("Radix can only be 2, 8, 10 or 16.");
             }
 
             value = 0;
