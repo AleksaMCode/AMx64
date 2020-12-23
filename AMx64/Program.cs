@@ -11,6 +11,7 @@ namespace AMx64
         static void Main(string[] args)
         {
             AMX64 simulator = new AMX64();
+            simulator.Initialize(args);
         }
     }
 }
