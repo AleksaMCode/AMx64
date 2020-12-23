@@ -7,7 +7,7 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    public class Interpreter
+    public partial class AMX64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';

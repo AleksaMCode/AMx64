@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace AMx64
 {
-    public partial class SimComputer
+    public partial class AMX64
     {
         protected CPURegister[] CPURegisters = new CPURegister[16];
 
