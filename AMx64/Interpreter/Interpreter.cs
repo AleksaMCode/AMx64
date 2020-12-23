@@ -44,5 +44,33 @@ namespace AMx64
             ["DL"] = new Tuple<byte, byte, bool>(3, 0, false),
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
+
+        public bool IsSymbolReserverd(string symbol)
+        {
+            // Reserved symbols are case insensitive.
+            symbol = symbol.ToUpper();
+
+            if (CPURegisterMap.ContainsKey(symbol))
+            {
+                return true;
+            }
+
+            // special tokens check
+            switch (symbol)
+            {
+                // size tokens
+                case "BYTE":
+                case "WORD":
+                case "DWORD":
+                case "QWORD":
+                    {
+                        return true;
+                    }
+                default:
+                    {
+                        return false;
+                    }
+            }
+        }
     }
 }
