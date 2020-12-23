@@ -50,6 +50,7 @@
     <Compile Include="Memory\Registers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
