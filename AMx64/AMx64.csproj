@@ -43,12 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assembler\Assembler.cs" />
-    <Compile Include="Assembler\AssemblerResult.cs" />
-    <Compile Include="Assembler\DataHole.cs" />
-    <Compile Include="Assembler\Expression.cs" />
-    <Compile Include="Assembler\LinkerResult.cs" />
-    <Compile Include="Assembler\ObjectFile.cs" />
+    <Compile Include="Interpreter\Expression.cs" />
+    <Compile Include="Interpreter\Interpreter.cs" />
+    <Compile Include="Interpreter\InterpreterError.cs" />
     <Compile Include="Memory\CPURegister.cs" />
     <Compile Include="Memory\Registers.cs" />
     <Compile Include="Program.cs" />

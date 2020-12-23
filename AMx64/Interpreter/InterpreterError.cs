@@ -7,17 +7,16 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    public enum AssemblerErrors
+    public enum InterpreterErrors
     {
         None, ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure
     }
-
-    public class AssemblerResult
+    public class InterpreterError
     {
-        public AssemblerErrors Error;
+        public InterpreterErrors Error;
         public string ErrorMesg;
 
-        public AssemblerResult(AssemblerErrors error, string errorMsg)
+        public InterpreterError(InterpreterErrors error, string errorMsg)
         {
             Error = error;
             ErrorMesg = errorMsg;

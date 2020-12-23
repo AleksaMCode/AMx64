@@ -7,55 +7,14 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    internal enum AsmSegment
-    {
-        INVALID = 0,
-        TEXT = 1,
-        DATA = 4,
-        BSS = 8
-    }
-    public static class Assembler
+    public class Interpreter
     {
         private const char commentSymbol = ';';
-        private const char labeldefSymbol = ':';
+        private const char labelDefSymbol = ':';
 
-        private const string currentLineMacro = "$", startOfSegmentMacro = "$$", stringLiteralMacro = "$STR", binaryLiterlMacro = "$BIN", timIterIdMacro = "$I";
-
-        private static readonly Dictionary<Expression.Operations, int> opRanks = new Dictionary<Expression.Operations, int>()
-        {
-            { Expression.Operations.Add, 6 },
-            { Expression.Operations.Sub, 6 },
-
-            { Expression.Operations.BitAnd, 11 },
-            { Expression.Operations.BitOr,  13 }
-        };
-
-        private static readonly Dictionary<AsmSegment, string> segmentOffsets = new Dictionary<AsmSegment, string>()
-        {
-            [AsmSegment.TEXT] = "#t",
-            [AsmSegment.DATA] = "#d",
-            [AsmSegment.BSS] = "#b"
-        };
-
-        private static readonly Dictionary<AsmSegment, string> segmentOrigins = new Dictionary<AsmSegment, string>()
-        {
-            [AsmSegment.TEXT] = "#T",
-            [AsmSegment.DATA] = "#D",
-            [AsmSegment.BSS] = "#B"
-        };
-
-        private static readonly string binaryLiteralPrefix = "#L";
-
-        private static readonly HashSet<string> ptrdiffIDs = new HashSet<string>()
-        {
-            "#t", "#d", "#b",
-            "#T", "#D", "#B",
-
-            "__heap__",
-        };
-
-        private static readonly HashSet<string> verifyLegalExpression = new HashSet<string>() { "__heap__" };
-
+        /// <summary>
+        /// CPU registers map of names to tuple of (id, sizecode, highbit)
+        /// </summary>
         private static readonly Dictionary<string, Tuple<byte, byte, bool>> CPURegisterMap = new Dictionary<string, Tuple<byte, byte, bool>>()
         {
             ["RAX"] = new Tuple<byte, byte, bool>(0, 3, false),
