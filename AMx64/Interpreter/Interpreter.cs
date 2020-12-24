@@ -12,7 +12,10 @@ namespace AMx64
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
 
-        private short currentLine = -1;
+        private Dictionary<short, string> labels = new Dictionary<short, string>();
+
+        private string currentLine = null;
+        private short currentLineNumber = -1;
 
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
@@ -44,6 +47,27 @@ namespace AMx64
             ["DL"] = new Tuple<byte, byte, bool>(3, 0, false),
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
+
+        public InterpreterErrors Interpret()
+        {
+            currentLine = currentLine.Trim();
+            if (currentLine.StartsWith(";"))
+            {
+                return InterpreterErrors.Comment;
+            }
+            // remove comment part of the asm line
+            if (currentLine.Contains(";"))
+            {
+                currentLine = currentLine.Substring(0, currentLine.IndexOf(';') - 1);
+            }
+            // remove label
+            if (currentLine.Contains(":"))
+            {
+                labels.Add(currentLineNumber,)
+                currentLine = currentLine.Substring(currentLine.IndexOf(':') + 1, currentLine.Length);
+            }
+
+        }
 
         public bool IsSymbolReserverd(string symbol)
         {

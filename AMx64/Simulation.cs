@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.IO;
 using System.Text;
 using static AMx64.Utility;
 
@@ -60,6 +60,26 @@ namespace AMx64
             if (args != null || args.Length != 2)
             {
                 // Start simulation function call
+                var asmFile = new StreamReader(args[1]); // e.q. amx64.exe mycode.asm
+                while ((currentLine = asmFile.ReadLine()) != null)
+                {
+                    currentLineNumber++;
+                    if (String.IsNullOrEmpty(currentLine))
+                    {
+                        continue;
+                    }
+                    
+                    var interpreterResult = Interpret();
+
+                    if (interpreterResult == InterpreterErrors.Comment)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+
+                    }
+                }
                 return true;
             }
             // otherwise terminate execution
