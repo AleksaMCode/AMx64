@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CmlnParser.cs" />
     <Compile Include="Debugger\Debugger.cs" />
     <Compile Include="Debugger\DebuggerInfo.cs" />
     <Compile Include="Interpreter\Expression.cs" />

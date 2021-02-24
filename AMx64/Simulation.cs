@@ -41,15 +41,6 @@ namespace AMx64
                                               otherwise                 interprets a AMX64 asm file with provided args
                                             ";
 
-        /// <summary>
-        /// Maps long options to parsing handler.
-        /// </summary>
-        static readonly Dictionary<string, cmdln_pack_handler> optionsLongNames = new Dictionary<string, cmdln_pack_handler>()
-        {
-            ["--help"] = _help,
-            ["--debug"] = _assemble
-        };
-
         protected Random randomValue = new Random();
 
         public ErrorCode Error { get; protected set; }
