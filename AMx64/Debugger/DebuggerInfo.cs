@@ -15,9 +15,19 @@ namespace AMx64
         private const char NULL = (char)0;
 
         public readonly string Prompt = "(amdb) ";
-        private readonly string breakpointErrorMsg = "Error setting breakpoint: ";
+        private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
+        private const string HelpDebugMessage =
+                                                @"Usage: (adb) [OPTION]... [ARG]...
 
-        public List<int> Breakpoints = null;
+                                                  h, help                prints this help page
+                                                  b, breakpoint
+                                                  d, delete
+                                                  r, run
+                                                  n, next
+                                                  c, continue
+                                                ";
+
+        public List<int> Breakpoints = new List<int>();
         public int currentLineNum = 0;
         public int lineCount;
 
@@ -33,7 +43,8 @@ namespace AMx64
                 }
                 else
                 {
-                    this.breakpoints.Add(breakpoint);
+                    Breakpoints.Add(breakpoint);
+                    return null;
                 }
             }
 
@@ -56,7 +67,7 @@ namespace AMx64
                 }
                 else
                 {
-                    this.breakpoints.Add(breakpoint);
+                    Breakpoints.Add(breakpoint);
                 }
             }
 

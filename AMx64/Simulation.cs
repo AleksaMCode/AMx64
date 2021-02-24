@@ -32,7 +32,7 @@ namespace AMx64
     public partial class AMX64
     {
         private const string HelpMessage =
-                                            @"Usage: amx64 [OPTION]... [ARG]...
+                                            @"Usage: amx64 [OPTION].... [ARG]....
                                             Interpret or debug CSX64 asm files.
 
                                               -h, --help                prints this help page
@@ -41,16 +41,14 @@ namespace AMx64
                                               otherwise                 interprets a AMX64 asm file with provided args
                                             ";
 
-        private const string HelpDebugMessage =
-                                            @"Usage: (adb) [OPTION].. [ARG]..
-
-                                              h, help                prints this help page
-                                              b, breakpoint
-                                              d, delete
-                                              r, run
-                                              n, next
-                                              c, continue
-                                            ";
+        /// <summary>
+        /// Maps long options to parsing handler.
+        /// </summary>
+        static readonly Dictionary<string, cmdln_pack_handler> optionsLongNames = new Dictionary<string, cmdln_pack_handler>()
+        {
+            ["--help"] = _help,
+            ["--debug"] = _assemble
+        };
 
         protected Random randomValue = new Random();
 
