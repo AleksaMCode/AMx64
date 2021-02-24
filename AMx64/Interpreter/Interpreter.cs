@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using static AMx64.Utility;
+using System.Text.RegularExpressions;
 
 namespace AMx64
 {
@@ -12,10 +13,20 @@ namespace AMx64
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
 
-        private Dictionary<short, string> labels = new Dictionary<short, string>();
+        private Dictionary<string, int> labels = new Dictionary<string, int>();
 
-        private string currentLine = null;
-        private short currentLineNumber = -1;
+        /// <summary>
+        /// Current asm line (line string + line number).
+        /// </summary>
+        private Tuple<string, int> currentLine = new Tuple<string, int>("", 0);
+
+        //private string currentLine = null;
+        //private int currentLineNumber = 0;
+
+        /// <summary>
+        /// Regex for labels.
+        /// </summary>
+        private readonly Regex labelRegex = new Regex("^[a-zA-Z0-9]", RegexOptions.Compiled);
 
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
@@ -48,24 +59,77 @@ namespace AMx64
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
 
-        public InterpreterErrors Interpret()
+
+        /// <summary>
+        /// Interprets asm file line by line.
+        /// </summary>
+        /// <param name="asmFilePath">Path to asm file.</param>
+        public void InterpretAsmFile(string asmFilePath)
         {
-            currentLine = currentLine.Trim();
+            // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
+            var bufferSize = 4_096;
+
+            using var fileStream = File.OpenRead(commonPasswordsPath);
+            using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
+
+            while ((currentLine.Item1 = streamReader.ReadLine()) != null)
+            {
+                currentLine.Item2++;
+
+                // Interpret asm line.
+                // If line is a comment or empty, skip it.
+                if (currentLine == "" || InterpretAsmLine() == InterpreterErrors.Comment)
+                {
+                    continue;
+                }
+            }
+
+            // Reset current line.
+            currentLine.Item1 = "";
+            currentLine.Item2 = 0;
+        }
+
+        /// <summary>
+        /// Interprets current asm line.
+        /// </summary>
+        /// <returns></returns>
+        private InterpreterErrors InterpretAsmLine()
+        {
+            currentLine.Item1 = currentLine.Item1.Trim();
             if (currentLine.StartsWith(";"))
             {
                 return InterpreterErrors.Comment;
             }
-            // remove comment part of the asm line
+
+            // Remove comment part of the asm line.
             if (currentLine.Contains(";"))
             {
-                currentLine = currentLine.Substring(0, currentLine.IndexOf(';') - 1);
+                currentLine.Item1 = currentLine.Item1.Substring(0, currentLine.Item1.IndexOf(';') - 1);
+                currentLine.Item1 = currentLine.Item1.Trim();
             }
-            // remove label
+
+            // Remove label.
             if (currentLine.Contains(":"))
             {
-                labels.Add(currentLineNumber,)
-                currentLine = currentLine.Substring(currentLine.IndexOf(':') + 1, currentLine.Length);
+                var match = labelRegex.Match(currentLine);
+
+                if (match.Success)
+                {
+                    if (labels.ContainsKey(match.Value))
+                    {
+                        throw new Exception("Error");
+                    }
+                    else
+                    {
+                        labels.Add(match.Value, currentLineNumber);
+                    }
+
+                    currentLine.Item1 = currentLine.Item1.Substring(currentLine.Item1.IndexOf(':') + 1, currentLine.Item1.Length - 1);
+                }
             }
+
+            // Create tokens from current line.
+            var lineToken = currentLine.Item1.Split(' ');
 
         }
 

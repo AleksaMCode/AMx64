@@ -31,6 +31,27 @@ namespace AMx64
 
     public partial class AMX64
     {
+        private const string HelpMessage =
+                                            @"Usage: amx64 [OPTION]... [ARG]...
+                                            Interpret or debug CSX64 asm files.
+
+                                              -h, --help                prints this help page
+
+                                              -d, --debug               debuggs AMX64 asm file
+                                              otherwise                 interprets a AMX64 asm file with provided args
+                                            ";
+
+        private const string HelpDebugMessage =
+                                            @"Usage: (adb) [OPTION].. [ARG]..
+
+                                              h, help                prints this help page
+                                              b, breakpoint
+                                              d, delete
+                                              r, run
+                                              n, next
+                                              c, continue
+                                            ";
+
         protected Random randomValue = new Random();
 
         public ErrorCode Error { get; protected set; }
@@ -68,7 +89,7 @@ namespace AMx64
                     {
                         continue;
                     }
-                    
+
                     var interpreterResult = Interpret();
 
                     if (interpreterResult == InterpreterErrors.Comment)
