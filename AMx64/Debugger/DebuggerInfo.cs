@@ -4,15 +4,71 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
 
 namespace AMx64
 {
-    public partial class AMX64
+    public class DebuggerInfo
     {
         private const char CR = '\r';
         private const char LF = '\n';
         private const char NULL = (char)0;
 
+        public readonly string Prompt = "(amdb) ";
+        private readonly string breakpointErrorMsg = "Error setting breakpoint: ";
+
+        public List<int> Breakpoints = null;
+        public int currentLineNum = 0;
+        public int lineCount;
+
+        public string SetBreakpoint(int breakpoint)
+        {
+            lineCount = GetAsmFileLineNumber();
+
+            foreach (var breakpoint in breakpoints)
+            {
+                if (breakpoint > lineCount)
+                {
+                    return breakpointErrorMsg + breakpoint;
+                }
+                else
+                {
+                    this.breakpoints.Add(breakpoint);
+                }
+            }
+
+            return null;
+        }
+
+        public string SetBreakpoints(int[] breakpoints)
+        {
+            lineCount = GetAsmFileLineNumber();
+
+            string errorMsg = breakpointErrorMsg;
+            bool breakpointError = false;
+
+            foreach (var breakpoint in breakpoints)
+            {
+                if (breakpoint > lineCount)
+                {
+                    errorMsg += breakpoint + " ";
+                    breakpointError = true;
+                }
+                else
+                {
+                    this.breakpoints.Add(breakpoint);
+                }
+            }
+
+            return breakpointError ? errorMsg : null;
+        }
+
+        public int GetAsmFileLineNumber()
+        {
+            using var fileStream = File.OpenRead(commonPasswordsPath);
+            using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
+            return CountAsmFileLines(streamReader);
+        }
 
         /// <summary>
         /// Counts asm file lines. Used to determine if breakpoints can be set when debugging. Method written by <a href="https://github.com/nimaara">Nima Ara</a>.
@@ -26,7 +82,7 @@ namespace AMx64
             var lineCount = 0;
 
             var byteBuffer = new byte[1024 * 1024];
-            const int BytesAtTheTime = 4;
+            const int bytesAtTheTime = 4;
             var detectedEOL = NULL;
             var currentChar = NULL;
 
@@ -34,7 +90,7 @@ namespace AMx64
             while ((bytesRead = stream.Read(byteBuffer, 0, byteBuffer.Length)) > 0)
             {
                 var i = 0;
-                for (; i <= bytesRead - BytesAtTheTime; i += BytesAtTheTime)
+                for (; i <= bytesRead - bytesAtTheTime; i += bytesAtTheTime)
                 {
                     currentChar = (char)byteBuffer[i];
 
@@ -58,7 +114,7 @@ namespace AMx64
                             detectedEOL = currentChar;
                             lineCount++;
                         }
-                        i -= BytesAtTheTime - 1;
+                        i -= bytesAtTheTime - 1;
                     }
                 }
 
