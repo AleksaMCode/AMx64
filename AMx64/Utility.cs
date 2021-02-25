@@ -9,7 +9,7 @@ namespace AMx64
     public static class Utility
     {
         /// <summary>
-        /// Attempts to parse the tring into an unsigned integer.
+        /// Attempts to parse the string value into an unsigned integer.
         /// </summary>
         /// <param name="str">String to parse.</param>
         /// <param name="value">The resulting value.</param>
