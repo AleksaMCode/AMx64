@@ -19,7 +19,7 @@ namespace AMx64
         /// <summary>
         /// Current asm line (line string + line number).
         /// </summary>
-        private Tuple<string, int> currentLine = new Tuple<string, int>("", 0);
+        private AsmLine currentLine = new AsmLine("", 0);
 
         //private string currentLine = null;
         //private int currentLineNumber = 0;
@@ -64,22 +64,21 @@ namespace AMx64
         /// <summary>
         /// Interprets asm file line by line.
         /// </summary>
-        /// <param name="asmFilePath">Path to asm file.</param>
-        public void InterpretAsmFile(string asmFilePath)
+        public void InterpretAsmFile()
         {
             // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
             var bufferSize = 4_096;
 
-            using var fileStream = File.OpenRead(commonPasswordsPath);
+            using var fileStream = File.OpenRead(asmFilePath);
             using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
 
-            while ((currentLine.Item1 = streamReader.ReadLine()) != null)
+            while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
             {
-                currentLine.Item2++;
+                currentLine.CurrenetAsmLineNumber++;
 
                 // Interpret asm line.
                 // If line is a comment or empty, skip it.
-                if (currentLine == "" || InterpretAsmLine() == InterpreterErrors.Comment)
+                if (currentLine.CurrentAsmLineValue == "" || InterpretAsmLine() == InterpreterErrors.Comment)
                 {
                     continue;
                 }
@@ -152,13 +151,13 @@ namespace AMx64
                 case "WORD":
                 case "DWORD":
                 case "QWORD":
-                    {
-                        return true;
-                    }
+                {
+                    return true;
+                }
                 default:
-                    {
-                        return false;
-                    }
+                {
+                    return false;
+                }
             }
         }
     }
