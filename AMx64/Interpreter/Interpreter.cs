@@ -104,8 +104,10 @@ namespace AMx64
                 currentLine.CurrenetAsmLineNumber++;
 
                 // Interpret asm line.
-                // If line is a comment or empty, skip it.
-                if (currentLine.CurrentAsmLineValue == "" || InterpretAsmLine() == InterpreterErrors.Comment)
+                var interpretResult = InterpretAsmLine();
+
+                // If a asm line contains only a comment or is empty, skip it.
+                if (currentLine.CurrentAsmLineValue == "" || interpretResult == InterpreterErrors.Comment)
                 {
                     continue;
                 }
