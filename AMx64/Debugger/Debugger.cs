@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Text;
 
 namespace AMx64
 {
@@ -6,10 +8,33 @@ namespace AMx64
     {
         private DebuggerInfo debugger;
 
-        public void Debug()
+        public bool Debug(string asmName)
         {
-            debugger = new DebuggerInfo();
+            if (asmName.Contains("\\"))
+            {
+                var path = Path.GetDirectoryName(asmName);
+                if (path != null && Directory.Exists(path))
+                {
+                    asmFilePath = asmName;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                asmFilePath += "\\" + asmName;
+            }
 
+            InterpretDebugCommandLine();
+            CheckAsmFileForErrors();
+
+            debugger = new DebuggerInfo();
+        }
+
+        public bool InterpretDebugCommandLine()
+        {
             do
             {
                 Console.Write(debugger.Prompt);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +12,7 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
+        private string asmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
         private Dictionary<string, int> labels = new Dictionary<string, int>();
 
