@@ -37,11 +37,11 @@ namespace AMx64
             {
                 lineCount = GetAsmFileLineNumber();
 
-                foreach (var breakpoint in breakpoints)
+                foreach (var bp in Breakpoints)
                 {
-                    if (breakpoint > lineCount)
+                    if (bp > lineCount)
                     {
-                        return breakpointErrorMsg + breakpoint;
+                        return breakpointErrorMsg + bp;
                     }
                     else
                     {
@@ -60,16 +60,16 @@ namespace AMx64
                 string errorMsg = breakpointErrorMsg;
                 bool breakpointError = false;
 
-                foreach (var breakpoint in breakpoints)
+                foreach (var bp in breakpoints)
                 {
-                    if (breakpoint > lineCount)
+                    if (bp > lineCount)
                     {
-                        errorMsg += breakpoint + " ";
+                        errorMsg += bp + " ";
                         breakpointError = true;
                     }
                     else
                     {
-                        Breakpoints.Add(breakpoint);
+                        Breakpoints.Add(bp);
                     }
                 }
 
@@ -90,7 +90,7 @@ namespace AMx64
             /// <returns></returns>
             private int CountAsmFileLines(Stream stream)
             {
-                Ensure.NotNull(stream, nameof(stream));
+                //Ensure.NotNull(stream, nameof(stream));
 
                 var lineCount = 0;
 

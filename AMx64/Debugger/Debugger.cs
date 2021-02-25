@@ -11,8 +11,10 @@ namespace AMx64
     {
         private DebuggerInfo debugger;
 
-        public Debug()
+        public void Debug()
         {
+            debugger = new DebuggerInfo();
+
             do
             {
 
