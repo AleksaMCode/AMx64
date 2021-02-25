@@ -22,7 +22,9 @@ namespace AMx64
         DEBUG = 255
     }
 
-    [StructLayout(LayoutKind.Explicit)]
+    /// <summary>
+    /// 64-bit register representation.
+    /// </summary>
     public class CPURegister
     {
         [FieldOffset(0)]

@@ -21,7 +21,7 @@ namespace AMx64
         /// <summary>
         /// Maps long options to parsing handler.
         /// </summary>
-        static readonly Dictionary<string, CmlnParserHandler> optionsLongNames = new Dictionary<string, cmdln_pack_handler>()
+        static readonly Dictionary<string, CmlnParserHandler> optionsLongNames = new Dictionary<string, CmlnParserHandler>()
         {
             ["--help"] = Help,
             ["--debug"] = Debug
@@ -30,7 +30,7 @@ namespace AMx64
         /// <summary>
         /// Maps short options to parsing handler.
         /// </summary>
-        static readonly Dictionary<char, CmlnParserHandler> optionsShortNames = new Dictionary<char, cmdln_pack_handler>()
+        static readonly Dictionary<char, CmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserHandler>()
         {
             ['h'] = Help,
             ['d'] = Debug
@@ -44,7 +44,7 @@ namespace AMx64
             /// <summary>
             /// Requested action.
             /// </summary>
-            public CmlnAction action = CmlnAction.Exectute;
+            public CmlnAction Action = CmlnAction.Execute;
 
             /// <summary>
             /// Root directory.

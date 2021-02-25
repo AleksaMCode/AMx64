@@ -6,15 +6,16 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
+    /// <summary>
+    /// Error codes 
+    /// </summary>
     public enum ErrorCode
     {
         None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort,
         NotImplemented, StackOverflow, AccessViolation, UnknownOp
     }
 
-    public class ErrorCodeWrapper
-    {
-        public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
+    public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
         {
             {ErrorCode.None,""},
             {ErrorCode.OutOfBounds, "Out of Bounds"},
@@ -27,6 +28,15 @@ namespace AMx64
             {ErrorCode.StackOverflow, "Stack Overflow"},
             {ErrorCode.UnknownOp, "Unknown Operation"}
         };
+
+    /// <summary>
+    /// Gets Error string from Error code.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static string GetErrorString(ErrorCode error)
+    {
+        return ErrorCodeMap[error];
     }
 
     public partial class AMX64
@@ -99,23 +109,20 @@ namespace AMx64
             }
         }
 
-        /// <summary>
-        /// Print out a string that contains all cpu registers/flag states.
-        /// </summary>
-        public void getCPUDebugStats()
+        static bool Help(CmlnParser parser)
         {
-            Console.WriteLine(
-                $"RAX:      {RAX:x16}\n" +
-                $"RBX:      {RBX:x16}\n" +
-                $"RCX:      {RCX:x16}\n" +
-                $"RDX:      {RDX:x16}\n" +
-                $"RFLAGS:   {RFLAGS:x16}\n" +
-                $"CF:   {(CF ? 1 : 0)}\n" +
-                $"PF:   {(PF ? 1 : 0)}\n" +
-                $"ZF    {(ZF ? 1 : 0)}\n" +
-                $"SF    {(SF ? 1 : 0)}\n" +
-                $"OF    {(OF ? 1 : 0)}\n"
-                );
+            Console.WriteLine(HelpMessage);
+
+            return false;
         }
+
+        static bool Debug(CmlnParser parser)
+        {
+            parser.Action = CmlnAction.Debug;
+
+            return true;
+        }
+
+        private delegate bool CmlnParserCmlnParserHandler(CmlnParser parser);
     }
 }
