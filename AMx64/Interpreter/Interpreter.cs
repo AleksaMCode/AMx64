@@ -21,13 +21,40 @@ namespace AMx64
         /// </summary>
         private AsmLine currentLine = new AsmLine("", 0);
 
-        //private string currentLine = null;
-        //private int currentLineNumber = 0;
-
         /// <summary>
         /// Regex for labels.
         /// </summary>
-        private readonly Regex labelRegex = new Regex("^[a-zA-Z0-9]", RegexOptions.Compiled);
+        private readonly Regex labelRegex = new Regex(@"^([a-zA-Z]+\d*)+$:", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
+        /// </summary>
+        private readonly Regex commandLineWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
+        /// </summary>
+        private readonly Regex commandLineWithoutLabelRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for NOT instruction inluding label.
+        /// </summary>
+        private readonly Regex commandLineNotInstrWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for NOT instruction not inluding label.
+        /// </summary>
+        private readonly Regex commandLineNotInstrWithoutLabelRegex = new Regex(@"^(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for Jcc operations inluding label.
+        /// </summary>
+        private readonly Regex commandLineJccWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for Jcc operations not inluding label.
+        /// </summary>
+        private readonly Regex commandLineJccWithoutLabelRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
 
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
