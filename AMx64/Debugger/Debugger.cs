@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace AMx64
 {
@@ -17,6 +12,42 @@ namespace AMx64
 
             do
             {
+                Console.Write(debugger.Prompt);
+                var command = Console.ReadLine();
+                // Remove trailing/leading white spaces.
+                command = command.Trim();
+
+                if ((command.StartsWith("help") && command.Length == 4) || (command.StartsWith("h") && command.Length == 1))
+                {
+                    Console.Write(debugger.HelpDebugMessage);
+                }
+                else if (command.StartsWith("breakpoint ") || command.StartsWith("b "))
+                {
+                    debugger.SetBreakpoints(command.Split(' '));
+                }
+                else if (command.StartsWith("run") || command.StartsWith("r"))
+                {
+
+                }
+                else if (command.StartsWith("delete ") || command.StartsWith("d "))
+                {
+                    var tokens = command.Split(' ');
+
+                    if (tokens.Length == 2 && tokens[1] == "all")
+                    {
+                        debugger.Breakpoints.Clear();
+                    }
+
+                    debugger.RemoveBreakpoints(tokens);
+                }
+                else if (command.StartsWith("continue") || command.StartsWith("c"))
+                {
+
+                }
+                else if (command.StartsWith("quit") || command.StartsWith("q"))
+                {
+
+                }
 
             }
             while (true);
@@ -24,7 +55,7 @@ namespace AMx64
 
 
         /// <summary>
-        /// Print out a string that contains all cpu registers/flag states.
+        /// Prints out all cpu registers/flag states.
         /// </summary>
         public void getCPUDebugStats()
         {

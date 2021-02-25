@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.Contracts;
 
 namespace AMx64
 {
@@ -18,62 +15,119 @@ namespace AMx64
 
             public readonly string Prompt = "(amdb) ";
             private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
-            private const string HelpDebugMessage =
-                                                    @"Usage: (adb) [OPTION]... [ARG]...
+            private readonly string debuggerErrorMsg = $"Failed to evaluate symbol(s) \"{0}\"";
+            public readonly string HelpDebugMessage =
+                                                    @"  Usage: (adb) [OPTION]... [ARG]...
+                                                        List of classes of commands:
 
-                                                  h, help                prints this help page
-                                                  b, breakpoint
-                                                  d, delete
-                                                  r, run
-                                                  n, next
-                                                  c, continue
-                                                ";
+                                                        h, help       -- Prints this help page
+                                                        r, run        -- Starts program debugging
+                                                        n, next       -- Interprets current line and stops a program at the next line
+                                                        c, continue   -- Continues program debugging from a breakpoint
+                                                        b, breakpoint -- Making program stop at certain points
+                                                        d, delete     -- Removes a breakpoint
+                                                        q, quit       -- Quits debugging
+                                                     ";
 
-            public List<int> Breakpoints = new List<int>();
-            public int currentLineNum = 0;
-            public int lineCount;
 
-            public string SetBreakpoint(int breakpoint)
+            public SortedSet<int> Breakpoints = new SortedSet<int>();
+            public int CurrentLineNum = 0;
+            public int LineCount;
+            public bool Next;
+
+            public string SetBreakpoints(string[] commandLineTokens)
             {
-                lineCount = GetAsmFileLineNumber();
-
-                foreach (var bp in Breakpoints)
+                if (commandLineTokens.Length == 1)
                 {
-                    if (bp > lineCount)
+                    return GetErrorMsg(commandLineTokens[0]);
+                }
+                else if (commandLineTokens.Length == 2)
+                {
+                    return Int32.TryParse(commandLineTokens[1], out var breakpoint) ? SetBreakpoint(breakpoint) : breakpointErrorMsg + breakpoint;
+                }
+                else
+                {
+                    var breakpoints = ParseBreakpoints(ref commandLineTokens, out var errors);
+                    var errorMsg = SetBreakpoints(breakpoints);
+
+                    return string.IsNullOrEmpty(errorMsg)
+                        ? string.IsNullOrEmpty(errors) ? errorMsg : breakpointErrorMsg + errors
+                        : string.IsNullOrEmpty(errors) ? errorMsg : errorMsg + errors;
+                }
+            }
+
+            public void RemoveBreakpoints(string[] commandLineTokens)
+            {
+                foreach (var breakpoint in ParseBreakpoints(ref commandLineTokens, out var _))
+                {
+                    Breakpoints.Remove(breakpoint);
+                }
+            }
+
+            private HashSet<int> ParseBreakpoints(ref string[] commandLineTokens, out string errorBreakpoinst)
+            {
+                var breakpoints = new HashSet<int>();
+                var errorBreakpointsSb = new StringBuilder();
+
+                for (var i = 1; i < commandLineTokens.Length; ++i)
+                {
+                    if (Int32.TryParse(commandLineTokens[i], out var breakpoint))
                     {
-                        return breakpointErrorMsg + bp;
+                        breakpoints.Add(breakpoint);
                     }
                     else
                     {
-                        Breakpoints.Add(breakpoint);
-                        return null;
+                        errorBreakpointsSb.Append(breakpoint + " ");
                     }
                 }
 
-                return null;
+                errorBreakpoinst = errorBreakpointsSb.ToString();
+
+                return breakpoints;
             }
 
-            public string SetBreakpoints(int[] breakpoints)
+            private string SetBreakpoint(int breakpoint)
             {
-                lineCount = GetAsmFileLineNumber();
+                if (Breakpoints.Count == 0)
+                {
+                    LineCount = GetAsmFileLineNumber();
+                }
 
-                string errorMsg = breakpointErrorMsg;
-                bool breakpointError = false;
+                if (breakpoint > LineCount)
+                {
+                    return breakpointErrorMsg + breakpoint;
+                }
+                else
+                {
+                    // Duplicate breakpoints are ignored.
+                    Breakpoints.Add(breakpoint);
+                    return null;
+                }
+            }
+
+            private string SetBreakpoints(HashSet<int> breakpoints)
+            {
+                if (Breakpoints.Count == 0)
+                {
+                    LineCount = GetAsmFileLineNumber();
+                }
+
+                var errorMsg = breakpointErrorMsg;
 
                 foreach (var bp in breakpoints)
                 {
-                    if (bp > lineCount)
+                    if (bp > LineCount)
                     {
                         errorMsg += bp + " ";
-                        breakpointError = true;
                     }
                     else
                     {
+                        // Duplicate breakpoints are ignored.
                         Breakpoints.Add(bp);
                     }
                 }
 
-                return breakpointError ? errorMsg : null;
+                return errorMsg.Length > breakpointErrorMsg.Length ? errorMsg : null;
             }
 
             public int GetAsmFileLineNumber()
@@ -81,6 +135,11 @@ namespace AMx64
                 using var fileStream = File.OpenRead(commonPasswordsPath);
                 using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
                 return CountAsmFileLines(streamReader);
+            }
+
+            public string GetErrorMsg(string symbol)
+            {
+                return string.Format(debuggerErrorMsg, symbol);
             }
 
             /// <summary>
@@ -109,16 +168,20 @@ namespace AMx64
 
                         if (detectedEOL != NULL)
                         {
-                            if (currentChar == detectedEOL) { lineCount++; }
+                            if (currentChar == detectedEOL)
+                            { lineCount++; }
 
                             currentChar = (char)byteBuffer[i + 1];
-                            if (currentChar == detectedEOL) { lineCount++; }
+                            if (currentChar == detectedEOL)
+                            { lineCount++; }
 
                             currentChar = (char)byteBuffer[i + 2];
-                            if (currentChar == detectedEOL) { lineCount++; }
+                            if (currentChar == detectedEOL)
+                            { lineCount++; }
 
                             currentChar = (char)byteBuffer[i + 3];
-                            if (currentChar == detectedEOL) { lineCount++; }
+                            if (currentChar == detectedEOL)
+                            { lineCount++; }
                         }
                         else
                         {
@@ -137,7 +200,8 @@ namespace AMx64
 
                         if (detectedEOL != NULL)
                         {
-                            if (currentChar == detectedEOL) { lineCount++; }
+                            if (currentChar == detectedEOL)
+                            { lineCount++; }
                         }
                         else
                         {
