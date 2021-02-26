@@ -250,3 +250,5 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 - [ ] Add Direct offset addressing.
 - [ ] Add Register indirect addressing.
 - [ ] Implement Stack memory structure.
+- [ ] Implement 64-bit addressable memory.
+- [ ] Implement assembler sections (.data, .bss, .text).
