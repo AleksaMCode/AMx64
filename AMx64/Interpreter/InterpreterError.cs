@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +7,21 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    public enum InterpreterErrors
+    public partial class AMX64
     {
-        None, ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
-        OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, FormatError, MemoryAllocError, ComputerInitError, UnknownError
+
+        public enum InterpreterErrors
+        {
+            None, ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
+            OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
+        }
+
+        public Dictionary<InterpreterErrors, string> ErrorsInterpreted = new Dictionary<InterpreterErrors, string>()
+        {
+        };
+
     }
+
     public class InterpreterError
     {
         public InterpreterErrors Error;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -6,16 +6,18 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    /// <summary>
-    /// Error codes 
-    /// </summary>
-    public enum ErrorCode
+    public partial class AMX64
     {
-        None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort,
-        NotImplemented, StackOverflow, AccessViolation, UnknownOp
-    }
+        /// <summary>
+        /// Error codes 
+        /// </summary>
+        public enum ErrorCode
+        {
+            None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort,
+            NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel
+        }
 
-    public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
+        public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
         {
             {ErrorCode.None,""},
             {ErrorCode.OutOfBounds, "Out of Bounds"},
@@ -26,21 +28,21 @@ namespace AMx64
             {ErrorCode.AccessViolation, "Access Violation"},
             {ErrorCode.NotImplemented, "Not Implemented"},
             {ErrorCode.StackOverflow, "Stack Overflow"},
-            {ErrorCode.UnknownOp, "Unknown Operation"}
+            {ErrorCode.UnknownOp, "Unknown Operation"},
+            {ErrorCode.Comment, "Comment"},
+            {ErrorCode.InvalidLabel, "Invalid Label"}
         };
 
-    /// <summary>
-    /// Gets Error string from Error code.
-    /// </summary>
-    /// <param name="error"></param>
-    /// <returns></returns>
-    public static string GetErrorString(ErrorCode error)
-    {
-        return ErrorCodeMap[error];
-    }
+        /// <summary>
+        /// Gets Error string from Error code.
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static string GetErrorString(this ErrorCode error)
+        {
+            return ErrorCodeMap[error];
+        }
 
-    public partial class AMX64
-    {
         private const string HelpMessage =
                                             @"Usage: amx64 [OPTION].... [ARG]....
                                             Interpret or debug CSX64 asm files.

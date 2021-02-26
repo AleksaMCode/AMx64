@@ -24,37 +24,42 @@ namespace AMx64
         /// <summary>
         /// Regex for labels.
         /// </summary>
-        private readonly Regex labelRegex = new Regex(@"^([a-zA-Z]+\d*)+$:", RegexOptions.Compiled);
+        private readonly Regex asmLineLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+$:", RegexOptions.Compiled);
 
-        /// <summary>
-        /// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
-        /// </summary>
-        private readonly Regex commandLineWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+        ///// <summary>
+        ///// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
+        ///// </summary>
+        //private readonly Regex commandLineWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
         /// </summary>
-        private readonly Regex commandLineWithoutLabelRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+        private readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
 
-        /// <summary>
-        /// Command line regex for NOT instruction inluding label.
-        /// </summary>
-        private readonly Regex commandLineNotInstrWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
+        ///// <summary>
+        ///// Command line regex for NOT instruction inluding label.
+        ///// </summary>
+        //private readonly Regex commandLineNotInstrWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for NOT instruction not inluding label.
         /// </summary>
-        private readonly Regex commandLineNotInstrWithoutLabelRegex = new Regex(@"^(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
+        private readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
 
-        /// <summary>
-        /// Command line regex for Jcc operations inluding label.
-        /// </summary>
-        private readonly Regex commandLineJccWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+        ///// <summary>
+        ///// Command line regex for Jcc operations inluding label.
+        ///// </summary>
+        //private readonly Regex commandLineJccWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
         /// </summary>
-        private readonly Regex commandLineJccWithoutLabelRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+        private readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Command line regex for used to check operations.
+        /// </summary>
+        private readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
 
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
@@ -93,6 +98,34 @@ namespace AMx64
         /// </summary>
         public void InterpretAsmFile()
         {
+            if (CheckAsmFileForErrors(out var errorMsg))
+            {
+                Console.WriteLine($"Error ({errorMsg}) on line {currentLine.CurrentAsmLineNumber}: \"{currentLine.CurrentAsmLineValue}\"");
+            }
+            else
+            {
+                // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
+                var bufferSize = 4_096;
+
+                using var fileStream = File.OpenRead(asmFilePath);
+                using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
+
+                while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
+                {
+                    currentLine.CurrentAsmLineNumber++;
+
+                    // Interpret asm line.
+                    InterpretAsmLine();
+                }
+
+                // Reset current line.
+                currentLine.CurrentAsmLineValue = "";
+                currentLine.CurrentAsmLineNumber = 0;
+            }
+        }
+
+        public bool CheckAsmFileForErrors(out string errorMsg)
+        {
             // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
             var bufferSize = 4_096;
 
@@ -101,22 +134,83 @@ namespace AMx64
 
             while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
             {
-                currentLine.CurrenetAsmLineNumber++;
+                currentLine.CurrentAsmLineNumber++;
 
-                // Interpret asm line.
-                var interpretResult = InterpretAsmLine();
+                // Check for errors in asm line.
+                var interpretResult = CheckAsmLineForErrors();
 
-                // If a asm line contains only a comment or is empty, skip it.
-                if (currentLine.CurrentAsmLineValue == "" || interpretResult == InterpreterErrors.Comment)
+                // If a asm line contains only a comment, is empty or has no errors, skip it.
+                if (currentLine.CurrentAsmLineValue == "" || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
                 {
                     continue;
+                }
+                else
+                {
+                    labels.Clear();
+                    errorMsg = GetErrorString(interpretResult);
+                    return false;
                 }
             }
 
             // Reset current line.
-            currentLine.Item1 = "";
-            currentLine.Item2 = 0;
+            currentLine.CurrentAsmLineValue = "";
+            currentLine.CurrentAsmLineNumber = 0;
+
+            errorMsg = GetErrorString(ErrorCode.None);
+            return true;
         }
+
+        private ErrorCode CheckAsmLineForErrors()
+        {
+            currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+
+            if (currentLine.CurrentAsmLineValue.StartsWith(";"))
+            {
+                return ErrorCode.Comment;
+            }
+
+            // Remove comment part of the asm line.
+            if (currentLine.CurrentAsmLineValue.Contains(";"))
+            {
+                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1);
+                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+            }
+
+            // Remove label.
+            if (currentLine.CurrentAsmLineValue.Contains(":"))
+            {
+                var match = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
+
+                if (match.Success)
+                {
+                    if (labels.ContainsKey(match.Value))
+                    {
+                        return ErrorCode.InvalidLabel;
+                    }
+                    // save label and label line
+                    else
+                    {
+                        labels.Add(match.Value.Remove(match.Value.Length - 1), currentLine.CurrentAsmLineNumber);
+                    }
+
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+                }
+            }
+
+            if (asmLineInstrRegex.Match(currentLine.CurrentAsmLineValue).Success)
+            {
+                return asmLineRegex.Match(currentLine.CurrentAsmLineValue).Success ||
+                    asmLineNotInstrRegex.Match(currentLine.CurrentAsmLineValue).Success || asmLineJccRegex.Match(currentLine.CurrentAsmLineValue).Success
+                    ? ErrorCode.None
+                    : ErrorCode.UndefinedBehavior;
+            }
+            else
+            {
+                return ErrorCode.UnknownOp;
+            }
+        }
+
 
         /// <summary>
         /// Interprets current asm line.
@@ -124,36 +218,38 @@ namespace AMx64
         /// <returns></returns>
         private InterpreterErrors InterpretAsmLine()
         {
-            currentLine.Item1 = currentLine.Item1.Trim();
-            if (currentLine.StartsWith(";"))
+            currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+
+            if (currentLine.CurrentAsmLineValue.StartsWith(";"))
             {
                 return InterpreterErrors.Comment;
             }
 
             // Remove comment part of the asm line.
-            if (currentLine.Contains(";"))
+            if (currentLine.CurrentAsmLineValue.Contains(";"))
             {
-                currentLine.Item1 = currentLine.Item1.Substring(0, currentLine.Item1.IndexOf(';') - 1);
-                currentLine.Item1 = currentLine.Item1.Trim();
+                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1);
+                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
             }
 
             // Remove label.
-            if (currentLine.Contains(":"))
+            if (currentLine.CurrentAsmLineValue.Contains(":"))
             {
-                var match = labelRegex.Match(currentLine);
+                var match = labelRegex.Match(currentLine.CurrentAsmLineValue);
 
                 if (match.Success)
                 {
                     if (labels.ContainsKey(match.Value))
                     {
-                        throw new Exception("Error");
+                        return InterpreterErrors.InvalidLabel;
                     }
                     else
                     {
-                        labels.Add(match.Value, currentLineNumber);
+                        labels.Add(match.Value, currentLine.CurrenetAsmLineNumber);
                     }
 
-                    currentLine.Item1 = currentLine.Item1.Substring(currentLine.Item1.IndexOf(':') + 1, currentLine.Item1.Length - 1);
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
                 }
             }
 

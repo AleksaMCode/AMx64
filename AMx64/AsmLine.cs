@@ -13,7 +13,7 @@ namespace AMx64
         /// <summary>
         /// Current asm line number.
         /// </summary>
-        public int CurrenetAsmLineNumber { get; set; }
+        public int CurrentAsmLineNumber { get; set; }
 
         public AsmLine(string asmLine, int asmLineNumber)
         {
