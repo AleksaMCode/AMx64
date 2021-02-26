@@ -36,9 +36,11 @@
 
 ## CPU details <a name="cpu_details"></a>
 <p align="justify">Registers are small storage cells built directly into a processor that are vastly faster than main memory (RAM) but are also more expensive per byte. Because of this price factor, there is not typically much room in a processor for storing data. The execution of a typical program is: move data from memory to registers, perform computations, move processed data from registers to memory and repeat.<br><br>
-General-purpose registers are used for processing integral instructions (the most common type) and are under the complete control of the programmer.
-<br><br><b>NOTE:</b> If you modify a subdivision of a register, the other subdivisions of that register will see the change.
-</p>
+General-purpose registers are used for processing integral instructions (the most common type) and are under the complete control of the programmer.</p>
+
+> **_NOTE:_**
+> 
+> If you modify a subdivision of a register, the other subdivisions of that register will see the change.
 
 ## The AMASM Language <a name="amasm"></a>
 ### Layout of a AMASM Source Line <a name="amasm_layout"></a>
