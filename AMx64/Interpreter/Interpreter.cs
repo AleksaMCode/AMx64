@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using static AMx64.Utility;
@@ -25,6 +24,11 @@ namespace AMx64
         /// Regex for labels.
         /// </summary>
         private readonly Regex asmLineLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+$:", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Regex for available registers.
+        /// </summary>
+        private readonly Regex asmLineAvailableRegisters = new Regex(@"^((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L)$", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
@@ -213,10 +217,12 @@ namespace AMx64
                 }
             }
 
-            if (asmLineInstrRegex.Match(currentLine.CurrentAsmLineValue).Success)
+            var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
+
+            if (asmLineInstrRegex.Match(currentAsmLine).Success)
             {
-                return asmLineRegex.Match(currentLine.CurrentAsmLineValue).Success ||
-                    asmLineNotInstrRegex.Match(currentLine.CurrentAsmLineValue).Success || asmLineJccRegex.Match(currentLine.CurrentAsmLineValue).Success
+                return asmLineRegex.Match(currentAsmLine).Success ||
+                    asmLineNotInstrRegex.Match(currentAsmLine).Success || asmLineJccRegex.Match(currentAsmLine).Success
                     ? ErrorCode.None
                     : ErrorCode.UndefinedBehavior;
             }
@@ -259,7 +265,41 @@ namespace AMx64
             }
 
             // Create tokens from current line.
-            var lineToken = currentLine.Item1.Split(' ');
+            var lineToken = currentLine.CurrentAsmLineValue.Split(',');
+            List<string> asmTokens;
+
+            // If there is no ',' symbol in asm line.
+            if (lineToken.Length == 1)
+            {
+                lineToken = lineToken[0].Split(' ');
+
+                lineToken[0] = lineToken[0].Trim().ToUpper();       // operation
+                lineToken[1] = lineToken[1].Trim();                 // operand
+
+                asmTokens = new List<string>(lineToken);
+            }
+            else
+            {
+                lineToken[1] = lineToken[1].Trim();                 // 2nd operand
+
+                // If second operand is register, then convert token to uppercase.
+                if (asmLineAvailableRegisters.Match(lineToken[1]).Success)
+                {
+                    lineToken[1] = lineToken[1].ToUpper();
+                }
+
+                var leftPart = lineToken[0].Trim().Split(' ');
+
+                leftPart[0] = leftPart[0].Trim().ToUpper();         // operation
+                leftPart[1] = leftPart[1].Trim();                   // 1st operand
+
+                asmTokens = new List<string>(leftPart)
+                {
+                    lineToken[1]
+                };
+            }
+
+            // execute operation
         }
 
         public bool IsSymbolReserverd(string symbol)
