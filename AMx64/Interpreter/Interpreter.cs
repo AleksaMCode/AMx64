@@ -114,8 +114,18 @@ namespace AMx64
                 {
                     currentLine.CurrentAsmLineNumber++;
 
-                    // Interpret asm line.
-                    InterpretAsmLine();
+                    // Check the current asm line.
+                    var asmLineValue = CheckAsmLineForErrors();
+
+                    if (asmLineValue == ErrorCode.Comment || asmLineValue == ErrorCode.EmptyLine)
+                    {
+                        continue;
+                    }
+                    else if (asmLineValue == ErrorCode.None)
+                    {
+                        // Interpret current asm line.
+                        InterpretAsmLine();
+                    }
                 }
 
                 // Reset current line.
@@ -140,7 +150,7 @@ namespace AMx64
                 var interpretResult = CheckAsmLineForErrors();
 
                 // If a asm line contains only a comment, is empty or has no errors, skip it.
-                if (currentLine.CurrentAsmLineValue == "" || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
+                if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
                 {
                     continue;
                 }
@@ -163,6 +173,11 @@ namespace AMx64
         private ErrorCode CheckAsmLineForErrors()
         {
             currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+
+            if (currentLine.CurrentAsmLineValue == "")
+            {
+                return ErrorCode.EmptyLine;
+            }
 
             if (currentLine.CurrentAsmLineValue.StartsWith(";"))
             {
@@ -215,14 +230,13 @@ namespace AMx64
         /// <summary>
         /// Interprets current asm line.
         /// </summary>
-        /// <returns></returns>
-        private InterpreterErrors InterpretAsmLine()
+        private void InterpretAsmLine()
         {
             currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
 
-            if (currentLine.CurrentAsmLineValue.StartsWith(";"))
+            if (currentLine.CurrentAsmLineValue.StartsWith(";") || currentLine.CurrentAsmLineValue == "")
             {
-                return InterpreterErrors.Comment;
+                return;
             }
 
             // Remove comment part of the asm line.
@@ -232,22 +246,13 @@ namespace AMx64
                 currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
             }
 
-            // Remove label.
+            // Remove label from asm line.
             if (currentLine.CurrentAsmLineValue.Contains(":"))
             {
-                var match = labelRegex.Match(currentLine.CurrentAsmLineValue);
+                var match = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
 
                 if (match.Success)
                 {
-                    if (labels.ContainsKey(match.Value))
-                    {
-                        return InterpreterErrors.InvalidLabel;
-                    }
-                    else
-                    {
-                        labels.Add(match.Value, currentLine.CurrenetAsmLineNumber);
-                    }
-
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
                 }
@@ -255,7 +260,6 @@ namespace AMx64
 
             // Create tokens from current line.
             var lineToken = currentLine.Item1.Split(' ');
-
         }
 
         public bool IsSymbolReserverd(string symbol)
