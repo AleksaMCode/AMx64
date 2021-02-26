@@ -1,4 +1,5 @@
 # AMx64
+<p align="justify"><b>AMx64</b> was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
 
 ## Table of contents
 - [AMx64](#amx64)
@@ -31,8 +32,7 @@
 
 
 ## Introduction <a name="introduction"></a>
-<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations.<br><br>
-<b>AMx64</b> was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
+<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations.</p>
 
 ## CPU details <a name="cpu_details"></a>
 <p align="justify">Registers are small storage cells built directly into a processor that are vastly faster than main memory (RAM) but are also more expensive per byte. Because of this price factor, there is not typically much room in a processor for storing data. The execution of a typical program is: move data from memory to registers, perform computations, move processed data from registers to memory and repeat.<br><br>
@@ -105,8 +105,8 @@ Flags affected:
 #### AND - Bitwise AND
 ANDs the destination with the source.
 ```
-SUB reg, value
-SUB reg1, reg2
+AND reg, value
+AND reg1, reg2
 ```
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
@@ -117,8 +117,8 @@ Flags affected:
 #### OR - Bitwise OR
 ORs the destination with the source.
 ```
-SUB reg, value
-SUB reg1, reg2
+OR reg, value
+OR reg1, reg2
 ```
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
@@ -140,7 +140,9 @@ NOT reg
 MOV reg, value
 MOV reg1, reg2
 ```
-**NOTE:** It doesn't affect flags.
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
 
 #### CMP - Compare
 <p align="justify">CMP performs a 'mental' subtraction of its second operand from its first operand, and affects the flags as if the subtraction had taken place, but does not store the result of the subtraction anywhere. This operation is identical to SUB (result is discarded); SUB should be used in place of CMP when the result is needed. CMP is often used with <i>conditional jump</i>.</p>
@@ -165,7 +167,9 @@ JMP rel_location
 ```
 <p align="justify">The JMP instruction provides a label name where the flow of control is transferred immediately. It can use a relative location, that can be a positive or a negative integer, while the transfer of control is moving forwards or backwards, respectively.</p>
 
-**NOTE:** It doesn't affect flags.
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
 
 #### Jcc - Jump if Condition Is Met (Conditional Jump)
 <p align="justify">Jcc is not a single instruction, it  describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.</p>
@@ -177,7 +181,9 @@ JNE | Jump not Equal | ZF | ZF == 0
 JGE | Jump Greater/Equal | OF, SF | SF == 0
 JL | Jump Less | OF, SF | SF != 0
 
-<br>**NOTE:** It doesn't affect flags.
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
 
 #### END
 <p align="justify">This instruction indicates that the program ends correctly. If the program terminates without this instruction it should return the value different from 0.</p>
@@ -233,7 +239,9 @@ Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
 
 <p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
 
-**NOTE:** Direct memory, Direct offset and Register indirect addressing is not currently supported.
+> **_NOTE:_**
+> 
+>  Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
 ## Debug - AMDB <a name="debug"></a>
 
