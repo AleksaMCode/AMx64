@@ -18,7 +18,7 @@ namespace AMx64
         public AsmLine(string asmLine, int asmLineNumber)
         {
             CurrentAsmLineValue = asmLine;
-            CurrenetAsmLineNumber = asmLineNumber;
+            CurrentAsmLineNumber = asmLineNumber;
         }
     }
 }
