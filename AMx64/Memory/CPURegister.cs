@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
+using System;
 using System.Runtime.InteropServices;
 
 namespace AMx64
@@ -25,6 +22,7 @@ namespace AMx64
     /// <summary>
     /// 64-bit register representation.
     /// </summary>
+    [StructLayout(LayoutKind.Explicit)]
     public class CPURegister
     {
         [FieldOffset(0)]
@@ -43,11 +41,26 @@ namespace AMx64
             {
                 switch (codeSize)
                 {
-                    case 3: { return x64; }
-                    case 2: { return x32; }
-                    case 1: { return x16; }
-                    case 0: { return x8; }
-                    default: throw new ArgumentOutOfRangeException("Registers code size out of range.");
+                    case 3:
+                    {
+                        return x64;
+                    }
+                    case 2:
+                    {
+                        return x32;
+                    }
+                    case 1:
+                    {
+                        return x16;
+                    }
+                    case 0:
+                    {
+                        return x8;
+                    }
+                    default:
+                    {
+                        throw new ArgumentOutOfRangeException("Registers code size out of range.");
+                    }
                 }
             }
 
@@ -55,11 +68,30 @@ namespace AMx64
             {
                 switch (codeSize)
                 {
-                    case 3: { x64 = value; break; }
-                    case 2: { x32 = (UInt32)value; break; }
-                    case 1: { x16 = (UInt16)value; break; }
-                    case 0: { x8 = (byte)value; break; }
-                    default: throw new ArgumentOutOfRangeException("Registers code size out of range.");
+                    case 3:
+                    {
+                        x64 = value;
+                        break;
+                    }
+                    case 2:
+                    {
+                        x32 = (UInt32)value;
+                        break;
+                    }
+                    case 1:
+                    {
+                        x16 = (UInt16)value;
+                        break;
+                    }
+                    case 0:
+                    {
+                        x8 = (byte)value;
+                        break;
+                    }
+                    default:
+                    {
+                        throw new ArgumentOutOfRangeException("Registers code size out of range.");
+                    }
                 }
             }
         }
