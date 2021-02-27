@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace AMx64
             /// <summary>
             /// Requested action.
             /// </summary>
-            public CmlnAction Action = CmlnAction.Execute;
+            public CmlnAction cmlnAction = CmlnAction.Execute;
 
             /// <summary>
             /// Root directory.
@@ -63,7 +63,7 @@ namespace AMx64
                 // Set up args for parsing.
                 this.args = args;
 
-                for (int i = 0; i < args.Length; ++i)
+                for (var i = 0; i < args.Length; ++i)
                 {
                     if (optionsLongNames.TryGetValue(args[i], out CmlnParserHandler handler))
                     {
@@ -75,9 +75,9 @@ namespace AMx64
                     else if (args[i].StartsWith('-'))
                     {
                         // Current argument option.
-                        string arg = args[i];
+                        var arg = args[i];
 
-                        for (int j = 1; j < arg.Length; ++j)
+                        for (var j = 1; j < arg.Length; ++j)
                         {
                             if (optionsShortNames.TryGetValue(arg[j], out handler))
                             {

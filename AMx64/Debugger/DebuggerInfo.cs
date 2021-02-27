@@ -132,9 +132,9 @@ namespace AMx64
 
             public int GetAsmFileLineNumber()
             {
-                using var fileStream = File.OpenRead(commonPasswordsPath);
-                using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
-                return CountAsmFileLines(streamReader);
+                using var fileStream = File.OpenRead(asmFilePath);
+
+                return CountAsmFileLines(fileStream);
             }
 
             public string GetErrorMsg(string symbol)
