@@ -217,8 +217,8 @@ JL | Jump Less | OF, SF | SF != 0
     <th>Implementation status</th>
   </tr>
   <tr>
-    <td>0</td>
-    <td>0x0001</td>
+    <td style="text-align:center">0</td>
+    <td style="text-align:center">0x0001</td>
     <td><p align="center">CF</p></td>
     <td>Carry flag</td>
     <td><p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p></td>
@@ -227,8 +227,8 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="center">☑</p></td>
   </tr>
   <tr>
-    <td>2</td>
-    <td>0x0004</td>
+    <td style="text-align:center">2</td>
+    <td style="text-align:center">0x0004</td>
     <td><p align="center">PF</p></td>
     <td>Adjust flag</td>
     <td><p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p></td>
@@ -237,8 +237,8 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="center">☑</p></td>
   </tr>
   <tr>
-    <td>4</td>
-    <td>0x0010</td>
+    <td style="text-align:center">4</td>
+    <td style="text-align:center">0x0010</td>
     <td><p align="center">AF</p></td>
     <td>Parity flag</td>
     <td><p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p></td>
@@ -247,8 +247,8 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="center">✗</p></td>
   </tr>
   <tr>
-    <td>6</td>
-    <td>0x0040</td>
+    <td style="text-align:center">6</td>
+    <td style="text-align:center">0x0040</td>
     <td><p align="center">ZF</p></td>
     <td>Zero flag</td>
     <td><p align="justify">Set if the result of an operation is Zero (0).</p></td>
@@ -257,8 +257,8 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="center">☑</p></td>
   </tr>
   <tr>
-    <td>7</td>
-    <td>0x0080</td>
+    <td style="text-align:center">7</td>
+    <td style="text-align:center">0x0080</td>
     <td><p align="center">SF</p></td>
     <td>Sign flag</td>
     <td><p align="justify">Set if the result of an operation is negative.</p></td>
@@ -266,17 +266,18 @@ JL | Jump Less | OF, SF | SF != 0
     <td>PL (Positive)</td>
     <td><p align="center">☑</p></td>
   </tr>
-    <td>8</td>
-    <td>0x0100</td>
+  <tr>
+    <td style="text-align:center">8</td>
+    <td style="text-align:center">0x0100</td>
     <td><p align="center">TF</p></td>
     <td>Trap flag</td>
     <td><p align="justify">Set if step by step debugging.</p></td>
     <td colspan="2"></td>
     <td><p align="center">✗</p></td>
   </tr>
-  </tr>
-    <td>9</td>
-    <td>0x0200</td>
+  <tr>
+    <td style="text-align:center">9</td>
+    <td style="text-align:center">0x0200</td>
     <td><p align="center">IF</p></td>
     <td>Interrupt enable flag</td>
     <td><p align="justify">Set if interrupts are enabled.</p></td>
@@ -284,9 +285,9 @@ JL | Jump Less | OF, SF | SF != 0
     <td>DI (Disable Interrupt)</td>
     <td><p align="center">✗</p></td>
   </tr>
-  </tr>
-    <td>10</td>
-    <td>0x0400</td>
+  <tr>
+    <td style="text-align:center">10</td>
+    <td style="text-align:center">0x0400</td>
     <td><p align="center">DF</p></td>
     <td>Direction flag</td>
     <td><p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p></td>
@@ -294,9 +295,9 @@ JL | Jump Less | OF, SF | SF != 0
     <td>UP (Up)</td>
     <td><p align="center">✗</p></td>
   </tr>
-  </tr>
-    <td>11</td>
-    <td>0x0800</td>
+  <tr>
+    <td style="text-align:center">11</td>
+    <td style="text-align:center">0x0800</td>
     <td><p align="center">OF</p></td>
     <td>Overflow flag</td>
     <td><p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p></td>
@@ -304,9 +305,9 @@ JL | Jump Less | OF, SF | SF != 0
     <td>NV (Not Overflow)</td>
     <td><p align="center">✗</p></td>
   </tr>
-  </tr>
-    <td>12-13</td>
-    <td>0x3000</td>
+  <tr>
+    <td style="text-align:center">12-13</td>
+    <td style="text-align:center">0x3000</td>
     <td><p align="center">IOPL</p></td>
     <td>I/O privilege level</td>
     <td><p align="justify">I/O Privilege Level of the current process.</p></td>
