@@ -205,18 +205,116 @@ JL | Jump Less | OF, SF | SF != 0
 #### FLAGS register <a name="memory_reg-flags"></a>
 <p align="justify">Status register contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
 
-Bit | Mask | Abbreviation | Name | Description | =1 | =0 | Implementation status
-| :- | - | :-: | - | ----------------------- | - | - | :-:
-0 | 0x0001 | CF | Carry flag | <p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p> | CY (Carry) | NC (No Carry) | ☑
-2 | 0x0004 | PF | Parity flag | <p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p> | PE (Parity Even) | PO (Parity Odd) | ☑
-4 | 0x0010 | AF | Adjust flag | <p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p> | AC (Auxiliary Carry) | NA (No Auxiliary Carry) | ☒
-6 | 0x0040 | ZF | Zero flag | <p align="justify">Set if the result of an operation is Zero (0).</p> | ZR (Zero) | NZ (Not Zero) | ☑
-7 | 0x0080 | SF | Sign flag | <p align="justify">Set if the result of an operation is negative.</p> | NG (Negative) | PL (Positive) | ☑
-8 | 0x1000 | TF | Trap flag | <p align="justify">Set if step by step debugging.</p> | | | ☒
-9 | 0x0200 | IF | Interrupt enable flag | <p align="justify">Set if interrupts are enabled.</p> | EI (Enable Interrupt) | DI (Disable Interrupt) | ☒
-10 | 0x0400 | DF | Direction flag | <p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p> | DN (Down) | UP (Up) | ☒
-11 | 0x0800 | OF | Overflow flag | <p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p> | OV (Overflow) | NV (Not Overflow) | ☒
-12-13 | 0x3000 | IOPL | I/O privilege level | <p align="justify">I/O Privilege Level of the current process.</p> | | | ☒
+<table style="width:120%">
+  <tr>
+    <th>Bit</th>
+    <th>Mark</th>
+    <th>Abbreviation</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>=1</th>
+    <th>=0</th>
+    <th>Implementation status</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0x0001</td>
+    <td><p align="center">CF</p></td>
+    <td>Carry flag</td>
+    <td><p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p></td>
+    <td>CY (Carry)</td>
+    <td>NC (No Carry)</td>
+    <td><p align="center">☑</p></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>0x0004</td>
+    <td><p align="center">PF</p></td>
+    <td>Adjust flag</td>
+    <td><p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p></td>
+    <td>AC (Auxiliary Carry)</td>
+    <td>NA (No Auxiliary Carry)</td>
+    <td><p align="center">☑</p></td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>0x0010</td>
+    <td><p align="center">AF</p></td>
+    <td>Parity flag</td>
+    <td><p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p></td>
+    <td>PE (Parity Even)</td>
+    <td>PO (Parity Odd)</td>
+    <td><p align="center">✗</p></td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>0x0040</td>
+    <td><p align="center">ZF</p></td>
+    <td>Zero flag</td>
+    <td><p align="justify">Set if the result of an operation is Zero (0).</p></td>
+    <td>ZR (Zero)</td>
+    <td>NZ (Not Zero)</td>
+    <td><p align="center">☑</p></td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>0x0080</td>
+    <td><p align="center">SF</p></td>
+    <td>Sign flag</td>
+    <td><p align="justify">Set if the result of an operation is negative.</p></td>
+    <td>NG (Negative)</td>
+    <td>PL (Positive)</td>
+    <td><p align="center">☑</p></td>
+  </tr>
+    <td>8</td>
+    <td>0x0100</td>
+    <td><p align="center">TF</p></td>
+    <td>Trap flag</td>
+    <td><p align="justify">Set if step by step debugging.</p></td>
+    <td colspan="2"></td>
+    <td><p align="center">✗</p></td>
+  </tr>
+  </tr>
+    <td>9</td>
+    <td>0x0200</td>
+    <td><p align="center">IF</p></td>
+    <td>Interrupt enable flag</td>
+    <td><p align="justify">Set if interrupts are enabled.</p></td>
+    <td>EI (Enable Interrupt)</td>
+    <td>DI (Disable Interrupt)</td>
+    <td><p align="center">✗</p></td>
+  </tr>
+  </tr>
+    <td>10</td>
+    <td>0x0400</td>
+    <td><p align="center">DF</p></td>
+    <td>Direction flag</td>
+    <td><p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p></td>
+    <td>DN (Down)</td>
+    <td>UP (Up)</td>
+    <td><p align="center">✗</p></td>
+  </tr>
+  </tr>
+    <td>11</td>
+    <td>0x0800</td>
+    <td><p align="center">OF</p></td>
+    <td>Overflow flag</td>
+    <td><p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p></td>
+    <td>OV (Overflow)</td>
+    <td>NV (Not Overflow)</td>
+    <td><p align="center">✗</p></td>
+  </tr>
+  </tr>
+    <td>12-13</td>
+    <td>0x3000</td>
+    <td><p align="center">IOPL</p></td>
+    <td>I/O privilege level</td>
+    <td><p align="justify">I/O Privilege Level of the current process.</p></td>
+    <td colspan="2"></td>
+    <td><p align="center">✗</p></td>
+  </tr>
+</table>
+<br>
 
 ### Addressing modes for data <a name="memory_address"></a>
 <p align="justify">The addressing mode indicates the manner in which the operand is presented.<p>
