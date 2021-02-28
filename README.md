@@ -205,7 +205,7 @@ JL | Jump Less | OF, SF | SF != 0
 #### FLAGS register <a name="memory_reg-flags"></a>
 <p align="justify">Status register contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
 
-<table style="width:120%">
+<table style="width:200%">
   <tr>
     <th>Bit</th>
     <th>Mark</th>
@@ -315,7 +315,6 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="center">✗</p></td>
   </tr>
 </table>
-<br>
 
 ### Addressing modes for data <a name="memory_address"></a>
 <p align="justify">The addressing mode indicates the manner in which the operand is presented.<p>
