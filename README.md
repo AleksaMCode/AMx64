@@ -224,7 +224,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p></td>
     <td>CY (Carry)</td>
     <td>NC (No Carry)</td>
-    <td><p align="center">☑</p></td>
+    <td><p align="center">✅</p></td>
   </tr>
   <tr>
     <td style="text-align:center">2</td>
@@ -234,7 +234,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p></td>
     <td>AC (Auxiliary Carry)</td>
     <td>NA (No Auxiliary Carry)</td>
-    <td><p align="center">☑</p></td>
+    <td><p align="center">✅</p></td>
   </tr>
   <tr>
     <td style="text-align:center">4</td>
@@ -244,7 +244,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p></td>
     <td>PE (Parity Even)</td>
     <td>PO (Parity Odd)</td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
   <tr>
     <td style="text-align:center">6</td>
@@ -254,7 +254,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if the result of an operation is Zero (0).</p></td>
     <td>ZR (Zero)</td>
     <td>NZ (Not Zero)</td>
-    <td><p align="center">☑</p></td>
+    <td><p align="center">✅</p></td>
   </tr>
   <tr>
     <td style="text-align:center">7</td>
@@ -264,7 +264,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if the result of an operation is negative.</p></td>
     <td>NG (Negative)</td>
     <td>PL (Positive)</td>
-    <td><p align="center">☑</p></td>
+    <td><p align="center">✅</p></td>
   </tr>
   <tr>
     <td style="text-align:center">8</td>
@@ -273,7 +273,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td>Trap flag</td>
     <td><p align="justify">Set if step by step debugging.</p></td>
     <td colspan="2"></td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
   <tr>
     <td style="text-align:center">9</td>
@@ -283,7 +283,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if interrupts are enabled.</p></td>
     <td>EI (Enable Interrupt)</td>
     <td>DI (Disable Interrupt)</td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
   <tr>
     <td style="text-align:center">10</td>
@@ -293,7 +293,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p></td>
     <td>DN (Down)</td>
     <td>UP (Up)</td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
   <tr>
     <td style="text-align:center">11</td>
@@ -303,7 +303,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td><p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p></td>
     <td>OV (Overflow)</td>
     <td>NV (Not Overflow)</td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
   <tr>
     <td style="text-align:center">12-13</td>
@@ -312,7 +312,7 @@ JL | Jump Less | OF, SF | SF != 0
     <td>I/O privilege level</td>
     <td><p align="justify">I/O Privilege Level of the current process.</p></td>
     <td colspan="2"></td>
-    <td><p align="center">✗</p></td>
+    <td><p align="center">❎</p></td>
   </tr>
 </table>
 
