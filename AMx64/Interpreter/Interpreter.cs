@@ -283,7 +283,7 @@ namespace AMx64
                 lineToken[1] = lineToken[1].Trim();                 // 2nd operand
 
                 // If second operand is register, then convert token to uppercase.
-                if (asmLineAvailableRegisters.Match(lineToken[1]).Success)
+                if (asmLineAvailableRegisters.Match(lineToken[1].ToUpper()).Success)
                 {
                     lineToken[1] = lineToken[1].ToUpper();
                 }
