@@ -7,6 +7,15 @@ using System.Text.RegularExpressions;
 
 namespace AMx64
 {
+
+    internal enum AsmSegment
+    {
+        DATA,
+        BSS,
+        TEXT,
+        INVALID
+    }
+
     public partial class AMX64
     {
         private const char commentSymbol = ';';
@@ -301,6 +310,8 @@ namespace AMx64
 
             // execute operation
         }
+
+
 
         public bool IsSymbolReserverd(string symbol)
         {

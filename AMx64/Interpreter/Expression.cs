@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,15 +9,15 @@ namespace AMx64
 {
     internal class Expression
     {
-        internal enum Instructions
+        internal enum Operations
         {
             None,
 
-            Add, Sub, // binary operations
+            Add, Sub,       // binary operations
 
-            BitAnd, BitOr, // binary operations
+            BitAnd, BitOr,  // binary operations
 
-            BitNot, //unary operation
+            BitNot,         //unary operation
 
             Mov,
 
@@ -29,7 +29,7 @@ namespace AMx64
             End
         }
 
-        public Instructions Instruction = Instructions.None;
+        public Operations Operation = Operations.None;
 
         public string LeftOp = null, RightOp = null;
 
@@ -46,12 +46,17 @@ namespace AMx64
             {
                 token = value ?? throw new ArgumentNullException("Token can't be a null value.");
 
-                Instruction = Instructions.None;
+                Operation = Operations.None;
                 LeftOp = RightOp = null;
             }
         }
 
-        public bool IsEvaluated => Instruction == Instructions.None && Token == null;
+        /// <summary>
+        /// Result of the operation.
+        /// </summary>
+        public UInt64 Result = 0;
+
+        public bool IsEvaluated => Operation == Operations.None && Token == null;
 
         private bool EvaluateHelper(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
         {

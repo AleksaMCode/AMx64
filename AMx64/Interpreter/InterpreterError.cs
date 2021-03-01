@@ -7,30 +7,32 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    public partial class AMX64
+    public enum InterpreterErrors
     {
-
-        public enum InterpreterErrors
-        {
-            None, ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
-            OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
-        }
-
-        public Dictionary<InterpreterErrors, string> ErrorsInterpreted = new Dictionary<InterpreterErrors, string>()
-        {
-        };
-
+        None, ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
+        OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
     }
+
+    public Dictionary<InterpreterErrors, string> InterpreterErrors = new Dictionary<InterpreterErrors, string>()
+    {
+    };
 
     public class InterpreterError
     {
+        /// <summary>
+        /// Error that occurred during interpreting.
+        /// </summary>
         public InterpreterErrors Error;
-        public string ErrorMesg;
+
+        /// <summary>
+        /// Error explanation.
+        /// </summary>
+        public string ErrorMsg;
 
         public InterpreterError(InterpreterErrors error, string errorMsg)
         {
             Error = error;
-            ErrorMesg = errorMsg;
+            ErrorMsg = errorMsg;
         }
     }
 }
