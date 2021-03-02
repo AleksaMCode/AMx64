@@ -24,6 +24,16 @@ namespace AMx64
 
         public List<string> AsmCode;
 
+        /// <summary>
+        /// 64-bit addressable memory.
+        /// </summary>
+        private byte[] memory = new byte[int.MaxValue];
+
+        /// <summary>
+        /// Next memory block index.
+        /// </summary>
+        private Int64 memorylocation = 0;
+
 
         /// <summary>
         /// Used to store asm labels.
@@ -49,6 +59,7 @@ namespace AMx64
 
         private AsmSegment currentSection = AsmSegment.INVALID;
 
+        #region Regex
         /// <summary>
         /// Regex for labels.
         /// </summary>
@@ -58,6 +69,16 @@ namespace AMx64
         /// Regex for available registers.
         /// </summary>
         private readonly Regex asmLineAvailableRegisters = new Regex(@"^((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L)$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Regex for .data section part of asm code (db, dw, dd, dq).
+        /// </summary>
+        private readonly Regex asmLineDataSection = new Regex(@"^([a-zA-Z]+\d*)+\s+d(b|w|d|q)+\s+", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Regex for .bss section part of asm code (resb, resw, resd, resq).
+        /// </summary>
+        private readonly Regex asmLineBssSection = new Regex(@"^([a-zA-Z]+\d*)+\s+res(b|w|d|q)+\s+", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
@@ -93,6 +114,7 @@ namespace AMx64
         /// Command line regex for used to check operations.
         /// </summary>
         private readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
+        #endregion
 
         /// <summary>
         /// CPU registers map of names to tuple of (id, sizecode, highbit)
@@ -276,7 +298,162 @@ namespace AMx64
             }
             else
             {
+                if (currentSection == AsmSegment.DATA)
+                {
+                    var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
 
+                    if (match.Success)
+                    {
+                        var dataTokens = match.Value.Split(' ');
+
+                        if (IsSymbolReserverd(dataTokens[0]) && labels.ContainsKey(dataTokens[0]))
+                        {
+                            
+                        }
+                        else
+                        {
+
+                            var dataTokensList = new List<string>(dataTokens)
+                            {
+                                currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
+                            };
+
+                            switch (dataTokens[1].ToUpper())
+                            {
+                                case "DB":
+                                {
+                                    if(TryProcessData(1))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "DW":
+                                {
+                                    if (TryProcessData(2))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "DD":
+                                {
+                                    if (TryProcessData(4))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "DQ":
+                                {
+                                    if (TryProcessData(8))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (currentSection == AsmSegment.BSS)
+                {
+                    var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
+
+                    if (match.Success)
+                    {
+                        var bssTokens = match.Value.Split(' ');
+
+                        if (IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0]))
+                        {
+
+                        }
+                        else
+                        {
+
+                            var dataTokensList = new List<string>(bssTokens)
+                            {
+                                currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
+                            };
+
+                            switch (bssTokens[1].ToUpper())
+                            {
+                                case "RESB":
+                                {
+                                    if (TryProcessBss(1))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "RESW":
+                                {
+                                    if (TryProcessBss(2))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "RESD":
+                                {
+                                    if (TryProcessBss(4))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                                case "RESQ":
+                                {
+                                    if (TryProcessBss(8))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
