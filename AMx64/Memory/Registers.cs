@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+using System;
 
 namespace AMx64
 {
@@ -7,35 +6,44 @@ namespace AMx64
     {
         protected CPURegister[] CPURegisters = new CPURegister[16];
 
-        // -- AX --
+        #region AX register
         public UInt64 RAX { get => CPURegisters[0].x64; set => CPURegisters[0].x64 = value; }
         public UInt32 EAX { get => CPURegisters[0].x32; set => CPURegisters[0].x32 = value; }
         public UInt16 AX { get => CPURegisters[0].x16; set => CPURegisters[0].x16 = value; }
         public byte AH { get => CPURegisters[0].x8h; set => CPURegisters[0].x8h = value; }
         public byte AL { get => CPURegisters[0].x8; set => CPURegisters[0].x8 = value; }
+        #endregion
 
-        // -- BX --
+        #region BX register
         public UInt64 RBX { get => CPURegisters[1].x64; set => CPURegisters[1].x64 = value; }
         public UInt32 EBX { get => CPURegisters[1].x32; set => CPURegisters[1].x32 = value; }
         public UInt16 BX { get => CPURegisters[1].x16; set => CPURegisters[1].x16 = value; }
         public byte BH { get => CPURegisters[1].x8h; set => CPURegisters[1].x8h = value; }
         public byte BL { get => CPURegisters[1].x8; set => CPURegisters[1].x8 = value; }
+        #endregion
 
-        // -- CX --
+        #region CX register
         public UInt64 RCX { get => CPURegisters[2].x64; set => CPURegisters[2].x64 = value; }
         public UInt32 ECX { get => CPURegisters[2].x32; set => CPURegisters[2].x32 = value; }
         public UInt16 CX { get => CPURegisters[2].x16; set => CPURegisters[2].x16 = value; }
         public byte CH { get => CPURegisters[2].x8h; set => CPURegisters[2].x8h = value; }
         public byte CL { get => CPURegisters[2].x8; set => CPURegisters[2].x8 = value; }
+        #endregion
 
-        // -- DX --
+        #region DX register
         public UInt64 RDX { get => CPURegisters[3].x64; set => CPURegisters[3].x64 = value; }
         public UInt32 EDX { get => CPURegisters[3].x32; set => CPURegisters[3].x32 = value; }
         public UInt16 DX { get => CPURegisters[3].x16; set => CPURegisters[3].x16 = value; }
         public byte DH { get => CPURegisters[3].x8h; set => CPURegisters[3].x8h = value; }
         public byte DL { get => CPURegisters[3].x8; set => CPURegisters[3].x8 = value; }
+        #endregion
 
-        // -- FLAGS --
+        public UInt64 RSI { get => CPURegisters[4].x64; set => CPURegisters[4].x64 = value; }
+        public UInt64 RDI { get => CPURegisters[5].x64; set => CPURegisters[5].x64 = value; }
+        public UInt64 RBP { get => CPURegisters[6].x64; set => CPURegisters[6].x64 = value; }
+        public UInt64 RSP { get => CPURegisters[7].x64; set => CPURegisters[7].x64 = value; }
+
+        #region FLAGS register
         public UInt64 RFLAGS;
         public UInt32 EFLAGS { get => (UInt32)RFLAGS; set => RFLAGS = value & ~0xfffffffful | value; }
         public UInt16 FLAGS { get => (UInt16)RFLAGS; set => RFLAGS = RFLAGS & ~0xfffful | value; }
@@ -80,12 +88,14 @@ namespace AMx64
         public byte IOPL { get => (byte)((RFLAGS >> 12) & 3); set => RFLAGS = (RFLAGS & ~0x3000ul) | ((UInt64)(value & 3) << 12); }
         public bool NT { get => (RFLAGS & 0x4000ul) != 0; set => RFLAGS = (RFLAGS & ~0x4000ul) | (value ? 0x4000ul : 0); }
 
-        /* EFLAGS */
+        #region EFLAGS
         public bool RF { get => (RFLAGS & 0x0001_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0001_0000ul) | (value ? 0x0001_0000ul : 0); }
         public bool VM { get => (RFLAGS & 0x0002_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0002_0000ul) | (value ? 0x0002_0000ul : 0); }
         public bool AC { get => (RFLAGS & 0x0004_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0004_0000ul) | (value ? 0x0004_0000ul : 0); }
         public bool VIF { get => (RFLAGS & 0x0008_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0008_0000ul) | (value ? 0x0008_0000ul : 0); }
         public bool VIP { get => (RFLAGS & 0x0010_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0010_0000ul) | (value ? 0x0010_0000ul : 0); }
         public bool ID { get => (RFLAGS & 0x0020_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0020_0000ul) | (value ? 0x0020_0000ul : 0); }
+        #endregion
+        #endregion
     }
 }
