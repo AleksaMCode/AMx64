@@ -132,7 +132,7 @@ namespace AMx64
 
             public int GetAsmFileLineNumber()
             {
-                using var fileStream = File.OpenRead(asmFilePath);
+                using var fileStream = File.OpenRead(AsmFilePath);
 
                 return CountAsmFileLines(fileStream);
             }

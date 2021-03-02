@@ -20,7 +20,7 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
-        private string asmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+        public static string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
         /// <summary>
         /// Used to store asm labels.
@@ -134,7 +134,7 @@ namespace AMx64
                 // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
                 var bufferSize = 4_096;
 
-                using var fileStream = File.OpenRead(asmFilePath);
+                using var fileStream = File.OpenRead(AsmFilePath);
                 using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
 
                 while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
@@ -166,7 +166,7 @@ namespace AMx64
             // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
             var bufferSize = 4_096;
 
-            using var fileStream = File.OpenRead(asmFilePath);
+            using var fileStream = File.OpenRead(AsmFilePath);
             using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
 
             while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
