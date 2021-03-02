@@ -4,10 +4,10 @@ using System.Text;
 using System.IO;
 using static AMx64.Utility;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace AMx64
 {
-
     internal enum AsmSegment
     {
         DATA,
@@ -20,7 +20,10 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
-        public static string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+        public string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+
+        public List<string> AsmCode;
+
 
         /// <summary>
         /// Used to store asm labels.
@@ -41,7 +44,10 @@ namespace AMx64
         /// <summary>
         /// Current asm line (line string + line number).
         /// </summary>
-        private AsmLine currentLine = new AsmLine("", 0);
+        private AsmLine currentLine = new AsmLine("", -1);
+
+
+        private AsmSegment currentSection = AsmSegment.INVALID;
 
         /// <summary>
         /// Regex for labels.
@@ -120,62 +126,81 @@ namespace AMx64
         };
 
 
+        private void AddSection(string section)
+        {
+            var index = AsmCode.IndexOf(section);
+            sections.Add(section, index);
+        }
+
+        private bool CheckSections()
+        {
+            return sections["section .data"] <= sections["section .text"] &&
+                sections["section .bss"] <= sections["section .text"];
+        }
+
         /// <summary>
         /// Interprets asm file line by line.
         /// </summary>
         public void InterpretAsmFile()
         {
+            if (File.Exists(AsmFilePath))
+            {
+                AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
+                // Remove empty or comment lines.
+                AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) || line.StartsWith(";")).ToList();
+
+                AddSection("section .data");
+                AddSection("section .bss");
+                AddSection("section .text");
+
+                if (!CheckSections())
+                {
+                    // handle error
+                }
+            }
+            else
+            {
+                // handle error
+            }
+
             if (CheckAsmFileForErrors(out var errorMsg))
             {
                 Console.WriteLine($"Error ({errorMsg}) on line {currentLine.CurrentAsmLineNumber}: \"{currentLine.CurrentAsmLineValue}\"");
             }
             else
             {
-                // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
-                var bufferSize = 4_096;
+                for (var lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
+                { }
 
-                using var fileStream = File.OpenRead(AsmFilePath);
-                using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
+                // Check the current asm line.
+                var asmLineValue = CheckAsmLineForErrors(out var _);
 
-                while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
+                if (asmLineValue == ErrorCode.Comment || asmLineValue == ErrorCode.EmptyLine)
                 {
-                    currentLine.CurrentAsmLineNumber++;
-
-                    // Check the current asm line.
-                    var asmLineValue = CheckAsmLineForErrors();
-
-                    if (asmLineValue == ErrorCode.Comment || asmLineValue == ErrorCode.EmptyLine)
-                    {
-                        continue;
-                    }
-                    else if (asmLineValue == ErrorCode.None)
-                    {
-                        // Interpret current asm line.
-                        InterpretAsmLine();
-                    }
+                    continue;
                 }
-
-                // Reset current line.
-                currentLine.CurrentAsmLineValue = "";
-                currentLine.CurrentAsmLineNumber = 0;
+                else if (asmLineValue == ErrorCode.None)
+                {
+                    // Interpret current asm line.
+                    InterpretAsmLine();
+                }
             }
+
+            // Reset current line.
+            currentLine.CurrentAsmLineValue = "";
+            currentLine.CurrentAsmLineNumber = 0;
         }
 
         public bool CheckAsmFileForErrors(out string errorMsg)
         {
-            // cluster size in NTFS = 4,096 b; this buffer size gave me best speed performance
-            var bufferSize = 4_096;
-
-            using var fileStream = File.OpenRead(AsmFilePath);
-            using var streamReader = new StreamReader(fileStream, Encoding.ASCII, true, bufferSize);
-
-            while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
+            for (var lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
-                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-                currentLine.CurrentAsmLineNumber++;
+                AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
+                currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
+                currentLine.CurrentAsmLineNumber = lineNumber;
 
                 // Check for errors in asm line.
-                var interpretResult = CheckAsmLineForErrors();
+                var interpretResult = CheckAsmLineForErrors(true);
 
                 // If a asm line contains only a comment, is empty or has no errors, skip it.
                 if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
@@ -192,26 +217,14 @@ namespace AMx64
 
             // Reset current line.
             currentLine.CurrentAsmLineValue = "";
-            currentLine.CurrentAsmLineNumber = 0;
+            currentLine.CurrentAsmLineNumber = -1;
 
             errorMsg = GetErrorString(ErrorCode.None);
             return true;
         }
 
-        private ErrorCode CheckAsmLineForErrors()
+        private ErrorCode CheckAsmLineForErrors(bool checkMainPart)
         {
-            currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-
-            if (currentLine.CurrentAsmLineValue == "")
-            {
-                return ErrorCode.EmptyLine;
-            }
-
-            if (currentLine.CurrentAsmLineValue.StartsWith(";"))
-            {
-                return ErrorCode.Comment;
-            }
-
             // Remove comment part of the asm line.
             if (currentLine.CurrentAsmLineValue.Contains(";"))
             {
@@ -219,40 +232,51 @@ namespace AMx64
                 currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
             }
 
-            // Remove label.
-            if (currentLine.CurrentAsmLineValue.Contains(":"))
+            if (checkMainPart)
             {
-                var match = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
-
-                if (match.Success)
+                // Remove label.
+                if (currentLine.CurrentAsmLineValue.Contains(":"))
                 {
-                    if (labels.ContainsKey(match.Value))
-                    {
-                        return ErrorCode.InvalidLabel;
-                    }
-                    // save label and label line
-                    else
-                    {
-                        labels.Add(match.Value.Remove(match.Value.Length - 1), currentLine.CurrentAsmLineNumber);
-                    }
+                    var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
 
-                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
-                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
+                    if (labelMatch.Success)
+                    {
+                        if (IsSymbolReserverd(labelMatch.Value) && labels.ContainsKey(labelMatch.Value))
+                        {
+                            return ErrorCode.InvalidLabel;
+                        }
+                        // Save label and label line number.
+                        else
+                        {
+                            labels.Add(labelMatch.Value.Remove(labelMatch.Value.Length - 1), currentLine.CurrentAsmLineNumber);
+                        }
+
+                        currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
+                        currentLine.CurrentAsmLineValue = AsmCode[currentLine.CurrentAsmLineNumber] = currentLine.CurrentAsmLineValue.Trim();
+                    }
                 }
-            }
 
-            var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
+                var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
-            if (asmLineInstrRegex.Match(currentAsmLine).Success)
-            {
-                return asmLineRegex.Match(currentAsmLine).Success ||
-                    asmLineNotInstrRegex.Match(currentAsmLine).Success || asmLineJccRegex.Match(currentAsmLine).Success
-                    ? ErrorCode.None
-                    : ErrorCode.UndefinedBehavior;
+                if (asmLineInstrRegex.Match(currentAsmLine).Success)
+                {
+                    if (asmLineRegex.Match(currentAsmLine).Success || asmLineNotInstrRegex.Match(currentAsmLine).Success)
+                    {
+                        return ErrorCode.None;
+                    }
+
+                    var jccMatch = asmLineJccRegex.Match(currentAsmLine);
+
+                    return jccMatch.Success && labels.ContainsKey(jccMatch.Value) ? ErrorCode.None : ErrorCode.InvalidLabel;
+                }
+                else
+                {
+                    return ErrorCode.UnknownOp;
+                }
             }
             else
             {
-                return ErrorCode.UnknownOp;
+
             }
         }
 
@@ -346,6 +370,10 @@ namespace AMx64
                 case "WORD":
                 case "DWORD":
                 case "QWORD":
+                case "DATA":
+                case "BSS":
+                case "TEXT":
+                case "MAIN":
                 {
                     return true;
                 }

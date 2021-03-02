@@ -15,7 +15,7 @@ namespace AMx64
                 var path = Path.GetDirectoryName(asmName);
                 if (path != null && Directory.Exists(path))
                 {
-                    asmFilePath = asmName;
+                    AsmFilePath = asmName;
                 }
                 else
                 {
@@ -24,7 +24,7 @@ namespace AMx64
             }
             else
             {
-                asmFilePath += "\\" + asmName;
+                AsmFilePath += "\\" + asmName;
             }
 
             InterpretDebugCommandLine();
