@@ -22,7 +22,21 @@ namespace AMx64
         private const char labelDefSymbol = ':';
         private string asmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
+        /// <summary>
+        /// Used to store asm labels.
+        /// </summary>
         private Dictionary<string, int> labels = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Used to store asm variables from .data and .bss sections.
+        /// </summary>
+        private Dictionary<string, Tuple<int, long, int>> variables = new Dictionary<string, Tuple<int, long, int>>();
+
+
+        /// <summary>
+        /// Used to store sections locations in asm code.
+        /// </summary>
+        private Dictionary<string, int> sections = new Dictionary<string, int>();
 
         /// <summary>
         /// Current asm line (line string + line number).
@@ -32,7 +46,7 @@ namespace AMx64
         /// <summary>
         /// Regex for labels.
         /// </summary>
-        private readonly Regex asmLineLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+$:", RegexOptions.Compiled);
+        private readonly Regex asmLineLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:$", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for available registers.
@@ -157,6 +171,7 @@ namespace AMx64
 
             while ((currentLine.CurrentAsmLineValue = streamReader.ReadLine()) != null)
             {
+                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
                 currentLine.CurrentAsmLineNumber++;
 
                 // Check for errors in asm line.
