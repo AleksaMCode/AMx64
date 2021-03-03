@@ -34,7 +34,6 @@ namespace AMx64
         /// </summary>
         private Int64 nextMemoryLocation = 0;
 
-
         /// <summary>
         /// Used to store asm labels.
         /// </summary>
@@ -56,7 +55,9 @@ namespace AMx64
         /// </summary>
         private AsmLine currentLine = new AsmLine("", -1);
 
-
+        /// <summary>
+        /// Current section flag. 
+        /// </summary>
         private AsmSegment currentSection = AsmSegment.INVALID;
 
         #region Regex
@@ -168,61 +169,57 @@ namespace AMx64
             if (File.Exists(AsmFilePath))
             {
                 AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
+
                 // Remove empty or comment lines.
                 AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) || line.StartsWith(";")).ToList();
 
+                // Remove comment part of the asm lines.
+                for (var i = 0; i < AsmCode.Count; ++i)
+                {
+                    AsmCode[i] = AsmCode[i].Contains(";")
+                        ? AsmCode[i].Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).Trim()
+                        : AsmCode[i].Trim();
+                }
+
+                // Add sections.
                 AddSection("section .data");
                 AddSection("section .bss");
                 AddSection("section .text");
 
                 if (!CheckSections())
                 {
-                    // handle error
+                    Console.WriteLine("Asm file section error! .text section can't be used before .data or .bss section in code.");
+                    return;
                 }
             }
             else
             {
-                // handle error
+                Console.WriteLine($"Asm file \"{Path.GetFileName(AsmFilePath)}\" is missing.");
+                return;
             }
 
-            if (CheckAsmFileForErrors(out var errorMsg))
-            {
-                Console.WriteLine($"Error ({errorMsg}) on line {currentLine.CurrentAsmLineNumber}: \"{currentLine.CurrentAsmLineValue}\"");
-            }
-            else
-            {
-                for (var lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
-                { }
-
-                // Check the current asm line.
-                var asmLineValue = CheckAsmLineForErrors(out var _);
-
-                if (asmLineValue == ErrorCode.Comment || asmLineValue == ErrorCode.EmptyLine)
-                {
-                    continue;
-                }
-                else if (asmLineValue == ErrorCode.None)
-                {
-                    // Interpret current asm line.
-                    InterpretAsmLine();
-                }
-            }
-
-            // Reset current line.
-            currentLine.CurrentAsmLineValue = "";
-            currentLine.CurrentAsmLineNumber = 0;
-        }
-
-        public bool CheckAsmFileForErrors(out string errorMsg)
-        {
             for (var lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
                 AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
                 currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
+                // Set current section.
+                switch (currentLine.CurrentAsmLineValue)
+                {
+                    case "section .data":
+                        currentSection = AsmSegment.DATA;
+                        break;
+                    case "section .bss":
+                        currentSection = AsmSegment.BSS;
+                        break;
+                    case "section .text":
+                        currentSection = AsmSegment.TEXT;
+                        break;
+                }
+
                 // Check for errors in asm line.
-                var interpretResult = CheckAsmLineForErrors(true);
+                var interpretResult = CheckAsmLineForErrors(out var errorMsg);
 
                 // If a asm line contains only a comment, is empty or has no errors, skip it.
                 if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
@@ -232,27 +229,20 @@ namespace AMx64
                 else
                 {
                     labels.Clear();
-                    errorMsg = GetErrorString(interpretResult);
-                    return false;
+                    //errorMsg = GetErrorString(interpretResult);
+                    return;
                 }
             }
 
             // Reset current line.
             currentLine.CurrentAsmLineValue = "";
             currentLine.CurrentAsmLineNumber = -1;
-
-            errorMsg = GetErrorString(ErrorCode.None);
-            return true;
+            currentSection = AsmSegment.INVALID;
         }
 
-        private ErrorCode CheckAsmLineForErrors(ref string errorMsg)
+        private ErrorCode CheckAsmLineForErrors(out string errorMsg)
         {
-            // Remove comment part of the asm line.
-            if (currentLine.CurrentAsmLineValue.Contains(";"))
-            {
-                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1);
-                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-            }
+            errorMsg = "";
 
             if (currentSection == AsmSegment.TEXT)
             {
