@@ -69,7 +69,7 @@ namespace AMx64
         /// <summary>
         /// Regex for labels.
         /// </summary>
-        private readonly Regex asmLineLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:$", RegexOptions.Compiled);
+        private readonly Regex asmLineLabelRegex = new Regex(@"^([_a-zA-Z]+\d*)+:$", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for available registers.
@@ -79,12 +79,12 @@ namespace AMx64
         /// <summary>
         /// Regex for .data section part of asm code (db, dw, dd, dq).
         /// </summary>
-        private readonly Regex asmLineDataSection = new Regex(@"^([a-zA-Z]+\d*)+\s+d(b|w|d|q)+\s+", RegexOptions.Compiled);
+        private readonly Regex asmLineDataSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+D(B|W|D|Q)+\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for .bss section part of asm code (resb, resw, resd, resq).
         /// </summary>
-        private readonly Regex asmLineBssSection = new Regex(@"^([a-zA-Z]+\d*)+\s+res(b|w|d|q)+\s+", RegexOptions.Compiled);
+        private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q)+\s+", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
@@ -114,7 +114,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
         /// </summary>
-        private readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+        private readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([_a-zA-Z]+\d*)+$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for used to check operations.
