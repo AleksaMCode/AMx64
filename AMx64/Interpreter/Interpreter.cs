@@ -253,7 +253,7 @@ namespace AMx64
                 // Check global symbol.
                 if (!CheckGlobalSymbol())
                 {
-                    Console.WriteLine("Wrong usage of global.");
+                    Console.WriteLine("Wrong usage of global symbol.");
                     return;
                 }
             }
