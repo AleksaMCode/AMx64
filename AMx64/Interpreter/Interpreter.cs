@@ -184,12 +184,7 @@ namespace AMx64
             AddSection("section .data");
             AddSection("section .bss");
 
-            if (!AddSection("section .text"))
-            {
-                return false;
-            }
-
-            return true;
+            return AddSection("section .text");
         }
 
         /// <summary>
