@@ -319,6 +319,11 @@ namespace AMx64
                         return TryProcessData(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.DataSectionProblem;
                     }
                 }
+                else
+                {
+                    errorMsg = $"Ill-formed .data line encountered: {currentLine.CurrentAsmLineValue}";
+                    return ErrorCode.BssSectionProblem;
+                }
             }
             else if (currentSection == AsmSegment.BSS)
             {
@@ -342,6 +347,11 @@ namespace AMx64
 
                         return TryProcessBss(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.BssSectionProblem;
                     }
+                }
+                else
+                {
+                    errorMsg = $"Ill-formed .bss line encountered: {currentLine.CurrentAsmLineValue}";
+                    return ErrorCode.BssSectionProblem;
                 }
             }
         }
