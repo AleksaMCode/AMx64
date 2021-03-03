@@ -16,6 +16,26 @@ namespace AMx64
         INVALID
     }
 
+    internal enum Operation
+    {
+        None,
+
+        Add, Sub,       // binary operations
+
+        BitAnd, BitOr,  // binary operations
+
+        BitNot,         //unary operation
+
+        Mov,
+
+        Cmp,
+
+        Jmp,
+        Je, Jne, Jge, Jl,
+
+        End
+    }
+
     public partial class AMX64
     {
         private const char commentSymbol = ';';
@@ -104,7 +124,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for NOT instruction not inluding label.
         /// </summary>
-        private readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s+(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s+$", RegexOptions.Compiled);
+        private readonly Regex asmLineNotOperRegex = new Regex(@"^(NOT)\s+(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s+$", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for Jcc operations inluding label.
@@ -391,10 +411,39 @@ namespace AMx64
 
                 if (asmLineOperRegex.Match(currentLine.CurrentAsmLineValue.ToUpper()).Success)
                 {
-                    if (asmLineRegex.Match(currentAsmLine).Success || asmLineNotInstrRegex.Match(currentAsmLine).Success)
+                    if (asmLineRegex.Match(currentAsmLine).Success)
                     {
-                        return ErrorCode.None;
+                        var tokens = currentLine.CurrentAsmLineValue.Split(',');
+                        tokens[0] = tokens[0].Trim();
+                        tokens[1] = tokens[1].Trim();
+
+                        var leftTokens = tokens[0].Split((char[])null);
+                        leftTokens[0] = leftTokens[0].Trim();
+                        leftTokens[1] = leftTokens[1].Trim();
+
+                        var tokenList = new List<string>(leftTokens)
+                        {
+                            tokens[1]
+                        };
+
+                        switch (tokenList[0].ToUpper())
+                        {
+                            case "ADD":
+                                return TryProcessBinaryOp(Operation.Add) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            case "SUB":
+                                return TryProcessBinaryOp(Operation.Sub) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            case "MOV":
+                                return TryProcessBinaryOp(Operation.Mov) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            case "AND":
+                                return TryProcessBinaryOp(Operation.BitAnd) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            case "OR":
+                                return TryProcessBinaryOp(Operation.BitOr) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                        }
                     }
+                    //    || asmLineNotInstrRegex.Match(currentAsmLine).Success)
+                    //{
+                    //    return ErrorCode.None;
+                    //}
 
                     var jccMatch = asmLineJccRegex.Match(currentAsmLine);
 
