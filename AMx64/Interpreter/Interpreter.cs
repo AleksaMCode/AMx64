@@ -429,15 +429,15 @@ namespace AMx64
                         switch (tokenList[0].ToUpper())
                         {
                             case "ADD":
-                                return TryProcessBinaryOp(Operation.Add) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                                return TryProcessBinaryOp(Operation.Add, tokenList) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                             case "SUB":
-                                return TryProcessBinaryOp(Operation.Sub) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                                return TryProcessBinaryOp(Operation.Sub, tokenList) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                             case "MOV":
-                                return TryProcessBinaryOp(Operation.Mov) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                                return TryProcessBinaryOp(Operation.Mov, tokenList) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                             case "AND":
-                                return TryProcessBinaryOp(Operation.BitAnd) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                                return TryProcessBinaryOp(Operation.BitAnd, tokenList) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                             case "OR":
-                                return TryProcessBinaryOp(Operation.BitOr) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                                return TryProcessBinaryOp(Operation.BitOr, tokenList) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                         }
                     }
                     //    || asmLineNotInstrRegex.Match(currentAsmLine).Success)
@@ -512,6 +512,11 @@ namespace AMx64
                     return ErrorCode.BssSectionProblem;
                 }
             }
+        }
+
+        private bool TryProcessBinaryOp(Operation op, List<string> tokenList)
+        {
+            throw new NotImplementedException();
         }
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
