@@ -114,7 +114,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for used to check operations.
         /// </summary>
-        private readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
+        private readonly Regex asmLineOperRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
         #endregion
 
         /// <summary>
@@ -148,13 +148,29 @@ namespace AMx64
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
 
-
-        private void AddSection(string section)
+        /// <summary>
+        /// Adds a sections of asm code. It has a value of -1 if the section isn't used in asm code.
+        /// Section .text must always be present in asm code.
+        /// </summary>
+        /// <param name="section">Section full name.</param>
+        /// <returns>true if section has been added successfully, otherwise false.</returns>
+        private bool AddSection(string section)
         {
             var index = AsmCode.IndexOf(section);
+
+            if(section == "section .text" && index == -1)
+            {
+                return false;
+            }
+
             sections.Add(section, index);
+            return true;
         }
 
+        /// <summary>
+        /// Checks if sections are in a proper order in asm code.
+        /// </summary>
+        /// <returns>true if sections are in proper order, otherwise false.</returns>
         private bool CheckSections()
         {
             return sections["section .data"] <= sections["section .text"] &&
@@ -184,7 +200,12 @@ namespace AMx64
                 // Add sections.
                 AddSection("section .data");
                 AddSection("section .bss");
-                AddSection("section .text");
+
+                if(!AddSection("section .text"))
+                {
+                    Console.WriteLine("Asm file is missing .text section.");
+                    return;
+                }
 
                 if (!CheckSections())
                 {
@@ -219,7 +240,7 @@ namespace AMx64
                 }
 
                 // Check for errors in asm line.
-                var interpretResult = CheckAsmLineForErrors(out var errorMsg);
+                var interpretResult = InterpretAsmLine(out var errorMsg);
 
                 // If a asm line contains only a comment, is empty or has no errors, skip it.
                 if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
@@ -240,7 +261,7 @@ namespace AMx64
             currentSection = AsmSegment.INVALID;
         }
 
-        private ErrorCode CheckAsmLineForErrors(out string errorMsg)
+        private ErrorCode InterpretAsmLine(out string errorMsg)
         {
             errorMsg = "";
 
@@ -270,7 +291,7 @@ namespace AMx64
 
                 var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
-                if (asmLineInstrRegex.Match(currentAsmLine).Success)
+                if (asmLineOperRegex.Match(currentLine.CurrentAsmLineValue.ToUpper()).Success)
                 {
                     if (asmLineRegex.Match(currentAsmLine).Success || asmLineNotInstrRegex.Match(currentAsmLine).Success)
                     {
