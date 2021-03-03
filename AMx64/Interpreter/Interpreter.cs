@@ -69,7 +69,7 @@ namespace AMx64
         /// <summary>
         /// Regex for labels.
         /// </summary>
-        private readonly Regex asmLineLabelRegex = new Regex(@"^([_a-zA-Z]+\d*)+:$", RegexOptions.Compiled);
+        private readonly Regex asmLineLabelRegex = new Regex(@"^([_a-zA-Z]+\d*)+:", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for available registers.
@@ -94,7 +94,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
         /// </summary>
-        private readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([_a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+        private readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s(([RE]{0,1}[ABCD]X)|[ABCD][HL]|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([RE]{0,1}[ABCD]X|[ABCD][HL])|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for NOT instruction inluding label.
@@ -104,7 +104,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for NOT instruction not inluding label.
         /// </summary>
-        private readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
+        private readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s+(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s+$", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for Jcc operations inluding label.
@@ -114,12 +114,12 @@ namespace AMx64
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
         /// </summary>
-        private readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s([_a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+        private readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s+$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for used to check operations.
         /// </summary>
-        private readonly Regex asmLineOperRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
+        private readonly Regex asmLineOperRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// GLOBAL symbol regex.
@@ -271,7 +271,7 @@ namespace AMx64
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
                 return;
             }
-            else if(labelError == ErrorCode.InvalidLabelPosition)
+            else if (labelError == ErrorCode.InvalidLabelPosition)
             {
                 Console.WriteLine($"Asm file uses label before .text section on line {lineNumber}.");
                 return;
