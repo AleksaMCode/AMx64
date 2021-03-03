@@ -222,6 +222,7 @@ namespace AMx64
                     return;
                 }
 
+                // Check sections.
                 if (!CheckSections())
                 {
                     Console.WriteLine("Asm file section error! .text section can't be used before .data or .bss section in code.");
@@ -252,13 +253,13 @@ namespace AMx64
                 {
                     case "section .data":
                         currentSection = AsmSegment.DATA;
-                        break;
+                        continue;
                     case "section .bss":
                         currentSection = AsmSegment.BSS;
-                        break;
+                        continue;
                     case "section .text":
                         currentSection = AsmSegment.TEXT;
-                        break;
+                        continue;
                 }
 
                 // Check for errors in asm line.
@@ -320,6 +321,13 @@ namespace AMx64
         private ErrorCode InterpretAsmLine(out string errorMsg)
         {
             errorMsg = "";
+
+            // Checks for duplicate sections in asm code.
+            if (currentLine.CurrentAsmLineValue.Contains("section"))
+            {
+                errorMsg = $"Duplicate section encountered: {currentLine.CurrentAsmLineValue}";
+                return ErrorCode.SectionProblems;
+            }
 
             if (currentSection == AsmSegment.TEXT)
             {
