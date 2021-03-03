@@ -85,7 +85,7 @@ namespace AMx64
             var b = new StringBuilder();
 
             // Read all characters in str.
-            for (var i = 0; i < str.Length; ++i)
+            for (var i = 1; i < str.Length - 1; ++i)
             {
                 // If backquote is used.
                 if (str[0] == '`' && str[i] == '\\')
