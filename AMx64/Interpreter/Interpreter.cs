@@ -406,6 +406,17 @@ namespace AMx64
                 // case "RESQ" is the default case
                 _ => 4,
             };
+
+            if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
+            {
+                variables.Add(tokens[0], new Tuple<long, long>(nextMemoryLocation, (nextMemoryLocation += amount * size) - 1));
+                return true;
+            }
+            else
+            {
+                errorMsg = $"Ill-formed size encountered: {tokens[2]}";
+                return false;
+            }
         }
 
         private void AddToMemory(UInt64 result, int size)
