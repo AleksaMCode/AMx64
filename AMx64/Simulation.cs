@@ -13,7 +13,7 @@ namespace AMx64
         /// </summary>
         public enum ErrorCode
         {
-            None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems,
+            None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalError,
             NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem
         }
 

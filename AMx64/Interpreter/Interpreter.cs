@@ -60,6 +60,11 @@ namespace AMx64
         /// </summary>
         private AsmSegment currentSection = AsmSegment.INVALID;
 
+        /// <summary>
+        /// GLOBAL symbol.
+        /// </summary>
+        private string globalSymbol;
+
         #region Regex
         /// <summary>
         /// Regex for labels.
@@ -115,6 +120,11 @@ namespace AMx64
         /// Command line regex for used to check operations.
         /// </summary>
         private readonly Regex asmLineOperRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s", RegexOptions.Compiled);
+
+        /// <summary>
+        /// GLOBAL symbol regex.
+        /// </summary>
+        private readonly Regex globalSymbolRegex = new Regex(@"^global\s+([_a-zA-Z]+\d*)+$", RegexOptions.Compiled);
         #endregion
 
         /// <summary>
@@ -148,6 +158,22 @@ namespace AMx64
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
 
+        /// <summary>
+        /// Checks if the global symbol is set properly.
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckGlobalSymbol()
+        {
+            var index = sections["section .text"];
+
+            if (globalSymbolRegex.Match(AsmCode[++index]).Success)
+            {
+                globalSymbol = AsmCode[index].Remove(6).Trim();
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Adds all sections of asm code (names and asm code line numbers).
@@ -228,6 +254,13 @@ namespace AMx64
                     Console.WriteLine("Asm file section error! .text section can't be used before .data or .bss section in code.");
                     return;
                 }
+
+                // Check global symbol.
+                if (!CheckGlobalSymbol())
+                {
+                    Console.WriteLine("Wrong usage of global.");
+                    return;
+                }
             }
             else
             {
@@ -236,7 +269,7 @@ namespace AMx64
             }
 
 
-            if(ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
+            if (ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
                 return;
@@ -259,6 +292,8 @@ namespace AMx64
                         continue;
                     case "section .text":
                         currentSection = AsmSegment.TEXT;
+                        // Skip global line.
+                        lineNumber++;
                         continue;
                 }
 
@@ -273,7 +308,7 @@ namespace AMx64
                 else
                 {
                     labels.Clear();
-                    //errorMsg = GetErrorString(interpretResult);
+                    Console.WriteLine(errorMsg);
                     return;
                 }
             }
@@ -328,6 +363,13 @@ namespace AMx64
                 errorMsg = $"Duplicate section encountered: {currentLine.CurrentAsmLineValue}";
                 return ErrorCode.SectionProblems;
             }
+            // Prevents multiple usage of global.
+            else if (currentLine.CurrentAsmLineValue.Contains("global"))
+            {
+                errorMsg = $"GLOBAL can only be used once in a asm code";
+                return ErrorCode.GlobalError;
+            }
+
 
             if (currentSection == AsmSegment.TEXT)
             {
@@ -710,7 +752,7 @@ namespace AMx64
             // Reserved symbols are case insensitive.
             symbol = symbol.ToUpper();
 
-            if (CPURegisterMap.ContainsKey(symbol))
+            if (CPURegisterMap.ContainsKey(symbol) || symbol == globalSymbol)
             {
                 return true;
             }
@@ -726,7 +768,6 @@ namespace AMx64
                 case "DATA":
                 case "BSS":
                 case "TEXT":
-                case "MAIN":
                 {
                     return true;
                 }
