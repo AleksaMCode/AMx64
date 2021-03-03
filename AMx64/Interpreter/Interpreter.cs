@@ -263,7 +263,6 @@ namespace AMx64
                 return;
             }
 
-
             if (ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
