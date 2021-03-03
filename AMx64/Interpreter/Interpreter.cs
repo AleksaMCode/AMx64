@@ -94,7 +94,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
         /// </summary>
-        private readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
+        private readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([_a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
 
         ///// <summary>
         ///// Command line regex for NOT instruction inluding label.
@@ -263,9 +263,17 @@ namespace AMx64
                 return;
             }
 
+            // Parse asm code labels.
             if (ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
+                return;
+            }
+
+            // Check if global symbol is used.
+            if (labels.ContainsKey(globalSymbol))
+            {
+                Console.WriteLine($"Global symbol \"{globalSymbol}\" is never used.");
                 return;
             }
 
