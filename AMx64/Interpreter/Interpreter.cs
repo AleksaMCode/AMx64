@@ -264,9 +264,16 @@ namespace AMx64
             }
 
             // Parse asm code labels.
-            if (ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
+            var labelError = ParseLabels(out var lineNumber);
+
+            if (labelError == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
+                return;
+            }
+            else if(labelError == ErrorCode.InvalidLabelPosition)
+            {
+                Console.WriteLine($"Asm file uses label before .text section on line {lineNumber}.");
                 return;
             }
 
@@ -336,6 +343,11 @@ namespace AMx64
 
                     if (labelMatch.Success)
                     {
+                        // Labels aren't permitted  before .text section.
+                        if (lineNumber < sections["section .text"])
+                        {
+                            return ErrorCode.InvalidLabelPosition;
+                        }
                         // If used label string is reserved or already used stop interpreting the asm code.
                         if (IsSymbolReserverd(labelMatch.Value) && labels.ContainsKey(labelMatch.Value))
                         {

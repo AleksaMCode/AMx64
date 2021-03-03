@@ -14,7 +14,8 @@ namespace AMx64
         public enum ErrorCode
         {
             None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalError,
-            NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem
+            NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition,
+            EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem
         }
 
         public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
