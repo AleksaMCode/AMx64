@@ -148,8 +148,26 @@ namespace AMx64
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
         };
 
+
         /// <summary>
-        /// Adds a sections of asm code. It has a value of -1 if the section isn't used in asm code.
+        /// Adds all sections of asm code (names and asm code line numbers).
+        /// </summary>
+        /// <returns>true if sections have been added successfully, otherwise false.</returns>
+        private bool AddSections()
+        {
+            AddSection("section .data");
+            AddSection("section .bss");
+
+            if (!AddSection("section .text"))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Adds a section of asm code (name and asm code line number). It has a value of -1 if the section isn't used in asm code.
         /// Section .text must always be present in asm code.
         /// </summary>
         /// <param name="section">Section full name.</param>
@@ -198,12 +216,9 @@ namespace AMx64
                 }
 
                 // Add sections.
-                AddSection("section .data");
-                AddSection("section .bss");
-
-                if (!AddSection("section .text"))
+                if (!AddSections())
                 {
-                    Console.WriteLine("Asm file is missing .text section.");
+                    Console.WriteLine("Asm file .text section is missing.");
                     return;
                 }
 
