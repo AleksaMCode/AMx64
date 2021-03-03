@@ -158,7 +158,7 @@ namespace AMx64
         {
             var index = AsmCode.IndexOf(section);
 
-            if(section == "section .text" && index == -1)
+            if (section == "section .text" && index == -1)
             {
                 return false;
             }
@@ -201,7 +201,7 @@ namespace AMx64
                 AddSection("section .data");
                 AddSection("section .bss");
 
-                if(!AddSection("section .text"))
+                if (!AddSection("section .text"))
                 {
                     Console.WriteLine("Asm file is missing .text section.");
                     return;
@@ -219,7 +219,14 @@ namespace AMx64
                 return;
             }
 
-            for (var lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
+
+            if(ParseLabels(out var lineNumber) == ErrorCode.InvalidLabel)
+            {
+                Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
+                return;
+            }
+
+            for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
                 AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
                 currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
@@ -261,34 +268,46 @@ namespace AMx64
             currentSection = AsmSegment.INVALID;
         }
 
+        /// <summary>
+        /// Parses asm code labels.
+        /// </summary>
+        /// <param name="lineNumber">Current line number.</param>
+        /// <returns>true if labels are used correctly, otherwise false.</returns>
+        private ErrorCode ParseLabels(out int lineNumber)
+        {
+            for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
+            {
+                if (AsmCode[lineNumber].Contains(":"))
+                {
+                    var labelMatch = asmLineLabelRegex.Match(AsmCode[lineNumber]);
+
+                    if (labelMatch.Success)
+                    {
+                        // If used label string is reserved or already used stop interpreting the asm code.
+                        if (IsSymbolReserverd(labelMatch.Value) && labels.ContainsKey(labelMatch.Value))
+                        {
+                            return ErrorCode.InvalidLabel;
+                        }
+                        // Save label and label line number.
+                        // Remove label from asm code.
+                        else
+                        {
+                            labels.Add(labelMatch.Value.Remove(labelMatch.Value.Length - 1), currentLine.CurrentAsmLineNumber);
+                            AsmCode[lineNumber] = AsmCode[lineNumber].Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1).Trim();
+                        }
+                    }
+                }
+            }
+
+            return ErrorCode.None;
+        }
+
         private ErrorCode InterpretAsmLine(out string errorMsg)
         {
             errorMsg = "";
 
             if (currentSection == AsmSegment.TEXT)
             {
-                // Remove label.
-                if (currentLine.CurrentAsmLineValue.Contains(":"))
-                {
-                    var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
-
-                    if (labelMatch.Success)
-                    {
-                        if (IsSymbolReserverd(labelMatch.Value) && labels.ContainsKey(labelMatch.Value))
-                        {
-                            return ErrorCode.InvalidLabel;
-                        }
-                        // Save label and label line number.
-                        else
-                        {
-                            labels.Add(labelMatch.Value.Remove(labelMatch.Value.Length - 1), currentLine.CurrentAsmLineNumber);
-                        }
-
-                        currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
-                        currentLine.CurrentAsmLineValue = AsmCode[currentLine.CurrentAsmLineNumber] = currentLine.CurrentAsmLineValue.Trim();
-                    }
-                }
-
                 var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
                 if (asmLineOperRegex.Match(currentLine.CurrentAsmLineValue.ToUpper()).Success)
