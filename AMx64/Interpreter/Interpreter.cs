@@ -32,7 +32,7 @@ namespace AMx64
         /// <summary>
         /// Next memory block index.
         /// </summary>
-        private Int64 memorylocation = 0;
+        private Int64 nextMemoryLocation = 0;
 
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace AMx64
             return true;
         }
 
-        private ErrorCode CheckAsmLineForErrors(bool checkMainPart)
+        private ErrorCode CheckAsmLineForErrors()
         {
             // Remove comment part of the asm line.
             if (currentLine.CurrentAsmLineValue.Contains(";"))
@@ -254,7 +254,7 @@ namespace AMx64
                 currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
             }
 
-            if (checkMainPart)
+            if (currentSection == AsmSegment.TEXT)
             {
                 // Remove label.
                 if (currentLine.CurrentAsmLineValue.Contains(":"))
@@ -296,160 +296,157 @@ namespace AMx64
                     return ErrorCode.UnknownOp;
                 }
             }
-            else
+            else if (currentSection == AsmSegment.DATA)
             {
-                if (currentSection == AsmSegment.DATA)
+                var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
+
+                if (match.Success)
                 {
-                    var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
+                    var dataTokens = match.Value.Split(' ');
 
-                    if (match.Success)
+                    if (IsSymbolReserverd(dataTokens[0]) && labels.ContainsKey(dataTokens[0]))
                     {
-                        var dataTokens = match.Value.Split(' ');
 
-                        if (IsSymbolReserverd(dataTokens[0]) && labels.ContainsKey(dataTokens[0]))
-                        {
-                            
-                        }
-                        else
-                        {
+                    }
+                    else
+                    {
 
-                            var dataTokensList = new List<string>(dataTokens)
+                        var dataTokensList = new List<string>(dataTokens)
                             {
                                 currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
                             };
 
-                            switch (dataTokens[1].ToUpper())
+                        switch (dataTokens[1].ToUpper())
+                        {
+                            case "DB":
                             {
-                                case "DB":
+                                if (TryProcessData(1, dataTokensList))
                                 {
-                                    if(TryProcessData(1))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "DW":
+                                else
                                 {
-                                    if (TryProcessData(2))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "DD":
+
+                                break;
+                            }
+                            case "DW":
+                            {
+                                if (TryProcessData(2))
                                 {
-                                    if (TryProcessData(4))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "DQ":
+                                else
                                 {
-                                    if (TryProcessData(8))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
+
+                                break;
+                            }
+                            case "DD":
+                            {
+                                if (TryProcessData(4))
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+
+                                break;
+                            }
+                            case "DQ":
+                            {
+                                if (TryProcessData(8))
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+
+                                break;
                             }
                         }
                     }
                 }
-                else if (currentSection == AsmSegment.BSS)
+            }
+            else if (currentSection == AsmSegment.BSS)
+            {
+                var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
+
+                if (match.Success)
                 {
-                    var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
+                    var bssTokens = match.Value.Split(' ');
 
-                    if (match.Success)
+                    if (IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0]))
                     {
-                        var bssTokens = match.Value.Split(' ');
 
-                        if (IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0]))
-                        {
+                    }
+                    else
+                    {
 
-                        }
-                        else
-                        {
-
-                            var dataTokensList = new List<string>(bssTokens)
+                        var dataTokensList = new List<string>(bssTokens)
                             {
                                 currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
                             };
 
-                            switch (bssTokens[1].ToUpper())
+                        switch (bssTokens[1].ToUpper())
+                        {
+                            case "RESB":
                             {
-                                case "RESB":
+                                if (TryProcessBss(1))
                                 {
-                                    if (TryProcessBss(1))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "RESW":
+                                else
                                 {
-                                    if (TryProcessBss(2))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "RESD":
+
+                                break;
+                            }
+                            case "RESW":
+                            {
+                                if (TryProcessBss(2))
                                 {
-                                    if (TryProcessBss(4))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
-                                case "RESQ":
+                                else
                                 {
-                                    if (TryProcessBss(8))
-                                    {
 
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    break;
                                 }
+
+                                break;
+                            }
+                            case "RESD":
+                            {
+                                if (TryProcessBss(4))
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+
+                                break;
+                            }
+                            case "RESQ":
+                            {
+                                if (TryProcessBss(8))
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+
+                                break;
                             }
                         }
                     }
@@ -457,6 +454,188 @@ namespace AMx64
             }
         }
 
+        public bool TryProcessData(List<string> tokens, ref string errorMsg)
+        {
+            var values = tokens[3].Split(',');
+            var size = (tokens[1].ToUpper()) switch
+            {
+                "DB" => 1,
+                "DW" => 2,
+                "DD" => 3,
+                // case "DQ" is the default case
+                _ => 4,
+            };
+
+            foreach (var value in values)
+            {
+                if (char.IsDigit(value[0]))
+                {
+                    if (Evaluate(value, out var result, out var _, ref errorMsg))
+                    {
+                        AddToMemory(result, size);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (Evaluate(value, out var _, out var result, ref errorMsg))
+                    {
+                        AddToMemory(result, size);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        private void AddToMemory(UInt64 result, int size)
+        {
+            var res = BitConverter.GetBytes(result);
+
+            for (var i = 0; i < res.Length; ++i)
+            {
+                Buffer.BlockCopy(res, i, memory, (int)nextMemoryLocation, 1);
+                nextMemoryLocation += size;
+            }
+        }
+
+        private void AddToMemory(string value, int size)
+        {
+            var byteArr = Encoding.ASCII.GetBytes(value);
+
+            for (var i = 0; i < value.Length; ++i)
+            {
+                Buffer.BlockCopy(byteArr, i, memory, (int)nextMemoryLocation, 1);
+                nextMemoryLocation += size;
+            }
+        }
+
+        private bool Evaluate(string value, out UInt64 result, out string characters, ref string errorMsg)
+        {
+            result = 0;
+            characters = "";
+
+            // Check for numbers (hex, oct, dec, bin) - Int parsing
+            if (char.IsDigit(value[0]))
+            {
+                // Remove underscores from a number.
+                var numLiteral = value.Replace("_", "").ToLower();
+
+                // hex number - prefix
+                if (numLiteral.StartsWith("0x") || numLiteral.StartsWith("0h"))
+                {
+                    if (numLiteral.Substring(2).TryParseUInt64(out result, 16))
+                    {
+                        return true;
+                    }
+                }
+                // hex number - suffix
+                else if (numLiteral[numLiteral.Length - 1] == 'h' || numLiteral[numLiteral.Length - 1] == 'x')
+                {
+                    if (numLiteral.Substring(0, numLiteral.Length - 1).TryParseUInt64(out result, 16))
+                    {
+                        return true;
+                    }
+                }
+
+                // dec number - prefix
+                else if (numLiteral.StartsWith("0d") || numLiteral.StartsWith("0t"))
+                {
+                    if (numLiteral.Substring(2).TryParseUInt64(out result))
+                    {
+                        return true;
+                    }
+                }
+                // dec number - suffix
+                else if (numLiteral[numLiteral.Length - 1] == 'd' || numLiteral[numLiteral.Length - 1] == 't')
+                {
+                    if (numLiteral.Substring(0, numLiteral.Length - 1).TryParseUInt64(out result))
+                    {
+                        return true;
+                    }
+                }
+
+                // octal number - prefix
+                else if (numLiteral.StartsWith("0o") || numLiteral.StartsWith("0q"))
+                {
+                    if (numLiteral.Substring(2).TryParseUInt64(out result, 8))
+                    {
+                        return true;
+                    }
+                }
+                // octal number - suffix
+                else if (numLiteral[numLiteral.Length - 1] == 'o' || numLiteral[numLiteral.Length - 1] == 'q')
+                {
+                    if (numLiteral.Substring(0, numLiteral.Length - 1).TryParseUInt64(out result, 8))
+                    {
+                        return true;
+                    }
+                }
+
+                // binary number - prefix
+                else if (numLiteral.StartsWith("0b") || numLiteral.StartsWith("0y"))
+                {
+                    if (numLiteral.Substring(2).TryParseUInt64(out result, 2))
+                    {
+                        return true;
+                    }
+                }
+                // binary number - suffix
+                else if (numLiteral[numLiteral.Length - 1] == 'b' || numLiteral[numLiteral.Length - 1] == 'y')
+                {
+                    if (numLiteral.Substring(0, numLiteral.Length - 1).TryParseUInt64(out result, 2))
+                    {
+                        return true;
+                    }
+                }
+
+                else // decimal number
+                {
+                    if (numLiteral.TryParseUInt64(out result))
+                    {
+                        return true;
+                    }
+                }
+
+                errorMsg = $"Ill-formed numeric literal encountered: \"{value}\".";
+                return false;
+            }
+            // if it's a character constant
+            else if (value[0] == '"' || value[0] == '\'' || value[0] == '`')
+            {
+                if (!value.TryParseCharacterString(out characters, ref errorMsg))
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    errorMsg = $"Ill-formed character string encountered (empty): {value}";
+                    return false;
+                }
+                if (characters.Length > 8)
+                {
+                    errorMsg = $"Ill-formed character string encountered (too long): {value}";
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                errorMsg = $"Failed to evaluate \"{value}\".";
+                return false;
+            }
+        }
 
         /// <summary>
         /// Interprets current asm line.
