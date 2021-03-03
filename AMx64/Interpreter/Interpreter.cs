@@ -493,6 +493,9 @@ namespace AMx64
                     }
                 }
             }
+
+            // TODO: Check this part!
+            return false;
         }
 
         private void AddToMemory(UInt64 result, int size)
