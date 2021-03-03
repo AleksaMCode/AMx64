@@ -41,9 +41,9 @@ namespace AMx64
         private Dictionary<string, int> labels = new Dictionary<string, int>();
 
         /// <summary>
-        /// Used to store asm variables from .data and .bss sections.
+        /// Used to store asm variables from .data and .bss sections. Includes memory address name, start and end index.
         /// </summary>
-        private Dictionary<string, Tuple<int, long, int>> variables = new Dictionary<string, Tuple<int, long, int>>();
+        private Dictionary<string, Tuple<long, long>> variables = new Dictionary<string, Tuple<long, long>>();
 
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace AMx64
                                 currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
                             };
 
-                        return TryProcessData(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                        return TryProcessData(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.DataSectionProblem;
                     }
                 }
             }
@@ -340,61 +340,7 @@ namespace AMx64
                                 currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
                             };
 
-                        switch (bssTokens[1].ToUpper())
-                        {
-                            case "RESB":
-                            {
-                                if (TryProcessBss(1))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "RESW":
-                            {
-                                if (TryProcessBss(2))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "RESD":
-                            {
-                                if (TryProcessBss(4))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "RESQ":
-                            {
-                                if (TryProcessBss(8))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                        }
+                        return TryProcessBss(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.BssSectionProblem;
                     }
                 }
             }
@@ -412,6 +358,8 @@ namespace AMx64
                 _ => 4,
             };
 
+            var startLocation = nextMemoryLocation;
+
             foreach (var value in values)
             {
                 if (char.IsDigit(value[0]))
@@ -419,6 +367,8 @@ namespace AMx64
                     if (Evaluate(value, out var result, out var _, ref errorMsg))
                     {
                         AddToMemory(result, size);
+                        variables.Add(tokens[0], new Tuple<long, long>(startLocation, nextMemoryLocation - 1));
+
                         return true;
                     }
                     else
@@ -431,6 +381,8 @@ namespace AMx64
                     if (Evaluate(value, out var _, out var result, ref errorMsg))
                     {
                         AddToMemory(result, size);
+                        variables.Add(tokens[0], new Tuple<long, long>(startLocation, nextMemoryLocation - 1));
+
                         return true;
                     }
                     else
@@ -460,6 +412,11 @@ namespace AMx64
         {
             var res = BitConverter.GetBytes(result);
 
+            if (nextMemoryLocation + res.Length * size >= int.MaxValue)
+            {
+                throw new Exception("Memory full.");
+            }
+
             for (var i = 0; i < res.Length; ++i)
             {
                 Buffer.BlockCopy(res, i, memory, (int)nextMemoryLocation, 1);
@@ -470,6 +427,11 @@ namespace AMx64
         private void AddToMemory(string value, int size)
         {
             var byteArr = Encoding.ASCII.GetBytes(value);
+
+            if (nextMemoryLocation + byteArr.Length * size >= int.MaxValue)
+            {
+                throw new Exception("Memory full.");
+            }
 
             for (var i = 0; i < value.Length; ++i)
             {
