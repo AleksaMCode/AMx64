@@ -245,7 +245,7 @@ namespace AMx64
             return true;
         }
 
-        private ErrorCode CheckAsmLineForErrors()
+        private ErrorCode CheckAsmLineForErrors(ref string errorMsg)
         {
             // Remove comment part of the asm line.
             if (currentLine.CurrentAsmLineValue.Contains(";"))
@@ -306,7 +306,7 @@ namespace AMx64
 
                     if (IsSymbolReserverd(dataTokens[0]) && labels.ContainsKey(dataTokens[0]))
                     {
-
+                        return ErrorCode.InvalidEffectiveAddressesName;
                     }
                     else
                     {
@@ -316,61 +316,7 @@ namespace AMx64
                                 currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
                             };
 
-                        switch (dataTokens[1].ToUpper())
-                        {
-                            case "DB":
-                            {
-                                if (TryProcessData(1, dataTokensList))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "DW":
-                            {
-                                if (TryProcessData(2))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "DD":
-                            {
-                                if (TryProcessData(4))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                            case "DQ":
-                            {
-                                if (TryProcessData(8))
-                                {
-
-                                }
-                                else
-                                {
-
-                                }
-
-                                break;
-                            }
-                        }
+                        return TryProcessData(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     }
                 }
             }
@@ -384,7 +330,7 @@ namespace AMx64
 
                     if (IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0]))
                     {
-
+                        return ErrorCode.InvalidEffectiveAddressesName;
                     }
                     else
                     {
@@ -496,6 +442,18 @@ namespace AMx64
 
             // TODO: Check this part!
             return false;
+        }
+
+        public bool TryProcessBss(List<string> tokens, ref string errorMsg)
+        {
+            var size = (tokens[1].ToUpper()) switch
+            {
+                "RESB" => 1,
+                "RESW" => 2,
+                "RESD" => 3,
+                // case "RESQ" is the default case
+                _ => 4,
+            };
         }
 
         private void AddToMemory(UInt64 result, int size)
