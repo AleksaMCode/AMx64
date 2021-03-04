@@ -7,239 +7,272 @@ using static AMx64.Utility;
 
 namespace AMx64
 {
-    internal class Expression
+    public partial class AMX64
     {
-        public Operations Operation = Operations.None;
-
-        public string LeftOp = null, RightOp = null;
-
-        private string token = null;
-
-        public string Token
+        public class Expression
         {
-            get
+            public Operations Operation = Operations.None;
+
+            public string LeftOp = null, RightOp = null;
+
+            public UInt64 CodeSize;
+
+            public bool ExplicitSize = false;
+
+            /// <summary>
+            /// Result of the operation.
+            /// </summary>
+            public UInt64 Result = 0;
+
+            public bool ParseAsmLine(string asmLine)
             {
-                return token;
-            }
+                var asmLineUpper = asmLine.ToUpper();
 
-            set
-            {
-                token = value ?? throw new ArgumentNullException("Token can't be a null value.");
-
-                Operation = Operations.None;
-                LeftOp = RightOp = null;
-            }
-        }
-
-        /// <summary>
-        /// Result of the operation.
-        /// </summary>
-        public UInt64 Result = 0;
-
-        public bool IsEvaluated => Operation == Operations.None && Token == null;
-
-        private bool EvaluateHelper(Dictionary<string, Expression> symbols, out UInt64 result, ref string error, Stack<string> visitedNodes)
-        {
-            result = 0;
-
-            UInt64 Left, Right;
-
-            bool retValue = true;
-
-            switch (Op)
-            {
-                case Operations.None:
+                if (asmLineRegex.Match(asmLineUpper).Success)
                 {
-                    if (Token == null)
+                    var match = asmLineOperRegex.Match(asmLineUpper);
+
+                    if (match.Success)
                     {
-                        result = cachedResult;
-                        return true;
+                        ParseOperation(match.Value.TrimEnd());
+
+                        asmLine.Remove(match.Value.Length - 1);
+                        asmLine.TrimStart();
                     }
 
-                    // check for numbers (hex, oct, dec) - Int parsing
-                    if (char.IsDigit(Token[0]))
+                    if (asmLineOperExplSizeRegex.Match(asmLineUpper).Success)
                     {
-                        string token = Token.Replace("_", "").ToLower(); // removing underscores
+                        ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
 
-                        if (token.StartsWith("0x")) // hex number - prefix
-                        {
-                            if (token.Substring(2).TryParseUInt64(out result, 16))
-                            {
-                                break;
-                            }
-                        }
-                        else if (token[token.Length - 1] == 'h') // hex number - suffix
-                        {
-                            if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 16))
-                            {
-                                break;
-                            }
-                        }
-                        else if (token[token.Length - 1] == 'o') // octal number - suffix
-                        {
-                            if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 8))
-                            {
-                                break;
-                            }
-                        }
-                        else if (token.StartsWith("0b")) // binary number - prefix
-                        {
-                            if (token.Substring(2).TryParseUInt64(out result, 2))
-                            {
-                                break;
-                            }
-                        }
-                        else if (token[token.Length - 1] == 'b') // binary number - suffix
-                        {
-                            if (token.Substring(0, token.Length - 1).TryParseUInt64(out result, 2))
-                            {
-                                break;
-                            }
-                        }
-                        else // decimal number
-                        {
-                            if (token.TryParseUInt64(out result))
-                            {
-                                break;
-                            }
-                        }
+                        asmLine = asmLine.Substring(asmLine.IndexOf(' ')).TrimStart();
+                        asmLine.Trim();
                     }
-                    // check for constants
-                    else if (this.token[0] == '"' || this.token[0] == '\'' || this.token[0] == '`')
+
+
+                    var tokens = asmLine.Split(',');
+                    LeftOp = tokens[0].Trim();
+                    RightOp = tokens[1].Trim();
+
+                    if (LeftOp == RightOp)
                     {
-                        break;
+                        return false;
                     }
-                    else if (!visitedNodes.Contains(this.token) && symbols.TryGetValue(this.token, out Expression expr))
+                }
+                else if (asmLineJccRegex.Match(asmLineUpper).Success)
+                {
+                    var tokens = asmLine.Split((char[])null);
+                    ParseOperation(tokens[0].TrimEnd());
+                    LeftOp = tokens[1].TrimStart();
+
+                    return true;
+                }
+                else if (asmLineNotOperRegex.Match(asmLineUpper).Success)
+                {
+                    var tokens = asmLine.Split((char[])null);
+                    ParseOperation(tokens[0].TrimEnd());
+
+                    if (tokens.Length == 3)
                     {
-                        visitedNodes.Push(this.token);
-
-                        if (expr.EvaluateHelper(symbols, out result, ref error, visitedNodes))
-                        {
-                            error = $"Failed to evaluate symbol \"{this.token}\" -> {error}";
-                            return false;
-                        }
-
-                        visitedNodes.Pop();
-                        break;
+                        ParseExplicitSize(tokens[1].Trim());
+                        LeftOp = tokens[3];
                     }
                     else
                     {
-                        error = $"Failed to evaluate symbol \"{this.token}\"";
-                        return false;
+                        LeftOp = tokens[2];
                     }
                 }
-                case Operations.Add:
+                else
                 {
-                    if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (retValue == false)
-                    {
-                        return false;
-                    }
-
-                    result = Left + Right;
-                    break;
+                    return false;
                 }
-                case Operations.Sub:
-                {
-                    if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (retValue == false)
-                    {
-                        return false;
-                    }
 
-                    result = Left - Right;
-                    break;
-                }
-                case Operations.BitAnd:
-                {
-                    if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (retValue == false)
-                    {
-                        return false;
-                    }
+                return true;
+            }
 
-                    result = Left & Right;
-                    break;
-                }
-                case Operations.BitOr:
+            private void ParseOperation(string operation)
+            {
+                switch (operation.ToUpper())
                 {
-                    if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-                    if (retValue == false)
-                    {
-                        return false;
-                    }
-
-                    result = Left | Right;
-                    break;
-                }
-                case Operations.BitNot:
-                {
-                    if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                    {
-                        retValue = false;
-                    }
-
-                    result = ~Left;
-                    break;
+                    case "ADD":
+                        Operation = Operations.Add;
+                        break;
+                    case "SUB":
+                        Operation = Operations.Sub;
+                        break;
+                    case "MOV":
+                        Operation = Operations.Mov;
+                        break;
+                    case "AND":
+                        Operation = Operations.BitAnd;
+                        break;
+                    case "OR":
+                        Operation = Operations.BitOr;
+                        break;
+                    case "NOT":
+                        Operation = Operations.BitNot;
+                        break;
+                    case "JMP":
+                        Operation = Operations.Jmp;
+                        break;
+                    case "JE":
+                        Operation = Operations.Je;
+                        break;
+                    case "JNE":
+                        Operation = Operations.Jne;
+                        break;
+                    case "JGE":
+                        Operation = Operations.Jge;
+                        break;
+                    case "JL":
+                        Operation = Operations.Jl;
+                        break;
                 }
             }
 
-            CacheResult(result); // result caching
-            return true;
-        }
-
-        public bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error)
-        {
-            return EvaluateHelper(symbols, out result, ref error, new Stack<string>());
-        }
-
-        public bool IsEvaluatable(Dictionary<string, Expression> sybmols)
-        {
-            string error = null;
-            return Evaluate(sybmols, out UInt64 result, ref error);
-        }
-
-        public void ExpressionResolver(string expr, UInt64 result)
-        {
-            if (Op == Operations.None)
+            private bool ParseExplicitSize(string explicitSize = "")
             {
-                if (token == expr)
+                if (string.IsNullOrEmpty(explicitSize))
                 {
-                    CacheResult(result);
+                    CodeSize = 3;
+                    ExplicitSize = false;
                 }
+                else
+                {
+                    switch (explicitSize.ToUpper())
+                    {
+                        case "BYTE":
+                            CodeSize = 0;
+                            ExplicitSize = true;
+                            break;
+                        case "WORD":
+                            CodeSize = 1;
+                            ExplicitSize = true;
+                            break;
+                        case "DWORD":
+                            CodeSize = 2;
+                            ExplicitSize = true;
+                            break;
+                        case "QWORD":
+                            CodeSize = 3;
+                            ExplicitSize = true;
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+
+                return true;
             }
-            else
+
+            private bool EvaluateHelper(Operations op, List<string> tokens, out UInt64 result, ref string error, Stack<string> visitedNodes)
             {
-                Left.ExpressionResolver(expr, result);
-                Right?.ExpressionResolver(expr, result);
+                result = 0;
+
+
+
+                UInt64 Left, Right;
+
+                bool retValue = true;
+
+                switch (op)
+                {
+                    case Operations.Add:
+                    {
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left + Right;
+                        break;
+                    }
+                    case Operations.Sub:
+                    {
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left - Right;
+                        break;
+                    }
+                    case Operations.BitAnd:
+                    {
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left & Right;
+                        break;
+                    }
+                    case Operations.BitOr:
+                    {
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+                        if (retValue == false)
+                        {
+                            return false;
+                        }
+
+                        result = Left | Right;
+                        break;
+                    }
+                    case Operations.BitNot:
+                    {
+                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
+                        {
+                            retValue = false;
+                        }
+
+                        result = ~Left;
+                        break;
+                    }
+                }
+
+                CacheResult(result); // result caching
+                return true;
+            }
+
+            public bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error)
+            {
+                return EvaluateHelper(symbols, out result, ref error, new Stack<string>());
+            }
+
+            public bool IsEvaluatable(Dictionary<string, Expression> sybmols)
+            {
+                string error = null;
+                return Evaluate(sybmols, out UInt64 result, ref error);
             }
         }
     }
