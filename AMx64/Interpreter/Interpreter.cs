@@ -421,8 +421,9 @@ namespace AMx64
                         leftTokens[0] = leftTokens[0].Trim();
                         leftTokens[1] = leftTokens[1].Trim();
 
-                        var tokenList = new List<string>(leftTokens)
+                        var tokenList = new List<string>()
                         {
+                            leftTokens[1],
                             tokens[1]
                         };
 
@@ -516,7 +517,26 @@ namespace AMx64
 
         private bool TryProcessBinaryOp(Operation op, List<string> tokenList)
         {
-            throw new NotImplementedException();
+            if(op == Operation.Add)
+            {
+
+            }
+            else if (op == Operation.Sub)
+            {
+
+            }
+            else if (op == Operation.Mov)
+            {
+
+            }
+            else if (op == Operation.BitAnd)
+            {
+
+            }
+            else/* if (op == Operation.BitOr)*/
+            {
+
+            }
         }
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
