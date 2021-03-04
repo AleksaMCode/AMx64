@@ -326,10 +326,10 @@ namespace AMx64
                 return false;
             }
 
-            for (int i = 0; i < (int)size; ++i)
+            for (var i = 0; i < (int)size; ++i)
             {
-                array[(int)position + i] = (byte)value;
-                value >>= 8;
+                array[(int)position + i] = (byte)inputValue;
+                inputValue >>= 8;
             }
 
             return true;
@@ -345,13 +345,13 @@ namespace AMx64
         public static bool WriteString(this byte[] array, UInt64 position, string inputValue)
         {
             // Check memory bounds.
-            if (MemoryBoundsExceeded(position, inputValue.Length + 1, (UInt64)array.Length))
+            if (MemoryBoundsExceeded(position, (UInt64)inputValue.Length + 1, (UInt64)array.Length))
             {
                 return false;
             }
 
             // Write each character.
-            for (int i = 0; i < inputValue.Length; ++i)
+            for (var i = 0; i < inputValue.Length; ++i)
             {
                 array[position + (UInt64)i] = (byte)inputValue[i];
             }
@@ -372,14 +372,15 @@ namespace AMx64
         /// <returns>true if value is read, otherwise false.</returns>
         public static bool Read(this byte[] array, UInt64 position, UInt64 size, out UInt64 outputValue)
         {
+            outputValue = 0;
+
             // Check memory bounds.
             if (MemoryBoundsExceeded(position, size, (UInt64)array.Length))
             {
                 return false;
             }
 
-            outputValue = 0;
-            for (int i = (int)size - 1; i >= 0; --i)
+            for (var i = (int)size - 1; i >= 0; --i)
             {
                 outputValue = (outputValue << 8) | array[(int)position + i];
             }
@@ -396,7 +397,7 @@ namespace AMx64
         /// <returns>true if value is read, otherwise false.</returns>
         public static bool ReadString(this byte[] array, UInt64 position, out string outputValue)
         {
-            StringBuilder cString = new StringBuilder();
+            var cString = new StringBuilder();
 
             // Read string until a terminator char is reached.
             for (; ; ++position)
@@ -430,14 +431,7 @@ namespace AMx64
         /// <returns>true if array bounds have been exceeded, otherwise false.</returns>
         private static bool MemoryBoundsExceeded(UInt64 position, UInt64 size, UInt64 arrayLimit)
         {
-            if (position >= arrayLimit || position + size > arrayLimit)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return position >= arrayLimit || position + size > arrayLimit;
         }
     }
 }
