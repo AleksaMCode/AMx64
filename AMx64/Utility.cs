@@ -239,7 +239,7 @@ namespace AMx64
         /// <returns>Random boolean.</returns>
         public static bool NextBool(this Random rndValue)
         {
-            return rndValue.Next(2) = 1;
+            return rndValue.Next(2) == 1;
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace AMx64
         /// <returns>true if string starts with specified character, otherwise false.</returns>
         public static bool StartsWith(this string stringValue, char character)
         {
-            return str.Length > 0 && str[0] == character;
+            return stringValue.Length > 0 && stringValue[0] == character;
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace AMx64
         /// <returns>true if string ends with specified character, otherwise false.</returns>
         public static bool EndsWith(this string stringValue, char character)
         {
-            return str != null && str.Length > 0 && str[str.Length - 1] == character;
+            return stringValue != null && stringValue.Length > 0 && stringValue[stringValue.Length - 1] == character;
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace AMx64
         /// <returns>true if string is equal to the specified value or begins with it and is followed by a white space.</returns>
         public static bool StartsWithValue(this string stringValue, string value)
         {
-            return str.StartsWith(value) && (str.Length == value.Length || char.IsWhiteSpace(str[value.Length]));
+            return stringValue.StartsWith(value) && (stringValue.Length == value.Length || char.IsWhiteSpace(stringValue[value.Length]));
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace AMx64
         {
             while ((value & (value - 1)) != 0)
             {
-                value = value & (value - 1);
+                value &= value - 1;
             }
 
             return value;
@@ -305,7 +305,7 @@ namespace AMx64
         /// </summary>
         /// <param name="value">Value used to get lowest bit.</param>
         /// <returns>Lowest value's bit.</returns>
-        public static UInt64 GetLowBig(UInt64 value)
+        public static UInt64 GetLowBit(UInt64 value)
         {
             return value & (~value + 1);
         }
@@ -428,7 +428,7 @@ namespace AMx64
         /// <param name="size">Number of spaces used after start index.</param>
         /// <param name="arrayLimit">Length of the array.</param>
         /// <returns>true if array bounds have been exceeded, otherwise false.</returns>
-        private static bool MemoryBoundsExceeded(UInt64 position, UInt64 size, (UInt64) arrayLimit)
+        private static bool MemoryBoundsExceeded(UInt64 position, UInt64 size, UInt64 arrayLimit)
         {
             if (position >= arrayLimit || position + size > arrayLimit)
             {

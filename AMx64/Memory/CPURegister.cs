@@ -3,22 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace AMx64
 {
-    public enum OPCode
-    {
-        SYSCALL,
-
-        MOV,
-
-        JMP,
-
-        ADD, SUB,
-        AND, OR, NOT,
-
-        CMP,
-
-        DEBUG = 255
-    }
-
     /// <summary>
     /// 64-bit register representation.
     /// </summary>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace AMx64
 {
@@ -11,7 +7,14 @@ namespace AMx64
         static void Main(string[] args)
         {
             AMX64 simulator = new AMX64();
-            simulator.Initialize(args);
+            try
+            {
+                simulator.Initialize(args);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

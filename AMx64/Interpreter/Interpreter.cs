@@ -413,7 +413,12 @@ namespace AMx64
             if (currentSection == AsmSegment.TEXT)
             {
                 var expr = new Expression();
-                expr.ParseAsmLine(currentLine.CurrentAsmLineValue);
+
+                if (!expr.ParseAsmLine(currentLine.CurrentAsmLineValue))
+                {
+                    errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                    return ErrorCode.InvalidAsmLine;
+                }
 
                 var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
@@ -497,6 +502,8 @@ namespace AMx64
                     return ErrorCode.BssSectionProblem;
                 }
             }
+
+            return ErrorCode.UndefinedBehavior;
         }
 
         private bool TryProcessJcc(Expression expr)
@@ -513,23 +520,69 @@ namespace AMx64
         {
             if (expr.Operation == Operations.Add)
             {
-
+                return ProcessAdd(expr.LeftOp, expr.RightOp, expr.ExplicitSize, expr.CodeSize);
             }
             else if (expr.Operation == Operations.Sub)
             {
-
+                return ProcessSub();
             }
             else if (expr.Operation == Operations.Mov)
             {
-
+                return ProcessMov();
             }
             else if (expr.Operation == Operations.BitAnd)
             {
-
+                return ProcessAnd();
             }
             else/* if (op == Operation.BitOr)*/
             {
+                return ProcessOr();
+            }
+        }
 
+        private bool ProcessAdd(string leftOp, string rightOp, bool explicitiSize, UInt64 codesize)
+        {
+            throw new NotImplementedException();
+
+            if (leftOp.StartsWith('[') && leftOp.EndsWith(']'))
+            {
+                // Direct memory manipulation isn't allowed.
+                if (rightOp.StartsWith('[') && rightOp.EndsWith(']'))
+                {
+                    return false;
+                }
+
+                leftOp = leftOp.Substring(1, leftOp.Length - 2);
+                int memoryIndex;
+
+
+                if (asmLineAvailableRegisters.Match(leftOp).Success)
+                {
+                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
+                    memoryIndex = (int)CPURegisters[info.Item1][info.Item2];
+                }
+
+
+                //memory.Write()
+            }
+            else
+            {
+                if (rightOp.StartsWith('[') && rightOp.EndsWith(']'))
+                {
+
+                }
+                else
+                {
+                    Tuple<byte, byte, bool> leftO, rightO;
+
+                    if (CPURegisterMap.TryGetValue(leftOp, out leftO))
+                    {
+                        if(CPURegisterMap.TryGetValue(rightOp, out rightO))
+                        {
+
+                        }
+                    }
+                }
             }
         }
 

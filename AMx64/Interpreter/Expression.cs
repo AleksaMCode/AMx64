@@ -15,6 +15,8 @@ namespace AMx64
 
             public string LeftOp = null, RightOp = null;
 
+            public UInt64 LeftOpValue, RightOpValue;
+
             public UInt64 CodeSize;
 
             public bool ExplicitSize = false;
@@ -162,6 +164,11 @@ namespace AMx64
                 }
 
                 return true;
+            }
+
+            public bool EvaluateOperand(string operand, out UInt64 operandValue)
+            {
+
             }
 
             private bool EvaluateHelper(Operations op, List<string> tokens, out UInt64 result, ref string error, Stack<string> visitedNodes)
