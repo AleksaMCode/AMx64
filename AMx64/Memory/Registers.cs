@@ -5,7 +5,7 @@ namespace AMx64
 {
     public partial class AMX64
     {
-        protected CPURegister[] CPURegisters = new CPURegister[16];
+        public CPURegister[] CPURegisters = new CPURegister[16];
 
         #region AX register
         public UInt64 RAX { get => CPURegisters[0].x64; set => CPURegisters[0].x64 = value; }

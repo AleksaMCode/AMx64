@@ -83,6 +83,14 @@ namespace AMx64
                         LeftOp = tokens[2];
                     }
                 }
+                else if ((LeftOp.StartsWith('[') && !LeftOp.EndsWith(']')) || (!LeftOp.StartsWith('[') && LeftOp.EndsWith(']')))
+                {
+                    return false;
+                }
+                else if (!string.IsNullOrEmpty(RightOp) && ((RightOp.StartsWith('[') && !RightOp.EndsWith(']')) || (!RightOp.StartsWith('[') && RightOp.EndsWith(']'))))
+                {
+                    return false;
+                }
                 else
                 {
                     return false;
@@ -164,122 +172,6 @@ namespace AMx64
                 }
 
                 return true;
-            }
-
-            public bool EvaluateOperand(string operand, out UInt64 operandValue)
-            {
-
-            }
-
-            private bool EvaluateHelper(Operations op, List<string> tokens, out UInt64 result, ref string error, Stack<string> visitedNodes)
-            {
-                result = 0;
-
-
-
-                UInt64 Left, Right;
-
-                bool retValue = true;
-
-                switch (op)
-                {
-                    case Operations.Add:
-                    {
-                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (retValue == false)
-                        {
-                            return false;
-                        }
-
-                        result = Left + Right;
-                        break;
-                    }
-                    case Operations.Sub:
-                    {
-                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (retValue == false)
-                        {
-                            return false;
-                        }
-
-                        result = Left - Right;
-                        break;
-                    }
-                    case Operations.BitAnd:
-                    {
-                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (retValue == false)
-                        {
-                            return false;
-                        }
-
-                        result = Left & Right;
-                        break;
-                    }
-                    case Operations.BitOr:
-                    {
-                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (!this.Right.EvaluateHelper(symbols, out Right, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-                        if (retValue == false)
-                        {
-                            return false;
-                        }
-
-                        result = Left | Right;
-                        break;
-                    }
-                    case Operations.BitNot:
-                    {
-                        if (!this.Left.EvaluateHelper(symbols, out Left, ref error, visitedNodes))
-                        {
-                            retValue = false;
-                        }
-
-                        result = ~Left;
-                        break;
-                    }
-                }
-
-                CacheResult(result); // result caching
-                return true;
-            }
-
-            public bool Evaluate(Dictionary<string, Expression> symbols, out UInt64 result, ref string error)
-            {
-                return EvaluateHelper(symbols, out result, ref error, new Stack<string>());
-            }
-
-            public bool IsEvaluatable(Dictionary<string, Expression> sybmols)
-            {
-                string error = null;
-                return Evaluate(sybmols, out UInt64 result, ref error);
             }
         }
     }

@@ -54,6 +54,8 @@ namespace AMx64
         /// </summary>
         private Int64 nextMemoryLocation = 0;
 
+        private Expression currentExpr;
+
         /// <summary>
         /// Used to store asm labels.
         /// </summary>
@@ -106,30 +108,15 @@ namespace AMx64
         /// </summary>
         private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q)+\s+", RegexOptions.Compiled);
 
-        ///// <summary>
-        ///// Command line regex for ADD, SUB, OR, AND or MOV operation including label.
-        ///// </summary>
-        //private readonly Regex commandLineWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(ADD|SUB|MOV|AND|OR|)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))\s{0,1},\s{0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|([a-zA-Z]+\d*)+)$", RegexOptions.Compiled);
-
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
         /// </summary>
         private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([RE]{0,1}[ABCD]X)|[ABCD][HL]|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([RE]{0,1}[ABCD]X|[ABCD][HL])|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
 
-        ///// <summary>
-        ///// Command line regex for NOT instruction inluding label.
-        ///// </summary>
-        //private readonly Regex commandLineNotInstrWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(NOT)\s(((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))$", RegexOptions.Compiled);
-
         /// <summary>
         /// Command line regex for NOT instruction not inluding label.
         /// </summary>
         private static readonly Regex asmLineNotOperRegex = new Regex(@"^(NOT)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
-
-        ///// <summary>
-        ///// Command line regex for Jcc operations inluding label.
-        ///// </summary>
-        //private readonly Regex commandLineJccWithLabelRegex = new Regex(@"^([a-zA-Z]+\d*)+:\s(J(MP|(N|G)*E|L))\s([a-zA-Z]+\d*)+$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
@@ -409,20 +396,23 @@ namespace AMx64
                 return ErrorCode.GlobalError;
             }
 
-
+            // .text section
             if (currentSection == AsmSegment.TEXT)
             {
-                var expr = new Expression();
+                currentExpr = new Expression();
 
-                if (!expr.ParseAsmLine(currentLine.CurrentAsmLineValue))
+                if (!currentExpr.ParseAsmLine(currentLine.CurrentAsmLineValue))
                 {
                     errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                     return ErrorCode.InvalidAsmLine;
                 }
 
+                // Set operands value.
+                EvaluateOperands();
+
                 var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
-                switch (expr.Operation)
+                switch (currentExpr.Operation)
                 {
                     case Operations.Add:
                     case Operations.Sub:
@@ -430,20 +420,21 @@ namespace AMx64
                     case Operations.BitAnd:
                     case Operations.BitOr:
                     case Operations.Cmp:
-                        return TryProcessBinaryOp(expr) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                        return TryProcessBinaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     case Operations.BitNot:
-                        return TryProcessUnaryOp(expr) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                        return TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     // if Jcc
                     case Operations.Jmp:
                     case Operations.Je:
                     case Operations.Jne:
                     case Operations.Jge:
                     case Operations.Jl:
-                        return labels.ContainsKey(expr.LeftOp)
+                        return labels.ContainsKey(currentExpr.LeftOp)
                             ? ErrorCode.InvalidEffectiveAddressesName
-                            : TryProcessJcc(expr) ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            : TryProcessJcc() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                 }
             }
+            // .data section
             else if (currentSection == AsmSegment.DATA)
             {
                 var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
@@ -473,6 +464,7 @@ namespace AMx64
                     return ErrorCode.BssSectionProblem;
                 }
             }
+            // .bss section
             else if (currentSection == AsmSegment.BSS)
             {
                 var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
@@ -506,31 +498,31 @@ namespace AMx64
             return ErrorCode.UndefinedBehavior;
         }
 
-        private bool TryProcessJcc(Expression expr)
+        private bool TryProcessJcc()
         {
             throw new NotImplementedException();
         }
 
-        private bool TryProcessUnaryOp(Expression expr)
+        private bool TryProcessUnaryOp()
         {
             throw new NotImplementedException();
         }
 
-        private bool TryProcessBinaryOp(Expression expr)
+        private bool TryProcessBinaryOp()
         {
-            if (expr.Operation == Operations.Add)
+            if (currentExpr.Operation == Operations.Add)
             {
-                return ProcessAdd(expr.LeftOp, expr.RightOp, expr.ExplicitSize, expr.CodeSize);
+                return ProcessAdd();
             }
-            else if (expr.Operation == Operations.Sub)
+            else if (currentExpr.Operation == Operations.Sub)
             {
                 return ProcessSub();
             }
-            else if (expr.Operation == Operations.Mov)
+            else if (currentExpr.Operation == Operations.Mov)
             {
                 return ProcessMov();
             }
-            else if (expr.Operation == Operations.BitAnd)
+            else if (currentExpr.Operation == Operations.BitAnd)
             {
                 return ProcessAnd();
             }
@@ -540,50 +532,29 @@ namespace AMx64
             }
         }
 
-        private bool ProcessAdd(string leftOp, string rightOp, bool explicitiSize, UInt64 codesize)
+        private bool ProcessOr()
         {
             throw new NotImplementedException();
+        }
 
-            if (leftOp.StartsWith('[') && leftOp.EndsWith(']'))
-            {
-                // Direct memory manipulation isn't allowed.
-                if (rightOp.StartsWith('[') && rightOp.EndsWith(']'))
-                {
-                    return false;
-                }
+        private bool ProcessAnd()
+        {
+            throw new NotImplementedException();
+        }
 
-                leftOp = leftOp.Substring(1, leftOp.Length - 2);
-                int memoryIndex;
+        private bool ProcessMov()
+        {
+            throw new NotImplementedException();
+        }
 
+        private bool ProcessSub()
+        {
+            throw new NotImplementedException();
+        }
 
-                if (asmLineAvailableRegisters.Match(leftOp).Success)
-                {
-                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
-                    memoryIndex = (int)CPURegisters[info.Item1][info.Item2];
-                }
-
-
-                //memory.Write()
-            }
-            else
-            {
-                if (rightOp.StartsWith('[') && rightOp.EndsWith(']'))
-                {
-
-                }
-                else
-                {
-                    Tuple<byte, byte, bool> leftO, rightO;
-
-                    if (CPURegisterMap.TryGetValue(leftOp, out leftO))
-                    {
-                        if(CPURegisterMap.TryGetValue(rightOp, out rightO))
-                        {
-
-                        }
-                    }
-                }
-            }
+        private bool ProcessAdd()
+        {
+            throw new NotImplementedException();
         }
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
@@ -689,6 +660,110 @@ namespace AMx64
                 Buffer.BlockCopy(byteArr, i, memory, (int)nextMemoryLocation, 1);
                 nextMemoryLocation += size;
             }
+        }
+
+        private bool EvaluateOperands()
+        {
+            // if OP [op1], *
+            if (currentExpr.LeftOp.EndsWith(']'))
+            {
+                // Direct memory manipulation isn't allowed.
+                if (currentExpr.RightOp.EndsWith(']'))
+                {
+                    return false;
+                }
+
+                // left operand handle
+                var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
+
+                if (asmLineAvailableRegisters.Match(leftOp).Success)
+                {
+                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
+
+                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                    // Read address value from memory.
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
+                    // Read value from address.
+                    memory.Read(address, (UInt64)size, out var output);
+
+                    currentExpr.LeftOpValue = output;
+                }
+                else
+                {
+                    if (labels.TryGetValue(leftOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read address value from memory.
+                        memory.Read((UInt64)index, (UInt64)size, out var address);
+                        // Read value from address.
+                        memory.Read(address, (UInt64)size, out var output);
+
+                        currentExpr.LeftOpValue = output;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                // right operand handle
+
+                // if operand is a register
+                if (asmLineAvailableRegisters.Match(currentExpr.RightOp).Success)
+                {
+                    CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
+
+                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
+                    currentExpr.RightOpValue = output;
+                }
+                else
+                {
+                    // if operand is a 'variable'
+                    if (labels.TryGetValue(currentExpr.RightOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        memory.Read((UInt64)index, (UInt64)size, out var output);
+                        currentExpr.RightOpValue = output;
+                    }
+                    // if operand is a numerical value
+                    else if (Evaluate(currentExpr.RightOp, out var output, out var stringOutput))
+                    {
+                        if (stringOutput == "")
+                        {
+                            currentExpr.RightOpValue = output;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            // if OP *, [op2]
+            else
+            {
+                if (currentExpr.RightOp.EndsWith(']'))
+                {
+                }
+                else
+                {
+                }
+            }
+        }
+
+        private bool Evaluate(string value, out UInt64 result, out string characters)
+        {
+            var errorMsg = "";
+            return Evaluate(value, out result, out characters, ref errorMsg);
         }
 
         private bool Evaluate(string value, out UInt64 result, out string characters, ref string errorMsg)
