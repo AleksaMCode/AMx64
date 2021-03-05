@@ -510,7 +510,7 @@ namespace AMx64
             // if OP [op1]
             if (currentExpr.LeftOp.EndsWith(']'))
             {
-                if(!currentExpr.ExplicitSize)
+                if (!currentExpr.ExplicitSize)
                 {
                     return false;
                 }
@@ -527,7 +527,7 @@ namespace AMx64
                     // Read address value from memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Write result value from address.
-                    memory.Write(address, (UInt64)size, /*GetResult()*/);
+                    memory.Write(address, (UInt64)size, GetUnaryOpResult());
                 }
                 else
                 {
@@ -539,7 +539,7 @@ namespace AMx64
                         // Read address value from memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Write result value from address.
-                        memory.Write(address, (UInt64)size, /*GetResult()*/);
+                        memory.Write(address, (UInt64)size, GetUnaryOpResult());
                     }
                     else
                     {
@@ -555,7 +555,7 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][info.Item2] =/* GetResult()*/;
+                    CPURegisters[info.Item1][info.Item2] = GetUnaryOpResult();
                 }
                 else
                 {
@@ -564,7 +564,7 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        memory.Write((UInt64)index, (UInt64)size, /*GetResult()*/);
+                        memory.Write((UInt64)index, (UInt64)size, GetUnaryOpResult());
                     }
                     else
                     {
@@ -658,7 +658,17 @@ namespace AMx64
             }
         }
 
-        public bool TryProcessData(List<string> tokens, ref string errorMsg)
+        private UInt64 GetUnaryOpResult()
+        {
+            switch (currentExpr.Operation)
+            {
+                // case Operations.BitNot
+                default:
+                    return ~currentExpr.LeftOpValue;
+            }
+        }
+
+            public bool TryProcessData(List<string> tokens, ref string errorMsg)
         {
             var values = tokens[3].Split(',');
             var size = (tokens[1].ToUpper()) switch
