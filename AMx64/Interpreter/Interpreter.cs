@@ -664,7 +664,7 @@ namespace AMx64
 
         private bool EvaluateOperands()
         {
-            // if OP [op1], *
+            // if OP [op1], op2
             if (currentExpr.LeftOp.EndsWith(']'))
             {
                 // Direct memory manipulation isn't allowed.
@@ -676,7 +676,8 @@ namespace AMx64
                 // left operand handle
                 var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
 
-                if (asmLineAvailableRegisters.Match(leftOp).Success)
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(leftOp.ToUpper()).Success)
                 {
                     CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
 
@@ -691,6 +692,7 @@ namespace AMx64
                 }
                 else
                 {
+                    // If operand is a 'variable'.
                     if (labels.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
@@ -710,8 +712,8 @@ namespace AMx64
 
                 // right operand handle
 
-                // if operand is a register
-                if (asmLineAvailableRegisters.Match(currentExpr.RightOp).Success)
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
                 {
                     CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
@@ -722,7 +724,7 @@ namespace AMx64
                 }
                 else
                 {
-                    // if operand is a 'variable'
+                    // If operand is a 'variable'.
                     if (labels.TryGetValue(currentExpr.RightOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
@@ -730,10 +732,91 @@ namespace AMx64
                         memory.Read((UInt64)index, (UInt64)size, out var output);
                         currentExpr.RightOpValue = output;
                     }
-                    // if operand is a numerical value
+                    // If operand is a numerical value.
                     else if (Evaluate(currentExpr.RightOp, out var output, out var stringOutput))
                     {
-                        if (stringOutput == "")
+                        currentExpr.RightOpValue = output;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                // if OP op1, [op2]
+                if (currentExpr.RightOp.EndsWith(']'))
+                {
+                    if (!currentExpr.ExplicitSize)
+                    {
+                        return false;
+                    }
+
+                    // right operand handle
+                    var rightOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
+
+                    // If operand is a register.
+                    if (asmLineAvailableRegisters.Match(rightOp.ToUpper()).Success)
+                    {
+                        CPURegisterMap.TryGetValue(rightOp.ToUpper(), out var info);
+
+                        var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                        // Read address value from memory.
+                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
+                        // Read value from address.
+                        memory.Read(address, (UInt64)size, out var output);
+
+                        currentExpr.RightOpValue = output;
+                    }
+                    else
+                    {
+                        // If operand is a 'variable'.
+                        if (labels.TryGetValue(rightOp, out var index))
+                        {
+                            var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                            // Read address value from memory.
+                            memory.Read((UInt64)index, (UInt64)size, out var address);
+                            // Read value from address.
+                            memory.Read(address, (UInt64)size, out var output);
+
+                            currentExpr.RightOpValue = output;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                // if OP op1, op2
+                else
+                {
+                    // right operand handle
+
+                    // If operand is a register.
+                    if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
+                    {
+                        CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
+
+                        var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
+                        currentExpr.RightOpValue = output;
+                    }
+                    else
+                    {
+                        // If operand is a 'variable'.
+                        if (labels.TryGetValue(currentExpr.RightOp, out var index))
+                        {
+                            var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                            memory.Read((UInt64)index, (UInt64)size, out var output);
+                            currentExpr.RightOpValue = output;
+                        }
+                        // If operand is a numerical value.
+                        else if (Evaluate(currentExpr.RightOp, out var output, out var stringOutput))
                         {
                             currentExpr.RightOpValue = output;
                         }
@@ -742,22 +825,43 @@ namespace AMx64
                             return false;
                         }
                     }
+                }
+
+                // left operand handle
+
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(currentExpr.LeftOp.ToUpper()).Success)
+                {
+                    CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
+
+                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
+                    currentExpr.LeftOpValue = output;
+                }
+                else
+                {
+                    // If operand is a 'variable'.
+                    if (labels.TryGetValue(currentExpr.LeftOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        memory.Read((UInt64)index, (UInt64)size, out var output);
+                        currentExpr.LeftOpValue = output;
+                    }
+                    // If operand is a numerical value.
+                    else if (Evaluate(currentExpr.LeftOp, out var output, out var stringOutput))
+                    {
+                        currentExpr.LeftOpValue = output;
+                    }
                     else
                     {
                         return false;
                     }
                 }
             }
-            // if OP *, [op2]
-            else
-            {
-                if (currentExpr.RightOp.EndsWith(']'))
-                {
-                }
-                else
-                {
-                }
-            }
+
+            return true;
         }
 
         private bool Evaluate(string value, out UInt64 result, out string characters)
