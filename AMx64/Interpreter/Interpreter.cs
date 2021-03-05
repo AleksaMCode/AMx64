@@ -510,45 +510,6 @@ namespace AMx64
 
         private bool TryProcessBinaryOp()
         {
-            if (currentExpr.Operation == Operations.Add)
-            {
-                return ProcessArithmeticOp('+');
-            }
-            else if (currentExpr.Operation == Operations.Sub)
-            {
-                return ProcessArithmeticOp('-');
-            }
-            else if (currentExpr.Operation == Operations.Mov)
-            {
-                return ProcessMov();
-            }
-            else if (currentExpr.Operation == Operations.BitAnd)
-            {
-                return ProcessAnd();
-            }
-            else/* if (op == Operation.BitOr)*/
-            {
-                return ProcessOr();
-            }
-        }
-
-        private bool ProcessOr()
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool ProcessAnd()
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool ProcessMov()
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool ProcessArithmeticOp(char operation)
-        {
             // if OP [op1], op2
             if (currentExpr.LeftOp.EndsWith(']'))
             {
@@ -564,7 +525,7 @@ namespace AMx64
                     // Read address value from memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Write result value from address.
-                    memory.Write(address, (UInt64)size, GetResult(operation));
+                    memory.Write(address, (UInt64)size, GetResult());
                 }
                 else
                 {
@@ -576,7 +537,7 @@ namespace AMx64
                         // Read address value from memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Write result value from address.
-                        memory.Write(address, (UInt64)size, GetResult(operation));
+                        memory.Write(address, (UInt64)size, GetResult());
                     }
                     else
                     {
@@ -592,7 +553,7 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][info.Item2] = GetResult(operation);
+                    CPURegisters[info.Item1][info.Item2] = GetResult();
                 }
                 else
                 {
@@ -601,7 +562,7 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        memory.Write((UInt64)index, (UInt64)size, GetResult(operation));
+                        memory.Write((UInt64)index, (UInt64)size, GetResult());
                     }
                     else
                     {
@@ -613,15 +574,21 @@ namespace AMx64
             return true;
         }
 
-        private UInt64 GetResult(char operation)
+        private UInt64 GetResult()
         {
-            switch (operation)
+            switch (currentExpr.Operation)
             {
-                case '+':
+                case Operations.Add:
                     return currentExpr.LeftOpValue + currentExpr.RightOpValue;
-                //case '-':
-                default:
+                case Operations.Sub:
                     return currentExpr.LeftOpValue - currentExpr.RightOpValue;
+                case Operations.Mov:
+                    return currentExpr.RightOpValue;
+                case Operations.BitAnd:
+                    return currentExpr.LeftOpValue & currentExpr.RightOpValue;
+                //case Operations.BitOr:
+                default:
+                    return currentExpr.LeftOpValue | currentExpr.RightOpValue;
             }
         }
 
