@@ -63,7 +63,6 @@ Some examples (all producing exactly the same code):
         mov     ax,0200d        ; explicitly decimal 
         mov     ax,0d200        ; also decimal 
         mov     ax,0c8h         ; hex 
-        mov     ax,$0c8         ; hex again: the 0 is required 
         mov     ax,0xc8         ; hex yet again 
         mov     ax,0hc8         ; still hex 
         mov     ax,310q         ; octal 
@@ -346,9 +345,9 @@ JL | Jump Less | OF, SF | SF != 0
 ## Debug - AMDB
 
 ## To-Do List
-- [ ] Add Direct memory addressing.
+- [x] Add Direct memory addressing.
 - [ ] Add Direct offset addressing.
-- [ ] Add Register indirect addressing.
+- [x] Add Register indirect addressing.
 - [ ] Implement Stack memory structure.
-- [ ] Implement 64-bit addressable memory.
-- [ ] Implement assembler sections (.data, .bss, .text).
+- [x] Implement 64-bit addressable memory.
+- [x] Implement assembler sections (.data, .bss, .text).
