@@ -911,11 +911,6 @@ namespace AMx64
                         memory.Read((UInt64)index, (UInt64)size, out var output);
                         currentExpr.LeftOpValue = output;
                     }
-                    // If operand is a numerical value.
-                    else if (Evaluate(currentExpr.LeftOp, out var output, out var stringOutput))
-                    {
-                        currentExpr.LeftOpValue = output;
-                    }
                     else
                     {
                         return false;
