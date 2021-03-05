@@ -506,6 +506,72 @@ namespace AMx64
         private bool TryProcessUnaryOp()
         {
             throw new NotImplementedException();
+
+            // if OP [op1]
+            if (currentExpr.LeftOp.EndsWith(']'))
+            {
+                if(!currentExpr.ExplicitSize)
+                {
+                    return false;
+                }
+
+                var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
+
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(leftOp.ToUpper()).Success)
+                {
+                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
+
+                    var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                    // Read address value from memory.
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
+                    // Write result value from address.
+                    memory.Write(address, (UInt64)size, /*GetResult()*/);
+                }
+                else
+                {
+                    // If operand is a 'variable'.
+                    if (variables.TryGetValue(leftOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read address value from memory.
+                        memory.Read((UInt64)index, (UInt64)size, out var address);
+                        // Write result value from address.
+                        memory.Write(address, (UInt64)size, /*GetResult()*/);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            // if OP op1
+            else
+            {
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(currentExpr.LeftOp.ToUpper()).Success)
+                {
+                    CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
+
+                    CPURegisters[info.Item1][info.Item2] =/* GetResult()*/;
+                }
+                else
+                {
+                    // If operand is a 'variable'.
+                    if (variables.TryGetValue(currentExpr.LeftOp, out var index) && currentExpr.ExplicitSize)
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        memory.Write((UInt64)index, (UInt64)size, /*GetResult()*/);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         private bool TryProcessBinaryOp()
