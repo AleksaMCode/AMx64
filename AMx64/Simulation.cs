@@ -90,6 +90,7 @@ namespace AMx64
                 else
                 {
                     InterpretAsmFile();
+                    return true;
                 }
             }
             // otherwise terminate execution

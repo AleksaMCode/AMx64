@@ -31,7 +31,7 @@ namespace AMx64
             }
 
             // checking each character
-            for (int i = 0; i < str.Length; ++i)
+            for (var i = 0; i < str.Length; ++i)
             {
                 value *= radix;
 

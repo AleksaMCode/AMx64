@@ -39,7 +39,7 @@ namespace AMx64
             /// <summary>
             /// Maps long options to parsing handler.
             /// </summary>
-            static readonly Dictionary<string, CmlnParserCmlnParserHandler> optionsLongNames = new Dictionary<string, CmlnParserCmlnParserHandler>()
+            private static readonly Dictionary<string, CmlnParserCmlnParserHandler> optionsLongNames = new Dictionary<string, CmlnParserCmlnParserHandler>()
             {
                 ["--help"] = Help,
                 ["--debug"] = Debug
@@ -48,7 +48,7 @@ namespace AMx64
             /// <summary>
             /// Maps short options to parsing handler.
             /// </summary>
-            static readonly Dictionary<char, CmlnParserCmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserCmlnParserHandler>()
+            private static readonly Dictionary<char, CmlnParserCmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserCmlnParserHandler>()
             {
                 ['h'] = Help,
                 ['d'] = Debug

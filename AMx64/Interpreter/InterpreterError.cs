@@ -13,9 +13,9 @@ namespace AMx64
         OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
     }
 
-    public Dictionary<InterpreterErrors, string> InterpreterErrors = new Dictionary<InterpreterErrors, string>()
-    {
-    };
+    //public Dictionary<InterpreterErrors, string> InterpreterErrors = new Dictionary<InterpreterErrors, string>()
+    //{
+    //};
 
     public class InterpreterError
     {

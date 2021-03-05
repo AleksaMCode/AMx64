@@ -2,9 +2,9 @@ using System;
 
 namespace AMx64
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var simulator = new AMX64();
             try

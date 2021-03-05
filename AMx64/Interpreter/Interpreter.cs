@@ -40,7 +40,7 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
-        public string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+        public static string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
         public List<string> AsmCode;
 
@@ -416,8 +416,6 @@ namespace AMx64
 
                 // Set operands value.
                 EvaluateOperands();
-
-                var currentAsmLine = currentLine.CurrentAsmLineValue.ToUpper();
 
                 switch (currentExpr.Operation)
                 {
@@ -901,7 +899,7 @@ namespace AMx64
                         currentExpr.RightOpValue = output;
                     }
                     // If operand is a numerical value.
-                    else if (Evaluate(currentExpr.RightOp, out var output, out var stringOutput))
+                    else if (Evaluate(currentExpr.RightOp, out var output, out var _))
                     {
                         currentExpr.RightOpValue = output;
                     }
@@ -1146,77 +1144,6 @@ namespace AMx64
                 return false;
             }
         }
-
-        /// <summary>
-        /// Interprets current asm line.
-        /// </summary>
-        private void InterpretAsmLine()
-        {
-            currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-
-            if (currentLine.CurrentAsmLineValue.StartsWith(";") || currentLine.CurrentAsmLineValue == "")
-            {
-                return;
-            }
-
-            // Remove comment part of the asm line.
-            if (currentLine.CurrentAsmLineValue.Contains(";"))
-            {
-                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1);
-                currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-            }
-
-            // Remove label from asm line.
-            if (currentLine.CurrentAsmLineValue.Contains(":"))
-            {
-                var match = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
-
-                if (match.Success)
-                {
-                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1);
-                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Trim();
-                }
-            }
-
-            // Create tokens from current line.
-            var lineToken = currentLine.CurrentAsmLineValue.Split(',');
-            List<string> asmTokens;
-
-            // If there is no ',' symbol in asm line.
-            if (lineToken.Length == 1)
-            {
-                lineToken = lineToken[0].Split(' ');
-
-                lineToken[0] = lineToken[0].Trim().ToUpper();       // operation
-                lineToken[1] = lineToken[1].Trim();                 // operand
-
-                asmTokens = new List<string>(lineToken);
-            }
-            else
-            {
-                lineToken[1] = lineToken[1].Trim();                 // 2nd operand
-
-                // If second operand is register, then convert token to uppercase.
-                if (asmLineAvailableRegisters.Match(lineToken[1].ToUpper()).Success)
-                {
-                    lineToken[1] = lineToken[1].ToUpper();
-                }
-
-                var leftPart = lineToken[0].Trim().Split(' ');
-
-                leftPart[0] = leftPart[0].Trim().ToUpper();         // operation
-                leftPart[1] = leftPart[1].Trim();                   // 1st operand
-
-                asmTokens = new List<string>(leftPart)
-                {
-                    lineToken[1]
-                };
-            }
-
-            // execute operation
-        }
-
-
 
         public bool IsSymbolReserverd(string symbol)
         {

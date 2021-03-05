@@ -31,6 +31,7 @@ namespace AMx64
             //CheckAsmFileForErrors();
 
             debugger = new DebuggerInfo();
+            return true;
         }
 
         public bool InterpretDebugCommandLine()
