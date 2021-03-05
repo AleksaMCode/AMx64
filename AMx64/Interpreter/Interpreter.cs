@@ -591,7 +591,7 @@ namespace AMx64
                     // Read address value from memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Write result value from address.
-                    memory.Write(address, (UInt64)size, GetResult());
+                    memory.Write(address, (UInt64)size, GetBinaryOpResult());
                 }
                 else
                 {
@@ -603,7 +603,7 @@ namespace AMx64
                         // Read address value from memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Write result value from address.
-                        memory.Write(address, (UInt64)size, GetResult());
+                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
                     }
                     else
                     {
@@ -619,7 +619,7 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][info.Item2] = GetResult();
+                    CPURegisters[info.Item1][info.Item2] = GetBinaryOpResult();
                 }
                 else
                 {
@@ -628,7 +628,7 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        memory.Write((UInt64)index, (UInt64)size, GetResult());
+                        memory.Write((UInt64)index, (UInt64)size, GetBinaryOpResult());
                     }
                     else
                     {
@@ -640,7 +640,7 @@ namespace AMx64
             return true;
         }
 
-        private UInt64 GetResult()
+        private UInt64 GetBinaryOpResult()
         {
             switch (currentExpr.Operation)
             {
