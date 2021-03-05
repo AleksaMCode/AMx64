@@ -51,7 +51,6 @@
     <Compile Include="Debugger\DebuggerInfo.cs" />
     <Compile Include="Interpreter\Expression.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
-    <Compile Include="Interpreter\InterpreterError.cs" />
     <Compile Include="Memory\CPURegister.cs" />
     <Compile Include="Memory\Registers.cs" />
     <Compile Include="Program.cs" />

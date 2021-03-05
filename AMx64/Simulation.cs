@@ -17,33 +17,8 @@ namespace AMx64
             None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalError,
             NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition,
             EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem, InvalidAsmLine, JmpOccurred
-        }
-
-        public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()
-        {
-            {ErrorCode.None,""},
-            {ErrorCode.OutOfBounds, "Out of Bounds"},
-            {ErrorCode.UnhandledSyscall, "Unhandled Syscall"},
-            {ErrorCode.UndefinedBehavior, "Undefined Behavior"},
-            {ErrorCode.ArithmeticError, "Arithmetic Error"},
-            {ErrorCode.Abort, "Abort"},
-            {ErrorCode.AccessViolation, "Access Violation"},
-            {ErrorCode.NotImplemented, "Not Implemented"},
-            {ErrorCode.StackOverflow, "Stack Overflow"},
-            {ErrorCode.UnknownOp, "Unknown Operation"},
-            {ErrorCode.Comment, "Comment"},
-            {ErrorCode.InvalidLabel, "Invalid Label"},
-            {ErrorCode.EmptyLine, "Empty Line"}
-        };
-
-        /// <summary>
-        /// Gets Error string from Error code.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public string GetErrorString(this ErrorCode error)
-        {
-            return ErrorCodeMap[error];
+            //     ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
+            //OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
         }
 
         protected Random randomValue = new Random();
