@@ -59,6 +59,8 @@ namespace AMx64
                     {
                         return false;
                     }
+
+                    return CheckLeftOperand() && CheckRightOperand();
                 }
                 else if (asmLineJccRegex.Match(asmLineUpper).Success)
                 {
@@ -66,7 +68,7 @@ namespace AMx64
                     ParseOperation(tokens[0].TrimEnd());
                     LeftOp = tokens[1].TrimStart();
 
-                    return true;
+                    return CheckLeftOperand();
                 }
                 else if (asmLineNotOperRegex.Match(asmLineUpper).Success)
                 {
@@ -82,21 +84,23 @@ namespace AMx64
                     {
                         LeftOp = tokens[2];
                     }
-                }
-                else if ((LeftOp.StartsWith('[') && !LeftOp.EndsWith(']')) || (!LeftOp.StartsWith('[') && LeftOp.EndsWith(']')))
-                {
-                    return false;
-                }
-                else if (!string.IsNullOrEmpty(RightOp) && ((RightOp.StartsWith('[') && !RightOp.EndsWith(']')) || (!RightOp.StartsWith('[') && RightOp.EndsWith(']'))))
-                {
-                    return false;
+
+                    return CheckLeftOperand();
                 }
                 else
                 {
                     return false;
                 }
+            }
 
-                return true;
+            private bool CheckRightOperand()
+            {
+                return string.IsNullOrEmpty(RightOp) || (!RightOp.StartsWith('[') || RightOp.EndsWith(']')) && (RightOp.StartsWith('[') || !RightOp.EndsWith(']'));
+            }
+
+            private bool CheckLeftOperand()
+            {
+                return (!LeftOp.StartsWith('[') || LeftOp.EndsWith(']')) && (LeftOp.StartsWith('[') || !LeftOp.EndsWith(']'));
             }
 
             private void ParseOperation(string operation)
