@@ -505,8 +505,6 @@ namespace AMx64
 
         private bool TryProcessUnaryOp()
         {
-            throw new NotImplementedException();
-
             // if OP [op1]
             if (currentExpr.LeftOp.EndsWith(']'))
             {
@@ -572,6 +570,8 @@ namespace AMx64
                     }
                 }
             }
+
+            return true;
         }
 
         private bool TryProcessBinaryOp()
