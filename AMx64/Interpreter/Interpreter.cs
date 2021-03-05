@@ -64,7 +64,7 @@ namespace AMx64
         /// <summary>
         /// Used to store asm variables from .data and .bss sections. Includes memory address name, start and end index.
         /// </summary>
-        private Dictionary<string, Tuple<long, long>> variables = new Dictionary<string, Tuple<long, long>>();
+        private Dictionary<string, long> variables = new Dictionary<string, long>();
 
 
         /// <summary>
@@ -512,11 +512,11 @@ namespace AMx64
         {
             if (currentExpr.Operation == Operations.Add)
             {
-                return ProcessAdd();
+                return ProcessArithmeticOp('+');
             }
             else if (currentExpr.Operation == Operations.Sub)
             {
-                return ProcessSub();
+                return ProcessArithmeticOp('-');
             }
             else if (currentExpr.Operation == Operations.Mov)
             {
@@ -547,14 +547,9 @@ namespace AMx64
             throw new NotImplementedException();
         }
 
-        private bool ProcessSub()
+        private bool ProcessArithmeticOp(char operation)
         {
-            throw new NotImplementedException();
-        }
-
-        private bool ProcessAdd()
-        {
-            // if ADD [op1], op2
+            // if OP [op1], op2
             if (currentExpr.LeftOp.EndsWith(']'))
             {
                 var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
@@ -569,19 +564,19 @@ namespace AMx64
                     // Read address value from memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Write result value from address.
-                    memory.Write(address, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                    memory.Write(address, (UInt64)size, GetResult(operation));
                 }
                 else
                 {
                     // If operand is a 'variable'.
-                    if (labels.TryGetValue(leftOp, out var index))
+                    if (variables.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
                         // Read address value from memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Write result value from address.
-                        memory.Write(address, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                        memory.Write(address, (UInt64)size, GetResult(operation));
                     }
                     else
                     {
@@ -589,6 +584,7 @@ namespace AMx64
                     }
                 }
             }
+            // if OP op1, *
             else
             {
                 // If operand is a register.
@@ -596,18 +592,16 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
-
-                    memory.Write(CPURegisters[info.Item1][info.Item2], (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                    CPURegisters[info.Item1][info.Item2] = GetResult(operation);
                 }
                 else
                 {
                     // If operand is a 'variable'.
-                    if (labels.TryGetValue(currentExpr.LeftOp, out var index))
+                    if (variables.TryGetValue(currentExpr.LeftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        memory.Write((UInt64)index, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                        memory.Write((UInt64)index, (UInt64)size, GetResult(operation));
                     }
                     else
                     {
@@ -617,6 +611,18 @@ namespace AMx64
             }
 
             return true;
+        }
+
+        private UInt64 GetResult(char operation)
+        {
+            switch (operation)
+            {
+                case '+':
+                    return currentExpr.LeftOpValue + currentExpr.RightOpValue;
+                //case '-':
+                default:
+                    return currentExpr.LeftOpValue - currentExpr.RightOpValue;
+            }
         }
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
@@ -640,7 +646,7 @@ namespace AMx64
                     if (Evaluate(value, out var result, out var _, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        variables.Add(tokens[0], new Tuple<long, long>(startLocation, nextMemoryLocation - 1));
+                        variables.Add(tokens[0], startLocation);
 
                         return true;
                     }
@@ -654,7 +660,7 @@ namespace AMx64
                     if (Evaluate(value, out var _, out var result, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        variables.Add(tokens[0], new Tuple<long, long>(startLocation, nextMemoryLocation - 1));
+                        variables.Add(tokens[0], startLocation);
 
                         return true;
                     }
@@ -682,7 +688,8 @@ namespace AMx64
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
-                variables.Add(tokens[0], new Tuple<long, long>(nextMemoryLocation, (nextMemoryLocation += amount * size) - 1));
+                variables.Add(tokens[0], nextMemoryLocation);
+                nextMemoryLocation += amount * size;
                 return true;
             }
             else
@@ -755,7 +762,7 @@ namespace AMx64
                 else
                 {
                     // If operand is a 'variable'.
-                    if (labels.TryGetValue(leftOp, out var index))
+                    if (variables.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
@@ -779,15 +786,12 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
-
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
-                    currentExpr.RightOpValue = output;
+                    currentExpr.RightOpValue = CPURegisters[info.Item1][info.Item2];
                 }
                 else
                 {
                     // If operand is a 'variable'.
-                    if (labels.TryGetValue(currentExpr.RightOp, out var index))
+                    if (variables.TryGetValue(currentExpr.RightOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
@@ -835,7 +839,7 @@ namespace AMx64
                     else
                     {
                         // If operand is a 'variable'.
-                        if (labels.TryGetValue(rightOp, out var index))
+                        if (variables.TryGetValue(rightOp, out var index))
                         {
                             var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
@@ -862,15 +866,12 @@ namespace AMx64
                     {
                         CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                        var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
-
-                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
-                        currentExpr.RightOpValue = output;
+                        currentExpr.RightOpValue = CPURegisters[info.Item1][info.Item2];
                     }
                     else
                     {
                         // If operand is a 'variable'.
-                        if (labels.TryGetValue(currentExpr.RightOp, out var index))
+                        if (variables.TryGetValue(currentExpr.RightOp, out var index))
                         {
                             var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
@@ -878,7 +879,7 @@ namespace AMx64
                             currentExpr.RightOpValue = output;
                         }
                         // If operand is a numerical value.
-                        else if (Evaluate(currentExpr.RightOp, out var output, out var stringOutput))
+                        else if (Evaluate(currentExpr.RightOp, out var output, out var _))
                         {
                             currentExpr.RightOpValue = output;
                         }
@@ -896,15 +897,12 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
-
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
-                    currentExpr.LeftOpValue = output;
+                    currentExpr.LeftOpValue = CPURegisters[info.Item1][info.Item2];
                 }
                 else
                 {
                     // If operand is a 'variable'.
-                    if (labels.TryGetValue(currentExpr.LeftOp, out var index))
+                    if (variables.TryGetValue(currentExpr.LeftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
