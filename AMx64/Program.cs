@@ -6,7 +6,7 @@ namespace AMx64
     {
         static void Main(string[] args)
         {
-            AMX64 simulator = new AMX64();
+            var simulator = new AMX64();
             try
             {
                 simulator.Initialize(args);

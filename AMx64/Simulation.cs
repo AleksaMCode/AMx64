@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using static AMx64.Utility;
 
@@ -40,29 +41,12 @@ namespace AMx64
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static string GetErrorString(this ErrorCode error)
+        public string GetErrorString(this ErrorCode error)
         {
             return ErrorCodeMap[error];
         }
 
-        private const string HelpMessage =
-                                            @"Usage: amx64 [OPTION].... [ARG]....
-                                            Interpret or debug CSX64 asm files.
-
-                                              -h, --help                prints this help page
-
-                                              -d, --debug               debuggs AMX64 asm file
-                                              otherwise                 interprets a AMX64 asm file with provided args
-                                            ";
-
         protected Random randomValue = new Random();
-
-        public ErrorCode Error { get; protected set; }
-
-        public AMX64()
-        {
-            Error = ErrorCode.None;
-        }
 
         /// <summary>
         /// Initialize the simulation for execution.
@@ -70,41 +54,43 @@ namespace AMx64
         /// <param name="args"></param>
         public bool Initialize(string[] args)
         {
-            // initialize cpu registers
-            for (int i = 0; i < CPURegisters.Length; ++i)
+            // Initialize cpu registers.
+            for (var i = 0; i < CPURegisters.Length; ++i)
             {
                 CPURegisters[i].x64 = randomValue.NextUInt64();
             }
 
-            // Implement and create User memory x64 space!
+            // Initialize x64 user memory.
+            for (var i = 0; i < int.MaxValue; ++i)
+            {
+                memory[i] = randomValue.NextUInt8();
+            }
 
-            Error = ErrorCode.None;
+            // Set asm file full path.
+            if (File.Exists(args[1]))
+            {
+                if (args[1].Contains('\\'))
+                {
+                    AsmFilePath = args[1];
+                }
+                else
+                {
+                    AsmFilePath += "\\" + args[1];
+                }
+            }
 
             // if we have arguments simulation can start
-            if (args != null || args.Length != 2)
+            if (args != null)
             {
-                // Start simulation function call
-                var asmFile = new StreamReader(args[1]); // e.q. amx64.exe mycode.asm
-                while ((currentLine = asmFile.ReadLine()) != null)
+                if (args.Length != 2)
                 {
-                    currentLineNumber++;
-                    if (String.IsNullOrEmpty(currentLine))
-                    {
-                        continue;
-                    }
-
-                    var interpreterResult = Interpret();
-
-                    if (interpreterResult == InterpreterErrors.Comment)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-
-                    }
+                    var cml = new CmlnParser();
+                    return cml.Parse(args.Where((source, index) => index == 0 || index == 1).ToArray());
                 }
-                return true;
+                else
+                {
+                    InterpretAsmFile();
+                }
             }
             // otherwise terminate execution
             else
@@ -112,21 +98,5 @@ namespace AMx64
                 return false;
             }
         }
-
-        static bool Help(CmlnParser parser)
-        {
-            Console.WriteLine(HelpMessage);
-
-            return false;
-        }
-
-        static bool Debug(CmlnParser parser)
-        {
-            parser.Action = CmlnAction.Debug;
-
-            return true;
-        }
-
-        private delegate bool CmlnParserCmlnParserHandler(CmlnParser parser);
     }
 }

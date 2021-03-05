@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AMx64
 {
@@ -12,29 +10,11 @@ namespace AMx64
         /// <summary>
         /// Represents a desired action.
         /// </summary>
-        private enum CmlnAction
+        public enum CmlnAction
         {
             Execute,    // takes 1 amx64 assembly file -- executes as a console application
             Debug       // takes 1 amx64 assebly file + args -- executes as a console application in debug mode
         }
-
-        /// <summary>
-        /// Maps long options to parsing handler.
-        /// </summary>
-        static readonly Dictionary<string, CmlnParserHandler> optionsLongNames = new Dictionary<string, CmlnParserHandler>()
-        {
-            ["--help"] = Help,
-            ["--debug"] = Debug
-        };
-
-        /// <summary>
-        /// Maps short options to parsing handler.
-        /// </summary>
-        static readonly Dictionary<char, CmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserHandler>()
-        {
-            ['h'] = Help,
-            ['d'] = Debug
-        };
 
         /// <summary>
         /// Parses command line arguments.
@@ -46,26 +26,49 @@ namespace AMx64
             /// </summary>
             public CmlnAction cmlnAction = CmlnAction.Execute;
 
+            private const string HelpMessage =
+                                               @"Usage: amx64 [OPTION].... [ARG]....
+                                            Interpret or debug CSX64 asm files.
+
+                                              -h, --help                prints this help page
+
+                                              -d, --debug               debuggs AMX64 asm file
+                                              otherwise                 interprets a AMX64 asm file with provided args
+                                            ";
+
             /// <summary>
-            /// Root directory.
+            /// Maps long options to parsing handler.
             /// </summary>
-            public string RootDir = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+            static readonly Dictionary<string, CmlnParserCmlnParserHandler> optionsLongNames = new Dictionary<string, CmlnParserCmlnParserHandler>()
+            {
+                ["--help"] = Help,
+                ["--debug"] = Debug
+            };
+
+            /// <summary>
+            /// Maps short options to parsing handler.
+            /// </summary>
+            static readonly Dictionary<char, CmlnParserCmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserCmlnParserHandler>()
+            {
+                ['h'] = Help,
+                ['d'] = Debug
+            };
 
             public string[] args;
 
-            public bool Parse(string dir, string[] args)
+            public bool Parse(string[] args)
             {
-                if (Directory.Exists(Path.GetDirectoryName(dir))
-                    {
-                    RootDir = dir;
-                }
-
                 // Set up args for parsing.
                 this.args = args;
 
+                if (args == null || args.Length == 0)
+                {
+                    return true;
+                }
+
                 for (var i = 0; i < args.Length; ++i)
                 {
-                    if (optionsLongNames.TryGetValue(args[i], out CmlnParserHandler handler))
+                    if (optionsLongNames.TryGetValue(args[i], out var handler))
                     {
                         if (!handler(this))
                         {
@@ -96,6 +99,20 @@ namespace AMx64
                 }
                 return true;
             }
+
+            public static bool Help(CmlnParser parser)
+            {
+                Console.WriteLine(HelpMessage);
+                return false;
+            }
+
+            public static bool Debug(CmlnParser parser)
+            {
+                parser.cmlnAction = CmlnAction.Debug;
+                return true;
+            }
+
+            private delegate bool CmlnParserCmlnParserHandler(CmlnParser parser);
         }
     }
 }

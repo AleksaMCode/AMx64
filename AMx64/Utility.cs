@@ -232,6 +232,11 @@ namespace AMx64
             return ((UInt64)(UInt32)rndValue.Next() << 32) | (UInt32)rndValue.Next();
         }
 
+        public static byte NextUInt8(this Random rndValue)
+        {
+            return (byte)(rndValue.Next() << 4 | (byte)rndValue.Next());
+        }
+
         /// <summary>
         /// Gets a random boolean.
         /// </summary>
