@@ -15,7 +15,7 @@ namespace AMx64
         {
             None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalError,
             NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition,
-            EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem, InvalidAsmLine
+            EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem, InvalidAsmLine, JmpOccurred
         }
 
         public static readonly Dictionary<ErrorCode, string> ErrorCodeMap = new Dictionary<ErrorCode, string>()

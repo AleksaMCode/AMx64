@@ -321,6 +321,13 @@ namespace AMx64
                 // Check for errors in asm line.
                 var interpretResult = InterpretAsmLine(out var errorMsg);
 
+                // If Jcc occurred.
+                if (interpretResult == ErrorCode.JmpOccurred)
+                {
+                    lineNumber = currentLine.CurrentAsmLineNumber - 1;
+                    continue;
+                }
+
                 // If a asm line contains only a comment, is empty or has no errors, skip it.
                 if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
                 {
@@ -431,7 +438,7 @@ namespace AMx64
                     case Operations.Jl:
                         return labels.ContainsKey(currentExpr.LeftOp)
                             ? ErrorCode.InvalidEffectiveAddressesName
-                            : TryProcessJcc() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                            : TryProcessJcc() ? ErrorCode.JmpOccurred : ErrorCode.None;
                 }
             }
             // .data section
@@ -500,7 +507,59 @@ namespace AMx64
 
         private bool TryProcessJcc()
         {
-            throw new NotImplementedException();
+            switch (currentExpr.Operation)
+            {
+                case Operations.Jmp:
+                    ProcessJcc();
+                    return true;
+                case Operations.Je:
+                    if (ZF)
+                    {
+                        ProcessJcc();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case Operations.Jne:
+                    if (!ZF)
+                    {
+                        ProcessJcc();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case Operations.Jge:
+                    if (!SF)
+                    {
+                        ProcessJcc();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                //case Operations.Jl:
+                default:
+                    if (SF)
+                    {
+                        ProcessJcc();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+        }
+
+        private void ProcessJcc()
+        {
+            labels.TryGetValue(currentExpr.LeftOp, out var lineNumb);
+            currentLine.CurrentAsmLineNumber = lineNumb;
         }
 
         private bool TryProcessUnaryOp()
@@ -668,7 +727,7 @@ namespace AMx64
             }
         }
 
-            public bool TryProcessData(List<string> tokens, ref string errorMsg)
+        public bool TryProcessData(List<string> tokens, ref string errorMsg)
         {
             var values = tokens[3].Split(',');
             var size = (tokens[1].ToUpper()) switch
