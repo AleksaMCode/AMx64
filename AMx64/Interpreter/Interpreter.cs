@@ -554,7 +554,69 @@ namespace AMx64
 
         private bool ProcessAdd()
         {
-            throw new NotImplementedException();
+            // if ADD [op1], op2
+            if (currentExpr.LeftOp.EndsWith(']'))
+            {
+                var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
+
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(leftOp.ToUpper()).Success)
+                {
+                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
+
+                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                    // Read address value from memory.
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
+                    // Write result value from address.
+                    memory.Write(address, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                }
+                else
+                {
+                    // If operand is a 'variable'.
+                    if (labels.TryGetValue(leftOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read address value from memory.
+                        memory.Read((UInt64)index, (UInt64)size, out var address);
+                        // Write result value from address.
+                        memory.Write(address, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                // If operand is a register.
+                if (asmLineAvailableRegisters.Match(currentExpr.LeftOp.ToUpper()).Success)
+                {
+                    CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
+
+                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
+
+                    memory.Write(CPURegisters[info.Item1][info.Item2], (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                }
+                else
+                {
+                    // If operand is a 'variable'.
+                    if (labels.TryGetValue(currentExpr.LeftOp, out var index))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        memory.Write((UInt64)index, (UInt64)size, currentExpr.LeftOpValue + currentExpr.RightOpValue);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
