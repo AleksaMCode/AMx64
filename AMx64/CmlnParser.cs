@@ -94,6 +94,10 @@ namespace AMx64
                             }
                         }
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -101,7 +105,7 @@ namespace AMx64
             public static bool Help(CmlnParser parser)
             {
                 Console.WriteLine(HelpMessage);
-                return false;
+                return true;
             }
 
             public static bool Debug(CmlnParser parser)
