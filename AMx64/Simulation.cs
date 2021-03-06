@@ -62,9 +62,9 @@ namespace AMx64
                 if (args.Length != 2)
                 {
                     var cml = new CmlnParser();
-                    if(cml.Parse(args.Where((source, index) => index > 1).ToArray()))
+                    if (cml.Parse(args.Where((source, index) => index > 1).ToArray()))
                     {
-                        if(Debug())
+                        if (args[2].StartsWith("--d") && Debug())
                         {
                             InterpretAsmFile();
                             return true;

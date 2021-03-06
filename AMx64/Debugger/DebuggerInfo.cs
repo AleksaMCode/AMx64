@@ -17,18 +17,18 @@ namespace AMx64
             private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
             public readonly string DebuggerErrorMsg = "Failed to evaluate symbol(s) \"{0}\"";
             public readonly string HelpDebugMessage =
-                                                    @"  Usage: (adb) [OPTION]... [ARG]...
-                                                        List of classes of commands:
+@"  Usage: (adb) [OPTION]... [ARG]...
+List of classes of commands:
 
-                                                        h, help       -- Prints this help page
-                                                        r, run        -- Starts program debugging
-                                                        n, next       -- Interprets current line and stops a program at the next line
-                                                        c, continue   -- Continues program debugging from a breakpoint
-                                                        b, breakpoint -- Making program stop at certain points
-                                                        d, delete     -- Removes a breakpoint
-                                                        s, show       -- Show current memory stats.
-                                                        q, quit       -- Quits debugging
-                                                     ";
+    h, help       -- Prints this help page
+    r, run        -- Starts program debugging
+    n, next       -- Interprets current line and stops a program at the next line
+    c, continue   -- Continues program debugging from a breakpoint
+    b, breakpoint -- Making program stop at certain points
+    d, delete     -- Removes a breakpoint
+    s, show       -- Show current memory stats.
+    q, quit       -- Quits debugging
+";
 
 
             public SortedSet<int> Breakpoints = new SortedSet<int>();
