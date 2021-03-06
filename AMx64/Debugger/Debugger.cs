@@ -109,7 +109,7 @@ namespace AMx64
                 }
                 else if (command.Equals("show") || command.Equals("s"))
                 {
-                    getCPUDebugStats();
+                    GetCPUDebugStats();
                 }
                 else if (command.Equals("quit") || command.Equals("q"))
                 {
