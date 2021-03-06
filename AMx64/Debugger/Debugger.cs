@@ -72,7 +72,14 @@ namespace AMx64
 
                     if (tokens.Length == 2 && tokens[1] == "all")
                     {
-                        debugger.Breakpoints.Clear();
+                        if (debugger.Breakpoints.Count != 0)
+                        {
+                            debugger.Breakpoints.Clear();
+                        }
+                        else
+                        {
+                            Console.WriteLine("No breakpoint has been set.");
+                        }
                     }
 
                     debugger.RemoveBreakpoints(tokens);
@@ -100,7 +107,7 @@ namespace AMx64
                         return true;
                     }
                 }
-                else if (command.Equals("next") || command.Equals("n"))
+                else if (command.Equals("show") || command.Equals("s"))
                 {
                     getCPUDebugStats();
                 }
