@@ -66,7 +66,7 @@ namespace AMx64
                         Console.WriteLine("Interpreter is already running.");
                     }
                 }
-                else if (command.StartsWith("delete") || command.StartsWith("d"))
+                else if (command.StartsWith("delete ") || command.StartsWith("d "))
                 {
                     var tokens = command.Split(' ');
 
