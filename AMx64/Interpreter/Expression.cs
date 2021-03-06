@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using static AMx64.Utility;
 
 namespace AMx64
 {
@@ -55,7 +50,8 @@ namespace AMx64
                     LeftOp = tokens[0].Trim();
                     RightOp = tokens[1].Trim();
 
-                    if (LeftOp == RightOp)
+                    // If e.q. MOV RAX, RAX or first operand is smaller in size than the second operand.
+                    if (LeftOp == RightOp || (LeftOp[0] == 'E' && RightOp[0] == 'R') || (LeftOp[0] != 'R' && LeftOp[0] != 'E' && (RightOp[0] == 'E' || RightOp[0] == 'R')))
                     {
                         return false;
                     }

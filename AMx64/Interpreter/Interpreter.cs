@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using static AMx64.Utility;
 using System.Text.RegularExpressions;
 using System.Linq;
 
@@ -20,18 +19,18 @@ namespace AMx64
     {
         None,
 
-        Add, Sub,       // binary operations
+        Add, Sub,           // binary operations
 
-        BitAnd, BitOr,  // binary operations
+        BitAnd, BitOr,      // binary operations
 
-        BitNot,         //unary operation
+        BitNot,             // unary operation
 
-        Mov,
+        Mov,                // binary operations
 
-        Cmp,
+        Cmp,                // binary operations
 
-        Jmp,
-        Je, Jne, Jge, Jl,
+        Jmp,                // unary operation
+        Je, Jne, Jge, Jl,   // unary operation
 
         End
     }
@@ -298,24 +297,26 @@ namespace AMx64
 
             for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
-                AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
-                currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
+                currentLine.CurrentAsmLineValue = AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
                 // Set current section.
-                switch (currentLine.CurrentAsmLineValue)
+                if (currentSection != AsmSegment.TEXT)
                 {
-                    case "section .data":
-                        currentSection = AsmSegment.DATA;
-                        continue;
-                    case "section .bss":
-                        currentSection = AsmSegment.BSS;
-                        continue;
-                    case "section .text":
-                        currentSection = AsmSegment.TEXT;
-                        // Skip global line.
-                        lineNumber++;
-                        continue;
+                    switch (currentLine.CurrentAsmLineValue)
+                    {
+                        case "section .data":
+                            currentSection = AsmSegment.DATA;
+                            continue;
+                        case "section .bss":
+                            currentSection = AsmSegment.BSS;
+                            continue;
+                        case "section .text":
+                            currentSection = AsmSegment.TEXT;
+                            // Skip global line.
+                            lineNumber++;
+                            continue;
+                    }
                 }
 
                 // Check for errors in asm line.
@@ -335,7 +336,6 @@ namespace AMx64
                 }
                 else
                 {
-                    labels.Clear();
                     Console.WriteLine(errorMsg);
                     return;
                 }
@@ -344,6 +344,9 @@ namespace AMx64
             // Reset current line.
             currentLine.CurrentAsmLineValue = "";
             currentLine.CurrentAsmLineNumber = -1;
+
+            labels.Clear();
+            sections.Clear();
             currentSection = AsmSegment.INVALID;
         }
 
