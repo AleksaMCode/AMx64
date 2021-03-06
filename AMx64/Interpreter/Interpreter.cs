@@ -43,10 +43,15 @@ namespace AMx64
 
         public List<string> AsmCode;
 
+
+
+        private int maxMemSize = 2_000_000;
+
         /// <summary>
         /// 64-bit addressable memory.
         /// </summary>
-        private byte[] memory = new byte[int.MaxValue];
+        private byte[] memory = new byte[maxMemSize];
+
 
         /// <summary>
         /// Next memory block index.
@@ -814,7 +819,7 @@ namespace AMx64
         {
             var res = BitConverter.GetBytes(result);
 
-            if (nextMemoryLocation + res.Length * size >= int.MaxValue)
+            if (nextMemoryLocation + res.Length * size >= maxMemSize)
             {
                 throw new Exception("Memory full.");
             }
@@ -830,7 +835,7 @@ namespace AMx64
         {
             var byteArr = Encoding.ASCII.GetBytes(value);
 
-            if (nextMemoryLocation + byteArr.Length * size >= int.MaxValue)
+            if (nextMemoryLocation + byteArr.Length * size >= maxMemSize)
             {
                 throw new Exception("Memory full.");
             }

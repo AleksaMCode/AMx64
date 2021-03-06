@@ -33,7 +33,7 @@ namespace AMx64
             }
 
             // Initialize x64 user memory.
-            for (var i = 0; i < int.MaxValue; ++i)
+            for (var i = 0; i < maxMemSize; ++i)
             {
                 memory[i] = randomValue.NextUInt8();
             }
