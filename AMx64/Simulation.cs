@@ -62,7 +62,7 @@ namespace AMx64
                 if (args.Length != 2)
                 {
                     var cml = new CmlnParser();
-                    if(cml.Parse(args.Where((source, index) => index == 0 || index == 1).ToArray()))
+                    if(cml.Parse(args.Where((source, index) => index > 1).ToArray()))
                     {
                         if(Debug())
                         {
