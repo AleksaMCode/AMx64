@@ -17,7 +17,7 @@ namespace AMx64
             private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
             public readonly string DebuggerErrorMsg = "Failed to evaluate symbol(s) \"{0}\"";
             public readonly string HelpDebugMessage =
-@"  Usage: (adb) [OPTION]... [ARG]...
+@"Usage: (adb) [OPTION]... [ARG]...
 List of classes of commands:
 
     h, help       -- Prints this help page
