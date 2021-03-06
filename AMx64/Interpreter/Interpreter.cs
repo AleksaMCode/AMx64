@@ -45,7 +45,7 @@ namespace AMx64
 
 
 
-        private int maxMemSize = 2_000_000;
+        private static readonly int maxMemSize = 2_000_000;
 
         /// <summary>
         /// 64-bit addressable memory.
