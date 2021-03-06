@@ -127,7 +127,7 @@ namespace AMx64
         /// <summary>
         /// Prints out all cpu registers/flag states.
         /// </summary>
-        public void getCPUDebugStats()
+        public void GetCPUDebugStats()
         {
             Console.WriteLine(
                 $"RAX:      0x{RAX:x16}\n" +
