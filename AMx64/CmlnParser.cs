@@ -63,6 +63,11 @@ Interpret or debug CSX64 asm files.
                     return true;
                 }
 
+                if (args.Length > 1)
+                {
+                    return false;
+                }
+
                 for (var i = 0; i < args.Length; ++i)
                 {
                     if (optionsLongNames.TryGetValue(args[i], out var handler))
