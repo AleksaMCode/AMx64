@@ -72,29 +72,24 @@ Interpret or debug CSX64 asm files.
                             return false;
                         }
                     }
-                    else if (args[i].StartsWith('-'))
+                    else if (args[i].StartsWith('-') && !args[i].StartsWith("--"))
                     {
-                        // Current argument option.
-                        var arg = args[i];
-
-                        for (var j = 1; j < arg.Length; ++j)
+                        if (optionsShortNames.TryGetValue(args[i][1], out handler))
                         {
-                            if (optionsShortNames.TryGetValue(arg[j], out handler))
+                            if (!handler(this))
                             {
-                                if (!handler(this))
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine($"{arg}: Unkown option '{arg[j]}'");
                                 return false;
                             }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Unkown option '{args[i]}'");
+                            return false;
                         }
                     }
                     else
                     {
+                        Console.WriteLine($"Unkown option '{args[i]}'");
                         return false;
                     }
                 }
