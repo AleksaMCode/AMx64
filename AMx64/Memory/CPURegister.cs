@@ -19,6 +19,11 @@ namespace AMx64
         [FieldOffset(1)]
         public byte x8h;
 
+        public CPURegister(UInt64 initValue)
+        {
+            x64 = initValue;
+        }
+
         internal UInt64 this[UInt64 codeSize]
         {
             get

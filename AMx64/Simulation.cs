@@ -29,7 +29,7 @@ namespace AMx64
             // Initialize cpu registers.
             for (var i = 0; i < CPURegisters.Length; ++i)
             {
-                CPURegisters[i].x64 = randomValue.NextUInt64();
+                CPURegisters[i] = new CPURegister(randomValue.NextUInt64());
             }
 
             // Initialize x64 user memory.
