@@ -45,10 +45,10 @@ Interpret or debug CSX64 asm files.
             /// <summary>
             /// Maps short options to parsing handler.
             /// </summary>
-            private static readonly Dictionary<char, CmlnParserCmlnParserHandler> optionsShortNames = new Dictionary<char, CmlnParserCmlnParserHandler>()
+            private static readonly Dictionary<string, CmlnParserCmlnParserHandler> optionsShortNames = new Dictionary<string, CmlnParserCmlnParserHandler>()
             {
-                ['h'] = Help,
-                ['d'] = Debug
+                ["-h"] = Help,
+                ["-d"] = Debug
             };
 
             public string[] args;
@@ -72,18 +72,10 @@ Interpret or debug CSX64 asm files.
                             return false;
                         }
                     }
-                    else if (args[i].StartsWith('-') && !args[i].StartsWith("--"))
+                    else if (optionsShortNames.TryGetValue(args[i], out handler))
                     {
-                        if (optionsShortNames.TryGetValue(args[i][1], out handler))
+                        if (!handler(this))
                         {
-                            if (!handler(this))
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Unkown option '{args[i]}'");
                             return false;
                         }
                     }
