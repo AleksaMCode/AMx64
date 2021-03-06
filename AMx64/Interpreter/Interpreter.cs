@@ -322,6 +322,14 @@ namespace AMx64
                 // Check for errors in asm line.
                 var interpretResult = InterpretAsmLine(out var errorMsg);
 
+                if (debugger.Next || debugger.Breakpoints.ElementAt(breakpointIndex) == lineNumber)
+                {
+                    if (!InterpretDebugCommandLine())
+                    {
+                        return;
+                    }
+                }
+
                 // If Jcc occurred.
                 if (interpretResult == ErrorCode.JmpOccurred)
                 {

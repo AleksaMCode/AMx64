@@ -15,7 +15,7 @@ namespace AMx64
 
             public readonly string Prompt = "(amdb) ";
             private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
-            private readonly string debuggerErrorMsg = $"Failed to evaluate symbol(s) \"{0}\"";
+            public readonly string DebuggerErrorMsg = "Failed to evaluate symbol(s) \"{0}\"";
             public readonly string HelpDebugMessage =
                                                     @"  Usage: (adb) [OPTION]... [ARG]...
                                                         List of classes of commands:
@@ -26,14 +26,15 @@ namespace AMx64
                                                         c, continue   -- Continues program debugging from a breakpoint
                                                         b, breakpoint -- Making program stop at certain points
                                                         d, delete     -- Removes a breakpoint
+                                                        s, show       -- Show current memory stats.
                                                         q, quit       -- Quits debugging
                                                      ";
 
 
             public SortedSet<int> Breakpoints = new SortedSet<int>();
-            public int CurrentLineNum = 0;
+            public int BreakpointIndex = -1;
             public int LineCount;
-            public bool Next;
+            public bool Next = false;
 
             public string SetBreakpoints(string[] commandLineTokens)
             {
@@ -52,13 +53,20 @@ namespace AMx64
 
                     return string.IsNullOrEmpty(errorMsg)
                         ? string.IsNullOrEmpty(errors) ? errorMsg : breakpointErrorMsg + errors
-                        : string.IsNullOrEmpty(errors) ? errorMsg : errorMsg + errors;
+                        : string.IsNullOrEmpty(errors) ? errorMsg : breakpointErrorMsg + errorMsg + " + " + errors;
                 }
             }
 
             public void RemoveBreakpoints(string[] commandLineTokens)
             {
-                foreach (var breakpoint in ParseBreakpoints(ref commandLineTokens, out var _))
+                var breakpoints = ParseBreakpoints(ref commandLineTokens, out var _);
+
+                if(breakpoints.Count == 0)
+                {
+                    return;
+                }    
+
+                foreach (var breakpoint in breakpoints)
                 {
                     Breakpoints.Remove(breakpoint);
                 }
@@ -139,7 +147,7 @@ namespace AMx64
 
             public string GetErrorMsg(string symbol)
             {
-                return string.Format(debuggerErrorMsg, symbol);
+                return string.Format(DebuggerErrorMsg, symbol);
             }
 
             /// <summary>

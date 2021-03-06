@@ -1,60 +1,72 @@
 using System;
-using System.IO;
 
 namespace AMx64
 {
     public partial class AMX64
     {
-        private DebuggerInfo debugger;
+        private DebuggerInfo debugger = null;
 
-        public bool Debug(string asmName)
+        public bool Debug()
         {
-            if (asmName.Contains("\\"))
-            {
-                var path = Path.GetDirectoryName(asmName);
-                if (path != null && Directory.Exists(path))
-                {
-                    AsmFilePath = asmName;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                AsmFilePath += "\\" + asmName;
-            }
-
-            InterpretDebugCommandLine();
-            //CheckAsmFileForErrors();
-
+            //if (asmName.Contains("\\"))
+            //{
+            //    var path = Path.GetDirectoryName(asmName);
+            //    if (path != null && Directory.Exists(path))
+            //    {
+            //        AsmFilePath = asmName;
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
+            //else
+            //{
+            //    AsmFilePath += "\\" + asmName;
+            //}
             debugger = new DebuggerInfo();
-            return true;
+            return InterpretDebugCommandLine();
         }
 
         public bool InterpretDebugCommandLine()
         {
+            debugger.Next = false;
+            debugger.BreakpointIndex++;
+
             do
             {
                 Console.Write(debugger.Prompt);
                 var command = Console.ReadLine();
-                // Remove trailing/leading white spaces.
                 command = command.Trim();
 
-                if ((command.StartsWith("help") && command.Length == 4) || (command.StartsWith("h") && command.Length == 1))
+                if (command.Equals("help") || command.Equals("h"))
                 {
                     Console.Write(debugger.HelpDebugMessage);
                 }
                 else if (command.StartsWith("breakpoint ") || command.StartsWith("b "))
                 {
-                    debugger.SetBreakpoints(command.Split(' '));
+                    var errorMsg = debugger.SetBreakpoints(command.Split(' '));
+                    if (string.IsNullOrEmpty(errorMsg))
+                    {
+                        Console.WriteLine("Breakpoints successfully  added.");
+                    }
+                    else
+                    {
+                        Console.WriteLine(errorMsg);
+                    }
                 }
-                else if (command.StartsWith("run") || command.StartsWith("r"))
+                else if (command.Equals("run") || command.Equals("r"))
                 {
-
+                    if (currentLine.CurrentAsmLineNumber == -1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Interpreter is already running.");
+                    }
                 }
-                else if (command.StartsWith("delete ") || command.StartsWith("d "))
+                else if (command.StartsWith("delete") || command.StartsWith("d"))
                 {
                     var tokens = command.Split(' ');
 
@@ -65,15 +77,41 @@ namespace AMx64
 
                     debugger.RemoveBreakpoints(tokens);
                 }
-                else if (command.StartsWith("continue") || command.StartsWith("c"))
+                else if (command.Equals("continue") || command.Equals("c"))
                 {
-
+                    if (currentLine.CurrentAsmLineNumber == -1)
+                    {
+                        Console.WriteLine("Interpreter isn't running.");
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                else if (command.StartsWith("quit") || command.StartsWith("q"))
+                else if (command.Equals("next") || command.Equals("n"))
                 {
-
+                    if (currentLine.CurrentAsmLineNumber == -1)
+                    {
+                        Console.WriteLine("Interpreter isn't running.");
+                    }
+                    else
+                    {
+                        debugger.Next = true;
+                        return true;
+                    }
                 }
-
+                else if (command.Equals("next") || command.Equals("n"))
+                {
+                    getCPUDebugStats();
+                }
+                else if (command.Equals("quit") || command.Equals("q"))
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine(string.Format(debugger.DebuggerErrorMsg, command));
+                }
             }
             while (true);
         }

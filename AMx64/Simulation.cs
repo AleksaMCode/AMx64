@@ -57,7 +57,22 @@ namespace AMx64
                 if (args.Length != 2)
                 {
                     var cml = new CmlnParser();
-                    return cml.Parse(args.Where((source, index) => index == 0 || index == 1).ToArray());
+                    if(cml.Parse(args.Where((source, index) => index == 0 || index == 1).ToArray()))
+                    {
+                        if(Debug())
+                        {
+                            InterpretAsmFile();
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
