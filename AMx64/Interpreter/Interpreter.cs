@@ -39,7 +39,7 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
-        public static string AsmFilePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+        public static string AsmFilePath = Environment.CurrentDirectory;
 
         public List<string> AsmCode;
 
