@@ -8,22 +8,6 @@ namespace AMx64
 
         public bool Debug()
         {
-            //if (asmName.Contains("\\"))
-            //{
-            //    var path = Path.GetDirectoryName(asmName);
-            //    if (path != null && Directory.Exists(path))
-            //    {
-            //        AsmFilePath = asmName;
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //}
-            //else
-            //{
-            //    AsmFilePath += "\\" + asmName;
-            //}
             debugger = new DebuggerInfo();
             return InterpretDebugCommandLine();
         }

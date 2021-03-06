@@ -184,7 +184,7 @@ namespace AMx64
 
             if (globalSymbolRegex.Match(AsmCode[++index]).Success)
             {
-                globalSymbol = AsmCode[index].Remove(6).Trim();
+                globalSymbol = AsmCode[index].Substring(6).Trim();
                 return true;
             }
 
