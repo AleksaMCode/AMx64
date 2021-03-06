@@ -322,7 +322,7 @@ namespace AMx64
                 // Check for errors in asm line.
                 var interpretResult = InterpretAsmLine(out var errorMsg);
 
-                if (debugger.Next || debugger.Breakpoints.ElementAt(breakpointIndex) == lineNumber)
+                if (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber)
                 {
                     if (!InterpretDebugCommandLine())
                     {
