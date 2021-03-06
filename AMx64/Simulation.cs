@@ -50,6 +50,11 @@ namespace AMx64
                     AsmFilePath += "\\" + args[1];
                 }
             }
+            else
+            {
+                Console.WriteLine($"File {args[1]} doesn't exist.");
+                return false;
+            }
 
             // if we have arguments simulation can start
             if (args != null)
