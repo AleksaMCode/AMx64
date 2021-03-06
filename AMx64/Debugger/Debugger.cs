@@ -130,11 +130,11 @@ namespace AMx64
         public void getCPUDebugStats()
         {
             Console.WriteLine(
-                $"RAX:      {RAX:x16}\n" +
-                $"RBX:      {RBX:x16}\n" +
-                $"RCX:      {RCX:x16}\n" +
-                $"RDX:      {RDX:x16}\n" +
-                $"RFLAGS:   {RFLAGS:x16}\n" +
+                $"RAX:      0x{RAX:x16}\n" +
+                $"RBX:      0x{RBX:x16}\n" +
+                $"RCX:      0x{RCX:x16}\n" +
+                $"RDX:      0x{RDX:x16}\n" +
+                $"RFLAGS:   0x{RFLAGS:x16}\n\n" +
                 $"CF:   {(CF ? 1 : 0)}\n" +
                 $"PF:   {(PF ? 1 : 0)}\n" +
                 $"ZF    {(ZF ? 1 : 0)}\n" +
