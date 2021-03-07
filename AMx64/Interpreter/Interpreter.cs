@@ -336,11 +336,6 @@ namespace AMx64
                 // Check for errors in asm line.
                 var interpretResult = InterpretAsmLine(out var errorMsg);
 
-                if(interpretResult == ErrorCode.SuccessfullyRun || interpretResult == ErrorCode.UnsuccessfullyRun || )
-                {
-                    return;
-                }
-
                 // If Jcc occurred.
                 if (interpretResult == ErrorCode.JmpOccurred)
                 {
