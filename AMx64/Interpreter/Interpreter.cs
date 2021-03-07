@@ -228,8 +228,8 @@ namespace AMx64
         /// <returns>true if sections are in proper order, otherwise false.</returns>
         private bool CheckSections()
         {
-            return sections["section .data"] <= sections["section .text"] &&
-                sections["section .bss"] <= sections["section .text"];
+            return sections["section .data"] < sections["section .text"] &&
+                sections["section .bss"] < sections["section .text"];
         }
 
         /// <summary>
@@ -1270,7 +1270,7 @@ namespace AMx64
             // Reserved symbols are case insensitive.
             symbol = symbol.ToUpper();
 
-            if (CPURegisterMap.ContainsKey(symbol) || symbol == globalSymbol)
+            if (CPURegisterMap.ContainsKey(symbol) || symbol == globalSymbol.ToUpper())
             {
                 return true;
             }
