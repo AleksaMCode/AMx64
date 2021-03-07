@@ -305,6 +305,15 @@ namespace AMx64
                 currentLine.CurrentAsmLineValue = AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
+                // User for debugging.
+                if (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber)
+                {
+                    if (!InterpretDebugCommandLine())
+                    {
+                        return;
+                    }
+                }
+
                 // Set current section.
                 if (currentSection != AsmSegment.TEXT)
                 {
@@ -327,12 +336,9 @@ namespace AMx64
                 // Check for errors in asm line.
                 var interpretResult = InterpretAsmLine(out var errorMsg);
 
-                if (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber)
+                if(interpretResult == ErrorCode.SuccessfullyRun || interpretResult == ErrorCode.UnsuccessfullyRun || )
                 {
-                    if (!InterpretDebugCommandLine())
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 // If Jcc occurred.
@@ -347,10 +353,20 @@ namespace AMx64
                 {
                     continue;
                 }
-                else
+
+                switch (interpretResult)
                 {
-                    Console.WriteLine(errorMsg);
-                    return;
+                    case ErrorCode.SuccessfullyRun:
+                    case ErrorCode.UnsuccessfullyRun:
+                    case ErrorCode.UnhandledSyscall:
+                    case ErrorCode.SyscallError:
+                    case ErrorCode.OutOfBounds:
+                    case ErrorCode.AccessViolation:
+                    case ErrorCode.MemoryAllocError:
+                        return;
+                    default:
+                        Console.WriteLine(errorMsg);
+                        return;
                 }
             }
 
@@ -417,6 +433,10 @@ namespace AMx64
             {
                 errorMsg = $"GLOBAL can only be used once in a asm code";
                 return ErrorCode.GlobalError;
+            }
+            else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection == AsmSegment.TEXT)
+            {
+                return SyscallHandel();
             }
 
             // .text section
@@ -517,6 +537,90 @@ namespace AMx64
             }
 
             return ErrorCode.UndefinedBehavior;
+        }
+
+        private ErrorCode SyscallHandel()
+        {
+            if (RAX == 60)
+            {
+                return RDI switch
+                {
+                    0 => ErrorCode.SuccessfullyRun,
+                    1 => ErrorCode.UnsuccessfullyRun,
+                    _ => ErrorCode.SyscallError,
+                };
+            }
+            else if (RAX == 0)
+            {
+                if (RDI == 0)
+                {
+                    var index = RSI;
+                    if (index > 2_000_000)
+                    {
+                        return ErrorCode.OutOfBounds;
+                    }
+                    else
+                    {
+                        if ((int)index > nextMemoryLocation)
+                        {
+                            return ErrorCode.AccessViolation;
+                        }
+                        else
+                        {
+                            var userInput = Console.ReadLine();
+                            var maxLen = RDX;
+                            if (maxLen > int.MaxValue / 4)
+                            {
+                                return ErrorCode.MemoryAllocError;
+                            }
+                            else
+                            {
+                                if (userInput.Length > (int)maxLen)
+                                {
+                                    if (!memory.WriteString(index, userInput.Substring(0, (int)maxLen)))
+                                    {
+                                        return ErrorCode.MemoryAllocError;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return ErrorCode.SyscallError;
+                }
+            }
+            else if (RAX == 1)
+            {
+                if (RDI == 1)
+                {
+                    var index = RSI;
+                    if (index > 2_000_000 || (int)index > nextMemoryLocation)
+                    {
+                        return ErrorCode.OutOfBounds;
+                    }
+                    else
+                    {
+                        var maxLen = RDX;
+                        if (maxLen > int.MaxValue / 4)
+                        {
+                            return ErrorCode.MemoryAllocError;
+                        }
+                        else
+                        {
+                            memory.ReadString(index, out var stringFromMem);
+                            Console.WriteLine(stringFromMem);
+                        }
+                    }
+                }
+                else
+                {
+                    return ErrorCode.UnhandledSyscall;
+                }
+            }
+
+            return ErrorCode.None;
         }
 
         private bool TryProcessJcc()
