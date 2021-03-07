@@ -438,6 +438,11 @@ namespace AMx64
             {
                 return SyscallHandel();
             }
+            else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection != AsmSegment.TEXT)
+            {
+                errorMsg = $"syscall is used in wrong section.";
+                return ErrorCode.SectionProblems;
+            }
 
             // .text section
             if (currentSection == AsmSegment.TEXT)
