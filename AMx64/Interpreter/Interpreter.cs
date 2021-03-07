@@ -282,9 +282,6 @@ namespace AMx64
             // Parse asm code labels.
             var labelError = ParseLabels(out var lineNumber);
 
-            // Remove empty lines.
-            AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
-
             if (labelError == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
@@ -296,8 +293,11 @@ namespace AMx64
                 return;
             }
 
+            // Remove empty lines.
+            AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
+
             // Check if global symbol is used.
-            if (labels.ContainsKey(globalSymbol))
+            if (!labels.ContainsKey(globalSymbol))
             {
                 Console.WriteLine($"Global symbol \"{globalSymbol}\" is never used.");
                 return;
