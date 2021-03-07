@@ -59,10 +59,11 @@ List of classes of commands:
 
             public void RemoveBreakpoints(string[] commandLineTokens)
             {
-                var breakpoints = ParseBreakpoints(ref commandLineTokens, out var _);
+                var breakpoints = ParseBreakpoints(ref commandLineTokens, out var errorMsg);
 
                 if(breakpoints.Count == 0)
                 {
+                    Console.WriteLine($"Error occurred while parsing values: {errorMsg}");
                     return;
                 }    
 
@@ -85,7 +86,7 @@ List of classes of commands:
                     }
                     else
                     {
-                        errorBreakpointsSb.Append(breakpoint + " ");
+                        errorBreakpointsSb.Append(commandLineTokens[i] + " ");
                     }
                 }
 
