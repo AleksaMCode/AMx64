@@ -282,6 +282,9 @@ namespace AMx64
             // Parse asm code labels.
             var labelError = ParseLabels(out var lineNumber);
 
+            // Remove empty lines.
+            AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
+
             if (labelError == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
@@ -394,8 +397,11 @@ namespace AMx64
                         {
                             return ErrorCode.InvalidLabelPosition;
                         }
+
+                        var label = labelMatch.Value.Remove(labelMatch.Value.Length - 1);
+
                         // If used label string is reserved or already used stop interpreting the asm code.
-                        if (IsSymbolReserverd(labelMatch.Value) && labels.ContainsKey(labelMatch.Value))
+                        if (IsSymbolReserverd(label) || labels.ContainsKey(label))
                         {
                             return ErrorCode.InvalidLabel;
                         }
@@ -403,8 +409,10 @@ namespace AMx64
                         // Remove label from asm code.
                         else
                         {
-                            labels.Add(labelMatch.Value.Remove(labelMatch.Value.Length - 1), currentLine.CurrentAsmLineNumber);
-                            AsmCode[lineNumber] = AsmCode[lineNumber].Substring(currentLine.CurrentAsmLineValue.IndexOf(':') + 1, currentLine.CurrentAsmLineValue.Length - 1).Trim();
+                            labels.Add(label, lineNumber);
+                            AsmCode[lineNumber] = AsmCode[lineNumber].ToUpper() == labelMatch.Value.ToUpper()
+                                ? ""
+                                : AsmCode[lineNumber].Substring(labelMatch.Length).Trim();
                         }
                     }
                 }
@@ -1270,7 +1278,7 @@ namespace AMx64
             // Reserved symbols are case insensitive.
             symbol = symbol.ToUpper();
 
-            if (CPURegisterMap.ContainsKey(symbol) || symbol == globalSymbol.ToUpper())
+            if (CPURegisterMap.ContainsKey(symbol)/* || symbol == globalSymbol.ToUpper()*/)
             {
                 return true;
             }
