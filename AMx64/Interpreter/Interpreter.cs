@@ -339,7 +339,7 @@ namespace AMx64
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
                 // User for debugging.
-                if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber))
+                if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
                     DebugShowAsmLines();
                     if (!InterpretDebugCommandLine())
@@ -414,7 +414,7 @@ namespace AMx64
         {
             // Green line before ams code.
             Console.BackgroundColor = ConsoleColor.Green;
-            Console.WriteLine();
+            Console.WriteLine("\t\t\t\t\t\t");
             Console.ResetColor();
 
             var upperLimit = currentLine.CurrentAsmLineNumber + 3 > AsmCode.Count ? AsmCode.Count : currentLine.CurrentAsmLineNumber + 3;
@@ -433,7 +433,7 @@ namespace AMx64
 
             // Green line after ams code.
             Console.BackgroundColor = ConsoleColor.Green;
-            Console.WriteLine();
+            Console.WriteLine("\t\t\t\t\t\t");
             Console.ResetColor();
         }
 
