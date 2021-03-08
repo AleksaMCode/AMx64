@@ -33,8 +33,8 @@ namespace AMx64
                     {
                         ParseOperation(match.Value.TrimEnd());
 
-                        asmLine.Remove(match.Value.Length - 1);
-                        asmLine.TrimStart();
+                        asmLine = asmLine.Substring(match.Value.Length - 1);
+                        asmLine = asmLine.TrimStart();
                     }
 
                     if (asmLineOperExplSizeRegex.Match(asmLineUpper).Success)
