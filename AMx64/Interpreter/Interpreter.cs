@@ -178,14 +178,20 @@ namespace AMx64
         /// Checks if the global symbol is set properly.
         /// </summary>
         /// <returns></returns>
-        private bool CheckGlobalSymbol()
+        private bool CheckGlobalSymbol(out string errorMsg)
         {
+            if (AsmCode.IndexOf("global") != AsmCode.LastIndexOf("global"))
+            {
+                errorMsg = "GLOBAL can only be used once in a asm code.";
+                return false;
+            }
+
             var index = sections["section .text"];
 
             // Skip comment or empty lines.
-            for(++index; index < AsmCode.Count; ++index)
+            for (++index; index < AsmCode.Count; ++index)
             {
-                if(AsmCode[index].StartsWith(';') || string.IsNullOrEmpty(AsmCode[index]))
+                if (AsmCode[index].StartsWith(';') || string.IsNullOrEmpty(AsmCode[index]))
                 {
                     continue;
                 }
@@ -198,9 +204,11 @@ namespace AMx64
             if (globalSymbolRegex.Match(AsmCode[index]).Success)
             {
                 globalSymbol = AsmCode[index].Substring(6).Trim();
+                errorMsg = "";
                 return true;
             }
 
+            errorMsg = "Wrong usage of global symbol.";
             return false;
         }
 
@@ -289,9 +297,9 @@ namespace AMx64
                 }
 
                 // Check global symbol.
-                if (!CheckGlobalSymbol())
+                if (!CheckGlobalSymbol(out var errorMsg))
                 {
-                    Console.WriteLine("Wrong usage of global symbol.");
+                    Console.WriteLine(errorMsg);
                     return;
                 }
             }
@@ -331,7 +339,7 @@ namespace AMx64
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
                 // User for debugging.
-                if (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber)
+                if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber))
                 {
                     DebugShowAsmLines();
                     if (!InterpretDebugCommandLine())
@@ -369,14 +377,15 @@ namespace AMx64
                     continue;
                 }
 
-                // If a asm line contains only a comment, is empty or has no errors, skip it.
-                if (interpretResult == ErrorCode.EmptyLine || interpretResult == ErrorCode.Comment || interpretResult == ErrorCode.None)
-                {
-                    continue;
-                }
-
                 switch (interpretResult)
                 {
+                    // If a asm line contains only a comment, is empty or has no errors, skip it.
+                    case ErrorCode.EmptyLine:
+                    case ErrorCode.Comment:
+                    case ErrorCode.None:
+                    case ErrorCode.GlobalLine:
+                        continue;
+                    // Stop interpreter.
                     case ErrorCode.SuccessfullyRun:
                     case ErrorCode.UnsuccessfullyRun:
                     case ErrorCode.UnhandledSyscall:
@@ -495,7 +504,7 @@ namespace AMx64
             else if (currentLine.CurrentAsmLineValue.Contains("global"))
             {
                 errorMsg = $"GLOBAL can only be used once in a asm code";
-                return ErrorCode.GlobalError;
+                return ErrorCode.GlobalLine;
             }
             else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection == AsmSegment.TEXT)
             {

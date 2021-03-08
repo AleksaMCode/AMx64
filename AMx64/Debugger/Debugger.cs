@@ -32,7 +32,7 @@ namespace AMx64
                     var errorMsg = debugger.SetBreakpoints(command.Split(' '));
                     if (string.IsNullOrEmpty(errorMsg))
                     {
-                        Console.WriteLine("Breakpoints successfully  added.");
+                        Console.WriteLine("Breakpoints successfully added.");
                     }
                     else
                     {
@@ -43,6 +43,10 @@ namespace AMx64
                 {
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
+                        if(debugger.Breakpoints.Count > 0)
+                        {
+
+                        }
                         return true;
                     }
                     else
