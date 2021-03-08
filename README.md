@@ -351,8 +351,8 @@ JL | Jump Less | OF, SF | SF != 0
 ## References
 ### Books
 <ul>
-  <li><a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf"><p align="justify">Intel® 64 and IA-32 Architectures - Software Developer’s Manual</p></a></li>
-  <li><a href="https://www.amazon.com/Debugging-GDB-GNU-Source-Level-Debugger/dp/1882114884"><p align="justify">Richard Stallman, Roland Pesch, Stan Shebs, et al. - <i>Debugging with gdb: The gnu Source-Level Debugger</i></p></a></li>
+  <li><p align="justify"><a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel® 64 and IA-32 Architectures - Software Developer’s Manual</p></a></li>
+  <li><p align="justify"><a href="https://www.amazon.com/Debugging-GDB-GNU-Source-Level-Debugger/dp/1882114884">Richard Stallman, Roland Pesch, Stan Shebs, et al. - <i>Debugging with gdb: The gnu Source-Level Debugger</i></p></a></li>
 </ul>
 
 ### Links
