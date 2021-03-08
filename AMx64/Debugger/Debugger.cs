@@ -101,6 +101,17 @@ namespace AMx64
                 {
                     GetCPUDebugStats();
                 }
+                else if (command.Equals("list") || command.Equals("l"))
+                {
+                    if(currentLine.CurrentAsmLineNumber != -1)
+                    {
+                        DebugShowAsmLines();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Interpreter isn't running.");
+                    }
+                }
                 else if (command.Equals("quit") || command.Equals("q"))
                 {
                     return false;
@@ -113,6 +124,33 @@ namespace AMx64
             while (true);
         }
 
+
+        /// <summary>
+        /// Prints out 7 asm code lines, 3 before and 3 after the current line, marking the current line with green color.
+        /// </summary>
+        private void DebugShowAsmLines()
+        {
+            Console.WriteLine("\n\n");
+
+            var upperLimit = currentLine.CurrentAsmLineNumber + 3 >= AsmCode.Count ? AsmCode.Count - 1 : currentLine.CurrentAsmLineNumber + 3;
+            var index = currentLine.CurrentAsmLineNumber - 3 < 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
+
+            for (; index <= upperLimit; ++index)
+            {
+                if (index == currentLine.CurrentAsmLineNumber)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
+                }
+            }
+
+            Console.WriteLine("\n\n");
+        }
 
         /// <summary>
         /// Prints out all cpu registers/flag states.

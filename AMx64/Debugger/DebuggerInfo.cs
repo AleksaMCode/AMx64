@@ -27,6 +27,7 @@ List of classes of commands:
     b, breakpoint -- Making program stop at certain points
     d, delete     -- Removes a breakpoint
     s, show       -- Show current memory stats.
+    l, list       -- Displays source code
     q, quit       -- Quits debugging
 ";
 
