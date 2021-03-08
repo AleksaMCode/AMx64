@@ -338,10 +338,24 @@ namespace AMx64
                 currentLine.CurrentAsmLineValue = AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
+                var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
+
+                // Remove lable from a line. e.q. from a line -> label: OP op1, op2
+                if (labelMatch.Success && labelMatch.Value.Length != currentLine.CurrentAsmLineValue.Length)
+                {
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length - 1).TrimStart();
+                }
+
                 // User for debugging.
                 if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
                     DebugShowAsmLines();
+
+                    if (debugger.BreakpointIndex + 1 < debugger.Breakpoints.Count && lineNumber >= debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1)
+                    {
+                        debugger.BreakpointIndex++;
+                    }
+
                     if (!InterpretDebugCommandLine())
                     {
                         return;
@@ -377,11 +391,12 @@ namespace AMx64
 
                 switch (interpretResult)
                 {
-                    // If a asm line contains only a comment, is empty or has no errors, skip it.
+                    // If a asm line contains only a comment, is empty, contains only label or has no errors, skip it.
                     case ErrorCode.EmptyLine:
                     case ErrorCode.Comment:
                     case ErrorCode.None:
                     case ErrorCode.GlobalLine:
+                    case ErrorCode.Label:
                         continue;
                     // Stop interpreter.
                     case ErrorCode.SuccessfullyRun:
@@ -417,18 +432,21 @@ namespace AMx64
             Console.WriteLine("\t\t\t\t\t\t");
             Console.ResetColor();
 
-            var upperLimit = currentLine.CurrentAsmLineNumber + 3 > AsmCode.Count ? AsmCode.Count : currentLine.CurrentAsmLineNumber + 3;
-            var index = currentLine.CurrentAsmLineNumber - 3 >= 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
+            var upperLimit = currentLine.CurrentAsmLineNumber + 3 >= AsmCode.Count ? AsmCode.Count - 1 : currentLine.CurrentAsmLineNumber + 3;
+            var index = currentLine.CurrentAsmLineNumber - 3 < 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
 
             for (; index <= upperLimit; ++index)
             {
                 if (index == currentLine.CurrentAsmLineNumber)
                 {
                     Console.BackgroundColor = ConsoleColor.Green;
-                    Console.WriteLine(AsmCode[index]);
+                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
                     Console.ResetColor();
                 }
-                Console.WriteLine(AsmCode[index]);
+                else
+                {
+                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
+                }
             }
 
             // Green line after ams code.
@@ -465,15 +483,18 @@ namespace AMx64
                         {
                             return ErrorCode.InvalidLabel;
                         }
+
                         // Save label and label line number.
+                        labels.Add(label, lineNumber);
+
                         // Remove label from asm code.
-                        else
-                        {
-                            labels.Add(label, lineNumber);
-                            AsmCode[lineNumber] = AsmCode[lineNumber].ToUpper() == labelMatch.Value.ToUpper()
-                                ? ""
-                                : AsmCode[lineNumber].Substring(labelMatch.Length).Trim();
-                        }
+                        //else
+                        //{
+                        //    labels.Add(label, lineNumber);
+                        //    AsmCode[lineNumber] = AsmCode[lineNumber].ToUpper() == labelMatch.Value.ToUpper()
+                        //        ? ""
+                        //        : AsmCode[lineNumber].Substring(labelMatch.Length).Trim();
+                        //}
                     }
                 }
             }
@@ -492,6 +513,10 @@ namespace AMx64
             else if (currentLine.CurrentAsmLineValue.StartsWith(';'))
             {
                 return ErrorCode.Comment;
+            }
+            else if(asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
+            {
+                return ErrorCode.Label;
             }
             // Checks for duplicate sections in asm code.
             else if (currentLine.CurrentAsmLineValue.Contains("section"))

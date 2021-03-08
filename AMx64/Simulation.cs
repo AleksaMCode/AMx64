@@ -14,7 +14,7 @@ namespace AMx64
             None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalLine,
             NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition,
             EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem, InvalidAsmLine, JmpOccurred,
-            SuccessfullyRun, UnsuccessfullyRun, SyscallError, MemoryAllocError
+            SuccessfullyRun, UnsuccessfullyRun, SyscallError, MemoryAllocError, Label
             //     ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
             //OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
         }

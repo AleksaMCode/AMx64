@@ -15,7 +15,6 @@ namespace AMx64
         public bool InterpretDebugCommandLine()
         {
             debugger.Next = false;
-            debugger.BreakpointIndex++;
 
             do
             {
@@ -43,10 +42,6 @@ namespace AMx64
                 {
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
-                        if(debugger.Breakpoints.Count > 0)
-                        {
-
-                        }
                         return true;
                     }
                     else
