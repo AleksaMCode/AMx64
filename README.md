@@ -6,9 +6,15 @@
   - [Table of contents](#table-of-contents)
   - [Introduction](#introduction)
   - [CPU details](#cpu-details)
-  - [The AMASM Language](#the-amasm-language)
+  - [The AMASM Language (AMx64 Assembly Language)](#the-amasm-language-amx64-assembly-language)
+    - [Sections](#sections)
+      - [Data Section (.data)](#data-section-data)
+      - [BSS Section (.bss)](#bss-section-bss)
+      - [Text Section (.text)](#text-section-text)
     - [Layout of a AMASM Source Line](#layout-of-a-amasm-source-line)
     - [Numeric Constants](#numeric-constants)
+    - [Character Literals](#character-literals)
+    - [Operand Size](#operand-size)
     - [Supported instructions](#supported-instructions)
       - [ADD - Add](#add---add)
       - [SUB - Subtract](#sub---subtract)
@@ -53,7 +59,25 @@ General-purpose registers are used for processing integral instructions (the mos
 > 
 > If you modify a subdivision of a register, the other subdivisions of that register will see the change.
 
-## The AMASM Language
+## The AMASM Language (AMx64 Assembly Language)
+<p align="justify"><b>AMx64</b> comes with build-in assembly language loosely based around NASM or Intel syntax. Before we describe the syntax of operations and other utilities, we need to go over some of the basics of <b>AMx64</b> assembly language.</p>
+
+> **_NOTE:_**
+> 
+> <code>.data</code> and <code>.bss</code> sections must come before <code>.text</code> section in asm code.
+
+### Sections
+<p align="justify">In a typical assembly language, your program is broken up into several sections.</p>
+
+#### Data Section (.data)
+<p align="justify">The data section holds all your variables that are initialized to specific values. This will typically be used only for global variables. The data section is read-write.</p>
+
+#### BSS Section (.bss)
+<p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value.</p>
+
+#### Text Section (.text)
+<p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size.</p>
+
 ### Layout of a AMASM Source Line
 <p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
 
@@ -68,7 +92,7 @@ General-purpose registers are used for processing integral instructions (the mos
 Numeric constants can have underscores (_) interspersed to break up long strings.</p>
 
 Some examples (all producing exactly the same code):
- ```
+ ```asm
         mov     ax,200          ; decimal 
         mov     ax,0200         ; still decimal 
         mov     ax,0200d        ; explicitly decimal 
@@ -87,10 +111,41 @@ Some examples (all producing exactly the same code):
         mov     ax,0y1100_1000  ; same binary constant yet again
 ```
 
+### Character Literals
+
+> **_NOTE:_**
+> 
+> Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.
+
+### Operand Size
+ <p align="justify">To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want (e.q. <code>add byte rax, [rbx]</code>). In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to.</p>
+ <table>
+  <tr>
+    <th>Size Directive</th>
+    <th>Size</th>
+  </tr>
+  <tr>
+    <td>BYTE</td>
+    <td>8-bit</td>
+  </tr>
+  <tr>
+    <td>WORD</td>
+    <td>16-bit</td>
+  </tr>
+  <tr>
+    <td>DWORD</td>
+    <td>32-bit</td>
+  </tr>
+  <tr>
+    <td>QWORD</td>
+    <td>64-bit</td>
+  </tr>
+</table>
+ 
 ### Supported instructions
 #### ADD - Add
 Adds the second argument (source) to the destination (first argument).
-```
+```asm
 ADD reg, value
 ADD reg1, reg2
 ```
@@ -103,7 +158,7 @@ Flags affected:
 
 #### SUB - Subtract
 Subtracts the source (second argument) from the destination (first argument).
-```
+```asm
 SUB reg, value
 SUB reg1, reg2
 ```
@@ -116,7 +171,7 @@ Flags affected:
 
 #### AND - Bitwise AND
 ANDs the destination with the source.
-```
+```asm
 AND reg, value
 AND reg1, reg2
 ```
@@ -128,7 +183,7 @@ Flags affected:
 
 #### OR - Bitwise OR
 ORs the destination with the source.
-```
+```asm
 OR reg, value
 OR reg1, reg2
 ```
@@ -140,7 +195,7 @@ Flags affected:
 
 #### NOT - Bitwise NOT
 Performs a bitwise NOT on the destination.
-```
+```asm
 NOT reg
 ```
 **NOTE:** It doesn't affect flags.
@@ -148,7 +203,7 @@ NOT reg
 #### MOV - Move
 <p align="justify">Copies a value from some source to a destination. Does not support  memory-to-memory transfers.</p>
 
-```
+```asm
 MOV reg, value
 MOV reg1, reg2
 ```
@@ -159,7 +214,7 @@ MOV reg1, reg2
 #### CMP - Compare
 <p align="justify">CMP performs a 'mental' subtraction of its second operand from its first operand, and affects the flags as if the subtraction had taken place, but does not store the result of the subtraction anywhere. This operation is identical to SUB (result is discarded); SUB should be used in place of CMP when the result is needed. CMP is often used with <i>conditional jump</i>.</p>
 
-```
+```asm
 CMP reg, value
 CMP reg1, reg2
 ```
@@ -173,7 +228,7 @@ Flags affected:
 #### JMP - Unconditional Jump
 <p align="justify">Jumps execution to the provided address. This instruction does not depend on the current conditions of theflag bits in the flag register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
 
-```
+```asm
 JMP label
 JMP rel_location
 ```
@@ -198,7 +253,7 @@ JL | Jump Less | OF, SF | SF != 0
 >  It doesn't affect flags.
 
 #### END
-<p align="justify">To terminate asm code properly you should do the following.</p>
+<p align="justify">To terminate asm code properly you should do the following:</p>
 
 ```asm
 mov rax, 60
