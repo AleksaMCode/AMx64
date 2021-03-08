@@ -173,7 +173,7 @@ namespace AMx64
                 }
                 else if (tokens[2].StartsWith("0x"))
                 {
-                    tokens[2].TryParseUInt64(out location, 16);
+                    tokens[2].Substring(2).TryParseUInt64(out location, 16);
                 }
                 else if (Int64.TryParse(tokens[2], out address))
                 {
@@ -188,7 +188,7 @@ namespace AMx64
                 if (location <= 2_000_000)
                 {
                     memory.Read(location, (UInt64)size, out var value);
-                    Console.WriteLine($"{tokens[2]}:    0x{value:x16}");
+                    Console.WriteLine($"0x{location:x16}:   {value}");
                 }
                 else
                 {

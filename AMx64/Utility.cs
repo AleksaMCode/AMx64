@@ -14,7 +14,7 @@ namespace AMx64
         /// <returns>true if parsing is successful, otherwise false.</returns>
         public static bool TryParseUInt64(this string str, out UInt64 value, uint radix = 10)
         {
-            if (radix != 2 || radix != 8 || radix != 10 || radix != 16)
+            if (radix != 2 && radix != 8 && radix != 10 && radix != 16)
             {
                 throw new ArgumentException("Radix can only be 2, 8, 10 or 16.");
             }
