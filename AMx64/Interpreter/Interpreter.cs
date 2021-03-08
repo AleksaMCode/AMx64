@@ -420,16 +420,17 @@ namespace AMx64
             Console.ResetColor();
 
             var upperLimit = currentLine.CurrentAsmLineNumber + 3 > AsmCode.Count ? AsmCode.Count : currentLine.CurrentAsmLineNumber + 3;
+            var index = currentLine.CurrentAsmLineNumber - 3 >= 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
 
-            for (var i = currentLine.CurrentAsmLineNumber - 3; i <= upperLimit; ++i)
+            for (; index <= upperLimit; ++index)
             {
-                if (i == currentLine.CurrentAsmLineNumber)
+                if (index == currentLine.CurrentAsmLineNumber)
                 {
                     Console.BackgroundColor = ConsoleColor.Green;
-                    Console.WriteLine(AsmCode[i]);
+                    Console.WriteLine(AsmCode[index]);
                     Console.ResetColor();
                 }
-                Console.WriteLine(AsmCode[i]);
+                Console.WriteLine(AsmCode[index]);
             }
 
             // Green line after ams code.
