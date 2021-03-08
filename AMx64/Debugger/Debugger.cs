@@ -100,7 +100,10 @@ namespace AMx64
                 }
                 else if (command.StartsWith("print") || command.StartsWith("p"))
                 {
-                    DebugPrint(command);
+                    if (!DebugPrint(command.Split(' ')))
+                    {
+                        Console.WriteLine(string.Format(debugger.DebuggerErrorMsg, command));
+                    }
                 }
                 else if (command.Equals("list") || command.Equals("l"))
                 {
@@ -139,10 +142,8 @@ namespace AMx64
             while (true);
         }
 
-        private void DebugPrint(string command)
+        private bool DebugPrint(string[] tokens)
         {
-            var tokens = command.Split(' ');
-
             if (tokens.Length == 1)
             {
                 GetCPUDebugStats();
@@ -161,34 +162,40 @@ namespace AMx64
                 if (size == -1)
                 {
                     Console.WriteLine($"Failed to parse value '{tokens[1]}'.");
-                    return;
+                    return false;
                 }
 
-                UInt64 location = 0;
+                UInt64 location;
 
-                if (variables.TryGetValue(tokens[2], out var variableAdd))
+                if (variables.TryGetValue(tokens[2], out var address))
                 {
-                    location = (UInt64)variableAdd;
+                    location = (UInt64)address;
                 }
                 else if (tokens[2].StartsWith("0x"))
                 {
                     tokens[2].TryParseUInt64(out location, 16);
                 }
+                else if (Int64.TryParse(tokens[2], out address))
+                {
+                    location = (UInt64)address;
+                }
                 else
                 {
-                    if (!tokens[2].TryParseUInt64(out location, 10))
-                    {
-                        Console.WriteLine($"Failed to parse value '{tokens[2]}'.");
-                        return;
-                    }
+                    Console.WriteLine($"Failed to parse value '{tokens[2]}'.");
+                    return false;
                 }
 
+
                 memory.Read(location, (UInt64)size, out var value);
+
+                Console.WriteLine($"{tokens[2]}:    0x{value:x16}");
             }
             else
             {
-                Console.WriteLine(string.Format(debugger.DebuggerErrorMsg, command));
+                return false;
             }
+
+            return true;
         }
 
 
@@ -234,7 +241,7 @@ namespace AMx64
                 $"PF:   {(PF ? 1 : 0)}\n" +
                 $"ZF    {(ZF ? 1 : 0)}\n" +
                 $"SF    {(SF ? 1 : 0)}\n" +
-                $"OF    {(OF ? 1 : 0)}\n"
+                $"OF    {(OF ? 1 : 0)}"
                 );
         }
     }
