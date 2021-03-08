@@ -311,6 +311,7 @@ namespace AMx64
                 // User for debugging.
                 if (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) == lineNumber)
                 {
+                    DebugShowAsmLines();
                     if (!InterpretDebugCommandLine())
                     {
                         return;
@@ -378,6 +379,35 @@ namespace AMx64
         }
 
         /// <summary>
+        /// Prints out 7 asm code lines, 3 before and 3 after the current line, marking the current line with green color.
+        /// </summary>
+        private void DebugShowAsmLines()
+        {
+            // Green line before ams code.
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.WriteLine();
+            Console.ResetColor();
+
+            var upperLimit = currentLine.CurrentAsmLineNumber + 3 > AsmCode.Count ? AsmCode.Count : currentLine.CurrentAsmLineNumber + 3;
+
+            for (var i = currentLine.CurrentAsmLineNumber - 3; i <= upperLimit; ++i)
+            {
+                if (i == currentLine.CurrentAsmLineNumber)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.WriteLine(AsmCode[i]);
+                    Console.ResetColor();
+                }
+                Console.WriteLine(AsmCode[i]);
+            }
+
+            // Green line after ams code.
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        /// <summary>
         /// Parses asm code labels.
         /// </summary>
         /// <param name="lineNumber">Current line number.</param>
@@ -425,11 +455,11 @@ namespace AMx64
         {
             errorMsg = "";
 
-            if(string.IsNullOrEmpty(currentLine.CurrentAsmLineValue) || string.IsNullOrWhiteSpace(currentLine.CurrentAsmLineValue))
+            if (string.IsNullOrEmpty(currentLine.CurrentAsmLineValue) || string.IsNullOrWhiteSpace(currentLine.CurrentAsmLineValue))
             {
                 return ErrorCode.EmptyLine;
             }
-            else if(currentLine.CurrentAsmLineValue.StartsWith(';'))
+            else if (currentLine.CurrentAsmLineValue.StartsWith(';'))
             {
                 return ErrorCode.Comment;
             }
