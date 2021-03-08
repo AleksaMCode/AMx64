@@ -346,7 +346,7 @@ namespace AMx64
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length - 1).TrimStart();
                 }
 
-                // User for debugging.
+                // Used for debugging.
                 if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
                     DebugShowAsmLines();
