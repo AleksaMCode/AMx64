@@ -28,6 +28,10 @@
       - [Register (Direct) Addressing](#register-direct-addressing)
       - [Immediate (literal) Addressing](#immediate-literal-addressing)
   - [Debug - AMDB](#debug---amdb)
+  - [References](#references)
+    - [Books](#books)
+    - [Links](#links)
+    - [Github projects](#github-projects)
   - [To-Do List](#to-do-list)
 
 
@@ -343,6 +347,26 @@ JL | Jump Less | OF, SF | SF != 0
 >  Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
 ## Debug - AMDB
+
+## References
+### Books
+<ul>
+  <li><a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf"><p align="justify">Intel® 64 and IA-32 Architectures - Software Developer’s Manual</p></a></li>
+  <li><a href="https://www.amazon.com/Debugging-GDB-GNU-Source-Level-Debugger/dp/1882114884"><p align="justify">Richard Stallman, Roland Pesch, Stan Shebs, et al. - <i>Debugging with gdb: The gnu Source-Level Debugger</i></p></a></li>
+</ul>
+
+### Links
+<ul>
+  <li><p align="justify"><a href="https://cs.baylor.edu/~donahoo/tools/gdb/tutorial.html">How to Debug Using GDB</a></p></li>
+  <li><p align="justify"><a href="https://en.wikibooks.org/wiki/X86_Assembly/X86_Architecture">x86 Assembly/X86 Architecture</a></p></li>
+  <li><p align="justify"><a href="http://home.myfairpoint.net/fbkotler/nasmdocr.html">Nasm Instruction Set Reference</a></p></li>
+  <li><p align="justify"><a href="https://able.bio/kerrishotts/building-a-basic-interpreter-80s-style--79a9d703">Building a BASIC Interpreter, '80s style</a></p></li>
+  <li><p align="justify"><a href="https://teaching.csse.uwa.edu.au/units/CITS2230/resources/gdb-intro.html">A Quickstart Guide to Debugging C Programs with gdb</a></p></li>
+  <li><p align="justify"><a href="https://opensource.com/article/21/1/gnu-project-debugger">A hands-on tutorial for using the GNU Project Debugger</a></p></li>
+</ul>
+
+### Github projects
+Some of the projects that helped me create my project.
 
 ## To-Do List
 - [x] Add Direct memory addressing.
