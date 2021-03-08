@@ -198,7 +198,14 @@ JL | Jump Less | OF, SF | SF != 0
 >  It doesn't affect flags.
 
 #### END
-<p align="justify">This instruction indicates that the program ends correctly. If the program terminates without this instruction it should return the value different from 0.</p>
+<p align="justify">To terminate asm code properly you should do the following.</p>
+
+```asm
+mov rax, 60
+mov rdi, 0
+syscall
+```
+<p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully it should store value 1 inside of the RDI register.</p>
 
 ## Memory
 ### Registers
