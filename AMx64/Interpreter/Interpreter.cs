@@ -182,7 +182,20 @@ namespace AMx64
         {
             var index = sections["section .text"];
 
-            if (globalSymbolRegex.Match(AsmCode[++index]).Success)
+            // Skip comment or empty lines.
+            for(++index; index < AsmCode.Count; ++index)
+            {
+                if(AsmCode[index].StartsWith(';') || string.IsNullOrEmpty(AsmCode[index]))
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (globalSymbolRegex.Match(AsmCode[index]).Success)
             {
                 globalSymbol = AsmCode[index].Substring(6).Trim();
                 return true;
@@ -247,9 +260,18 @@ namespace AMx64
                 // Remove comment part of the asm lines.
                 for (var i = 0; i < AsmCode.Count; ++i)
                 {
-                    AsmCode[i] = AsmCode[i].Contains(";")
-                        ? AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd()
-                        : AsmCode[i].Trim();
+                    AsmCode[i] = AsmCode[i].Trim();
+
+                    // Skip comment lines.
+                    if (AsmCode[i].StartsWith(';'))
+                    {
+                        continue;
+                    }
+
+                    if (AsmCode[i].Contains(";"))
+                    {
+                        AsmCode[i] = AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd();
+                    }
                 }
 
                 // Add sections.
@@ -455,7 +477,7 @@ namespace AMx64
         {
             errorMsg = "";
 
-            if (string.IsNullOrEmpty(currentLine.CurrentAsmLineValue) || string.IsNullOrWhiteSpace(currentLine.CurrentAsmLineValue))
+            if (string.IsNullOrEmpty(currentLine.CurrentAsmLineValue))
             {
                 return ErrorCode.EmptyLine;
             }
