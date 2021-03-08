@@ -63,12 +63,12 @@ General-purpose registers are used for processing integral instructions (the mos
 ## The AMASM Language (AMx64 Assembly Language)
 <p align="justify"><b>AMx64</b> comes with build-in assembly language loosely based around NASM or Intel syntax. Before we describe the syntax of operations and other utilities, we need to go over some of the basics of <b>AMx64</b> assembly language.</p>
 
+### Sections
+<p align="justify">In a typical assembly language, your program is broken up into several sections.</p>
+
 > **_NOTE:_**
 > 
 > <code>.data</code> and <code>.bss</code> sections must come before <code>.text</code> section in asm code.
-
-### Sections
-<p align="justify">In a typical assembly language, your program is broken up into several sections.</p>
 
 #### Data Section (.data)
 <p align="justify">The data section holds all your variables that are initialized to specific values. This will typically be used only for global variables. The data section is read-write.</p>
