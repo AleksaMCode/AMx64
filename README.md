@@ -15,7 +15,7 @@
     - [Labels](#labels)
     - [Numeric Constants](#numeric-constants)
     - [Character Literals](#character-literals)
-    - [Operand/Adress Size](#operandadress-size)
+    - [Operand/Address Size](#operandaddress-size)
     - [Supported instructions](#supported-instructions)
       - [ADD - Add](#add---add)
       - [SUB - Subtract](#sub---subtract)
@@ -123,7 +123,7 @@ Some examples (all producing exactly the same code):
 > 
 > Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.
 
-### Operand/Adress Size
+### Operand/Address Size
  <p align="justify">To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). </p>
  <table>
   <tr>
@@ -276,7 +276,7 @@ syscall
 >  Despite the fact that you can use 64-bit address, you only have 2 GB of memory available due to internal limits of C# in Visual Studio.
 
 ### Registers
-<p align="justify">Register operand refers to the contents of a register.<b>AMx64</b> has a total of 16 registers, but not all of the currently in use. To refer to one of the avaliable registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. mov eax, [var]) loads a 32-bit value from memory into the 32-bit partition of RAX.
+<p align="justify">Register operand refers to the contents of a register. <b>AMx64</b> has a total of 16 registers, but not all of the currently in use. To refer to one of the avaliable registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. <code>mov eax, [var]</code>) loads a 32-bit value from memory into the 32-bit partition of RAX.
 
 <b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
@@ -421,7 +421,9 @@ syscall
 ```
 <p align="justify">This "addressing mode" does not have an effective address, and is not considered to be an addressing mode on some computers. For example,<p>
 
-`mov ax, 1` 
+```asm
+mov ax, 1
+```
 
 <p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
 
@@ -430,7 +432,7 @@ syscall
 >  Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
 ## Debug - AMDB
-<p align="justify">You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.
+<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
@@ -504,3 +506,4 @@ Some of the projects that helped me create my project.
 - [ ] Implement Stack memory structure.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
+- [ ] Implement C-style character escapes.
