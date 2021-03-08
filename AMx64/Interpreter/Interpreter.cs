@@ -242,13 +242,13 @@ namespace AMx64
                 AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
 
                 // Remove empty or comment lines.
-                AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) || line.StartsWith(";")).ToList();
+                AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && !string.IsNullOrWhiteSpace(line)).ToList();
 
                 // Remove comment part of the asm lines.
                 for (var i = 0; i < AsmCode.Count; ++i)
                 {
                     AsmCode[i] = AsmCode[i].Contains(";")
-                        ? AsmCode[i].Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).Trim()
+                        ? AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd()
                         : AsmCode[i].Trim();
                 }
 
