@@ -152,10 +152,10 @@ namespace AMx64
             {
                 var size = (tokens[1].ToUpper()) switch
                 {
-                    "BYTE" => 8,
-                    "WORD" => 16,
-                    "DWORD" => 32,
-                    "QWORD" => 64,
+                    "BYTE" => 1,
+                    "WORD" => 2,
+                    "DWORD" => 4,
+                    "QWORD" => 6,
                     _ => -1,
                 };
 
@@ -185,10 +185,15 @@ namespace AMx64
                     return false;
                 }
 
-
-                memory.Read(location, (UInt64)size, out var value);
-
-                Console.WriteLine($"{tokens[2]}:    0x{value:x16}");
+                if (location <= 2_000_000)
+                {
+                    memory.Read(location, (UInt64)size, out var value);
+                    Console.WriteLine($"{tokens[2]}:    0x{value:x16}");
+                }
+                else
+                {
+                    Console.WriteLine($"Out of bounds error for memory location 0x{location:x16}");
+                }
             }
             else
             {
