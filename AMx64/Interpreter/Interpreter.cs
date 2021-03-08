@@ -475,6 +475,7 @@ namespace AMx64
         {
             Console.BackgroundColor = ConsoleColor.Green;
             Console.WriteLine("\t\t\t\t\t\t");
+            Console.WriteLine("\t\t\t\t\t\t");
             Console.ResetColor();
         }
 
