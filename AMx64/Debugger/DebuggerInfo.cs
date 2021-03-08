@@ -22,11 +22,11 @@ List of classes of commands:
 
     h, help       -- Prints this help page
     r, run        -- Starts program debugging
-    n, next       -- Interprets current line and stops a program at the next line
+    s, step       -- Interprets current line and stops a program at the next line
     c, continue   -- Continues program debugging from a breakpoint
     b, breakpoint -- Making program stop at certain points
     d, delete     -- Removes a breakpoint
-    s, show       -- Show current memory stats.
+    p, print      -- Show current memory stats.
     l, list       -- Displays source code
     q, quit       -- Quits debugging
 ";

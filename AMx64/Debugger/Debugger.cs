@@ -26,9 +26,10 @@ namespace AMx64
                 {
                     Console.Write(debugger.HelpDebugMessage);
                 }
-                else if (command.StartsWith("breakpoint ") || command.StartsWith("b "))
+                else if (command.StartsWith("break ") || command.StartsWith("b "))
                 {
                     var errorMsg = debugger.SetBreakpoints(command.Split(' '));
+
                     if (string.IsNullOrEmpty(errorMsg))
                     {
                         Console.WriteLine("Breakpoint(s) successfully added.");
@@ -49,11 +50,11 @@ namespace AMx64
                         Console.WriteLine("Interpreter is already running.");
                     }
                 }
-                else if (command.StartsWith("delete ") || command.StartsWith("d "))
+                else if (command.StartsWith("delete") || command.StartsWith("d"))
                 {
                     var tokens = command.Split(' ');
 
-                    if (tokens.Length == 2 && tokens[1] == "all")
+                    if (tokens.Length == 1)
                     {
                         if (debugger.Breakpoints.Count != 0)
                         {
@@ -85,7 +86,7 @@ namespace AMx64
                         return true;
                     }
                 }
-                else if (command.Equals("next") || command.Equals("n"))
+                else if (command.Equals("step") || command.Equals("s"))
                 {
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
@@ -97,13 +98,13 @@ namespace AMx64
                         return true;
                     }
                 }
-                else if (command.Equals("show") || command.Equals("s"))
+                else if (command.StartsWith("print") || command.StartsWith("p"))
                 {
-                    GetCPUDebugStats();
+                    DebugPrint(command);
                 }
                 else if (command.Equals("list") || command.Equals("l"))
                 {
-                    if(currentLine.CurrentAsmLineNumber != -1)
+                    if (currentLine.CurrentAsmLineNumber != -1)
                     {
                         DebugShowAsmLines();
                     }
@@ -114,7 +115,21 @@ namespace AMx64
                 }
                 else if (command.Equals("quit") || command.Equals("q"))
                 {
-                    return false;
+                    Console.Write(@"Are you sure? [y\n] ");
+                    var answer = Console.ReadLine();
+
+                    if (answer == "y")
+                    {
+                        return false;
+                    }
+                    else if (answer == "n")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine(string.Format(debugger.DebuggerErrorMsg, answer));
+                    }
                 }
                 else
                 {
@@ -122,6 +137,58 @@ namespace AMx64
                 }
             }
             while (true);
+        }
+
+        private void DebugPrint(string command)
+        {
+            var tokens = command.Split(' ');
+
+            if (tokens.Length == 1)
+            {
+                GetCPUDebugStats();
+            }
+            else if (tokens.Length == 3)
+            {
+                var size = (tokens[1].ToUpper()) switch
+                {
+                    "BYTE" => 8,
+                    "WORD" => 16,
+                    "DWORD" => 32,
+                    "QWORD" => 64,
+                    _ => -1,
+                };
+
+                if (size == -1)
+                {
+                    Console.WriteLine($"Failed to parse value '{tokens[1]}'.");
+                    return;
+                }
+
+                UInt64 location = 0;
+
+                if (variables.TryGetValue(tokens[2], out var variableAdd))
+                {
+                    location = (UInt64)variableAdd;
+                }
+                else if (tokens[2].StartsWith("0x"))
+                {
+                    tokens[2].TryParseUInt64(out location, 16);
+                }
+                else
+                {
+                    if (!tokens[2].TryParseUInt64(out location, 10))
+                    {
+                        Console.WriteLine($"Failed to parse value '{tokens[2]}'.");
+                        return;
+                    }
+                }
+
+                memory.Read(location, (UInt64)size, out var value);
+            }
+            else
+            {
+                Console.WriteLine(string.Format(debugger.DebuggerErrorMsg, command));
+            }
         }
 
 
