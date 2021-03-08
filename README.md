@@ -28,6 +28,13 @@
       - [Register (Direct) Addressing](#register-direct-addressing)
       - [Immediate (literal) Addressing](#immediate-literal-addressing)
   - [Debug - AMDB](#debug---amdb)
+    - [Getting Help](#getting-help)
+    - [Setting Breakpoints](#setting-breakpoints)
+    - [Deleting Breakpoints](#deleting-breakpoints)
+    - [Display Source Code](#display-source-code)
+    - [Examine Memory](#examine-memory)
+    - [Continuing and Stepping](#continuing-and-stepping)
+    - [Quitting](#quitting)
   - [References](#references)
     - [Books](#books)
     - [Links](#links)
@@ -347,6 +354,52 @@ JL | Jump Less | OF, SF | SF != 0
 >  Direct memory, Direct offset and Register indirect addressing is not currently supported.
 
 ## Debug - AMDB
+<p align="justify">You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.
+
+### Getting Help
+<p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
+
+### Setting Breakpoints
+<p align="justify">Breakpoints are set with the <code>break</code> command (abbreviated <code>b</code>). This command tells <i>amdb</i> to pause execution of your program at some point to allow you to inspect the value of 'variables' and other memory locations. It will pause interpretation just before the specified line number is interpreted.</p>
+<dl>
+  <dt><b>break [breakpoints]</b></dt>
+  <dd><p align="justify">Set a breakpoint(s) at the given location(s) (line number(s)). The breakpoint will stop your program just before it executes any of the code in the specified location. E.q. <code>break 2 3 4</code>.</p></dd>
+</dl>
+
+### Deleting Breakpoints
+<p align="justify">It is often necessary to eliminate a breakpoint once it has done its job and you no longer want your program to stop there. This is called deleting the breakpoint. A breakpoint that has been deleted no longer exists. You can delete breakpoints using the <code>d</code> (or <code>delete</code>) command.</p>
+<dl>
+  <dt><b>delete</b></dt>
+  <dd>Deletes all available breakpoints.</dd>
+  <dt><b>delete [breakpoints]</b></dt>
+  <dd>Deletes all available breakpoints. E.q. <code>delete 2 3 4</code>.</dd>
+</dl>
+
+### Display Source Code
+<p align="justify">You can display your source code inside <i>amdb</i> using the <code>l</code> (or <code>list</code>) command. <i>amdb</i> will print 7 lines of source code at a time, with a line number at the start of each line. Current line is always highlighted with a green color.</p>
+
+### Examine Memory
+<p align="justify">Once you have paused a interpretation, you can use the <code>p</code> (or <code>print</code>) command to print the values of 'variables', specified memory locations or registers.</p>
+<dl>
+  <dt><b>print</b></dt>
+  <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.</dd>
+  <dt><b>print size memory_location</b></dt>
+  <dd>Shows value stored in memory starting from the memory location. E.q. <code>print word 0x0000000A</code>.</dd>
+  <dt><b>print size variable</b></dt>
+  <dd>Shows value stored in memory starting from the memory location which is referenced using a 'variable'. E.q. <code>print word hello_msg</code>.</dd>
+</dl>
+
+### Continuing and Stepping
+<p align="justify">Continuing means resuming file interpretation until your it completes normally. In contrast, stepping means executing just one more “step” of your interpreter, where “step” means one line of source code. Either when continuing or when stepping, interpreter may stop even sooner, due to a breakpoint.</p>
+<dl>
+  <dt><b>continue</b> or <b>c</b></dt>
+  <dd>Continues interpretation until the end of the file or unitil it reaches the next breakpoint.</dd>
+  <dt><b>next</b> or <b>n</b></dt>
+  <dd>Interprets the current and stop interpretation on the next line.</dd>
+</dl>
+
+### Quitting
+<p align="justify">To quit from a <i>amdb</i> session, type <code>q</code> (short for quit) or <code>quit</code>. <i>amdb</i> will ask if you really want to quit. If you do, type <code>y</code> followed by the <code>Enter</code> key. This check may see a little unnecessary, but it helps prevent people quitting accidentally at that crucial moment in a lengthy debugging session.</p>
 
 ## References
 ### Books
