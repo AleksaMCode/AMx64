@@ -232,7 +232,16 @@ namespace AMx64
         /// <returns>true if section has been added successfully, otherwise false.</returns>
         private bool AddSection(string section)
         {
-            var index = AsmCode.IndexOf(section);
+            var index = -1;
+
+            for (var i = 0; i < AsmCode.Count; ++i)
+            {
+                if (AsmCode[i].StartsWith(section))
+                {
+                    index = i;
+                    break;
+                }
+            }
 
             if (section == "section .text" && index == -1)
             {
@@ -265,22 +274,25 @@ namespace AMx64
                 //// Remove empty or comment lines.
                 //AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && !string.IsNullOrWhiteSpace(line)).ToList();
 
-                // Remove comment part of the asm lines.
-                for (var i = 0; i < AsmCode.Count; ++i)
-                {
-                    AsmCode[i] = AsmCode[i].Trim();
+                // Trim each line.
+                AsmCode = AsmCode.Select(line => line.Trim()).ToList();
 
-                    // Skip comment lines.
-                    if (AsmCode[i].StartsWith(';'))
-                    {
-                        continue;
-                    }
+                //// Remove comment part of the asm lines.
+                //for (var i = 0; i < AsmCode.Count; ++i)
+                //{
+                //    AsmCode[i] = AsmCode[i].Trim();
 
-                    if (AsmCode[i].Contains(";"))
-                    {
-                        AsmCode[i] = AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd();
-                    }
-                }
+                //    // Skip comment lines.
+                //    if (AsmCode[i].StartsWith(';'))
+                //    {
+                //        continue;
+                //    }
+
+                //    if (AsmCode[i].Contains(";"))
+                //    {
+                //        AsmCode[i] = AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd();
+                //    }
+                //}
 
                 // Add sections.
                 if (!AddSections())
@@ -335,7 +347,8 @@ namespace AMx64
 
             for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
-                currentLine.CurrentAsmLineValue = AsmCode[lineNumber] = AsmCode[lineNumber].Trim();
+                // Set current line.
+                currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
                 var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
@@ -343,7 +356,13 @@ namespace AMx64
                 // Remove lable from a line. e.q. from a line -> label: OP op1, op2
                 if (labelMatch.Success && labelMatch.Value.Length != currentLine.CurrentAsmLineValue.Length)
                 {
-                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length - 1).TrimStart();
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length).TrimStart();
+                }
+
+                // Remove comment part of the asm lines.
+                if (!currentLine.CurrentAsmLineValue.StartsWith(';') && currentLine.CurrentAsmLineValue.Contains(";"))
+                {
+                    currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).TrimEnd();
                 }
 
                 // Used for debugging.
@@ -362,7 +381,7 @@ namespace AMx64
                     }
                 }
 
-                // Set current section.
+                // Set current section and skip section asm line.
                 if (currentSection != AsmSegment.TEXT)
                 {
                     switch (currentLine.CurrentAsmLineValue)
@@ -385,6 +404,7 @@ namespace AMx64
                 // If Jcc occurred.
                 if (interpretResult == ErrorCode.JmpOccurred)
                 {
+                    // Reduce by one to offset for loop increment.
                     lineNumber = currentLine.CurrentAsmLineNumber - 1;
                     continue;
                 }
@@ -514,7 +534,7 @@ namespace AMx64
             {
                 return ErrorCode.Comment;
             }
-            else if(asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
+            else if (asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
             {
                 return ErrorCode.Label;
             }
