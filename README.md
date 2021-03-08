@@ -12,9 +12,10 @@
       - [BSS Section (.bss)](#bss-section-bss)
       - [Text Section (.text)](#text-section-text)
     - [Layout of a AMASM Source Line](#layout-of-a-amasm-source-line)
+    - [Labels](#labels)
     - [Numeric Constants](#numeric-constants)
     - [Character Literals](#character-literals)
-    - [Operand Size](#operand-size)
+    - [Operand/Adress Size](#operandadress-size)
     - [Supported instructions](#supported-instructions)
       - [ADD - Add](#add---add)
       - [SUB - Subtract](#sub---subtract)
@@ -87,6 +88,11 @@ General-purpose registers are used for processing integral instructions (the mos
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
+### Labels
+> **_NOTE:_**
+> 
+> Local labels aren't available.
+
 ### Numeric Constants
 <p align="justify">A numeric constant is simply a number. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
 Numeric constants can have underscores (_) interspersed to break up long strings.</p>
@@ -117,8 +123,8 @@ Some examples (all producing exactly the same code):
 > 
 > Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.
 
-### Operand Size
- <p align="justify">To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want (e.q. <code>add byte rax, [rbx]</code>). In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to.</p>
+### Operand/Adress Size
+ <p align="justify">To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). </p>
  <table>
   <tr>
     <th>Size Directive</th>
@@ -263,8 +269,16 @@ syscall
 <p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully it should store value 1 inside of the RDI register.</p>
 
 ## Memory
+<p align="justify">A memory value is an expression that evaluates to the address of some value in memory. In <b>AMx64</b> assembly language, addresses are enclosed in brackets “[…]” with the address expression inside.</p>
+
+> **_NOTE:_**
+> 
+>  Despite the fact that you can use 64-bit address, you only have 2 GB of memory available due to internal limits of C# in Visual Studio.
+
 ### Registers
-<p align="justify"><b>AMASM</b> uses the following names for general-purpose registers in 64-bit mode This is consistent with the AMD/Intel documentation and most other assemblers.</p>
+<p align="justify">Register operand refers to the contents of a register.<b>AMx64</b> has a total of 16 registers, but not all of the currently in use. To refer to one of the avaliable registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. mov eax, [var]) loads a 32-bit value from memory into the 32-bit partition of RAX.
+
+<b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
 #### General-Purpose Registers
  Naming conventions | 64 bits | 32 bits | 16 bits | High 8 bits | Low 8 bits
