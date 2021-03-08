@@ -241,8 +241,8 @@ namespace AMx64
             {
                 AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
 
-                // Remove empty or comment lines.
-                AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && !string.IsNullOrWhiteSpace(line)).ToList();
+                //// Remove empty or comment lines.
+                //AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && !string.IsNullOrWhiteSpace(line)).ToList();
 
                 // Remove comment part of the asm lines.
                 for (var i = 0; i < AsmCode.Count; ++i)
@@ -293,8 +293,8 @@ namespace AMx64
                 return;
             }
 
-            // Remove empty lines.
-            AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
+            //// Remove empty lines.
+            //AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
 
             // Check if global symbol is used.
             if (!labels.ContainsKey(globalSymbol))
@@ -425,8 +425,16 @@ namespace AMx64
         {
             errorMsg = "";
 
+            if(string.IsNullOrEmpty(currentLine.CurrentAsmLineValue) || string.IsNullOrWhiteSpace(currentLine.CurrentAsmLineValue))
+            {
+                return ErrorCode.EmptyLine;
+            }
+            else if(currentLine.CurrentAsmLineValue.StartsWith(';'))
+            {
+                return ErrorCode.Comment;
+            }
             // Checks for duplicate sections in asm code.
-            if (currentLine.CurrentAsmLineValue.Contains("section"))
+            else if (currentLine.CurrentAsmLineValue.Contains("section"))
             {
                 errorMsg = $"Duplicate section encountered: {currentLine.CurrentAsmLineValue}";
                 return ErrorCode.SectionProblems;
