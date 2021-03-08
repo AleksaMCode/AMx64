@@ -447,8 +447,7 @@ namespace AMx64
         /// </summary>
         private void DebugShowAsmLines()
         {
-            // Green line before ams code.
-            DebugPrintLine();
+            Console.WriteLine("\n\n");
 
             var upperLimit = currentLine.CurrentAsmLineNumber + 3 >= AsmCode.Count ? AsmCode.Count - 1 : currentLine.CurrentAsmLineNumber + 3;
             var index = currentLine.CurrentAsmLineNumber - 3 < 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
@@ -467,16 +466,7 @@ namespace AMx64
                 }
             }
 
-            // Green line after ams code.
-            DebugPrintLine();
-        }
-
-        private void DebugPrintLine()
-        {
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.WriteLine("\t\t\t\t\t\t");
-            Console.WriteLine("\t\t\t\t\t\t");
-            Console.ResetColor();
+            Console.WriteLine("\n\n");
         }
 
         /// <summary>
