@@ -361,8 +361,6 @@ namespace AMx64
                             continue;
                         case "section .text":
                             currentSection = AsmSegment.TEXT;
-                            // Skip global line.
-                            lineNumber++;
                             continue;
                     }
                 }
