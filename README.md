@@ -462,7 +462,7 @@ mov ax, 1
   <dt><b>print</b></dt>
   <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.</dd>
   <dt><b>print size memory_location</b></dt>
-  <dd>Shows value stored in memory starting from the memory location. E.q. <code>print word 0x0000000A</code>.</dd>
+  <dd>Shows value stored in memory starting from the memory location. Memory location can be set in hex format (e.q. 0x0000007B) or in decimal format (e.q. 123). E.q. <code>print word 0x0000000A</code>.</dd>
   <dt><b>print size variable</b></dt>
   <dd>Shows value stored in memory starting from the memory location which is referenced using a 'variable'. E.q. <code>print word hello_msg</code>.</dd>
 </dl>
