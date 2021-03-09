@@ -532,7 +532,7 @@ namespace AMx64
 
                 if (!currentExpr.ParseAsmLine(currentLine.CurrentAsmLineValue))
                 {
-                    errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                    errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber + 1}: {currentLine.CurrentAsmLineValue}";
                     return ErrorCode.InvalidAsmLine;
                 }
 
