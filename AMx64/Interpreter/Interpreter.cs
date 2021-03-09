@@ -31,8 +31,6 @@ namespace AMx64
 
         Jmp,                // unary operation
         Je, Jne, Jge, Jl,   // unary operation
-
-        End
     }
 
     public partial class AMX64
