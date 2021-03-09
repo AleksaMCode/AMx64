@@ -204,7 +204,9 @@ Performs a bitwise NOT on the destination.
 ```asm
 NOT reg
 ```
-**NOTE:** It doesn't affect flags.
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
 
 #### MOV - Move
 <p align="justify">Copies a value from some source to a destination. Does not support  memory-to-memory transfers.</p>
