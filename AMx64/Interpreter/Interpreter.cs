@@ -39,6 +39,21 @@ namespace AMx64
         private const char labelDefSymbol = ':';
 
         /// <summary>
+        /// A lookup table of parity for 8-bit values.
+        /// </summary>
+        private static readonly bool[] parityTable =
+        {
+            true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true, false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false,
+            false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false, true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true,
+            false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false, true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true,
+            true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true, false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false,
+            false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false, true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true,
+            true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true, false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false,
+            true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true, false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false,
+            false, true, true, false, true, false, false, true, true, false, false, true, false, true, true, false, true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true,
+        };
+
+        /// <summary>
         /// Path to asm file path.
         /// </summary>
         public static string AsmFilePath = Environment.CurrentDirectory;
@@ -1364,6 +1379,18 @@ namespace AMx64
                 errorMsg = $"Failed to evaluate \"{value}\".";
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Updates ZF, SF and PF flags.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="sizecode"></param>
+        private void UpdateZSPFlags(UInt64 value, UInt64 sizecode)
+        {
+            ZF = value == 0;
+            SF = Utility.Negative(value, sizecode);
+            PF = parityTable[value & 0xff];
         }
 
         public bool IsSymbolReserverd(string symbol)

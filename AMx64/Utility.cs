@@ -425,6 +425,27 @@ namespace AMx64
         }
 
         /// <summary>
+        /// Checks if the value with specified code size is negative.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="codeSize">Code size of the value.</param>
+        /// <returns>true if postive, otherwise false.</returns>
+        public static bool Negative(UInt64 value, UInt64 codeSize)
+        {
+            return (value & SignMask(codeSize)) != 0;
+        }
+
+        /// <summary>
+        /// Gets the bitmask for the sign bit of an integer with the specified code size.
+        /// </summary>
+        /// <param name="codeSize">Specified code size.</param>
+        /// <returns>Integer's bitmask.</returns>
+        public static UInt64 SignMask(UInt64 codeSize)
+        {
+            return 1ul << ((8 << (UInt16)codeSize) - 1);
+        }
+
+        /// <summary>
         /// Help method used to determine if array's bounds have been exceeded.
         /// </summary>
         /// <param name="position">Start index of array.</param>
