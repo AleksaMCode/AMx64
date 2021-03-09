@@ -37,12 +37,20 @@ namespace AMx64
     {
         private const char commentSymbol = ';';
         private const char labelDefSymbol = ':';
+
+        /// <summary>
+        /// Path to asm file path.
+        /// </summary>
         public static string AsmFilePath = Environment.CurrentDirectory;
 
+        /// <summary>
+        /// Asm code.
+        /// </summary>
         public List<string> AsmCode;
 
-
-
+        /// <summary>
+        /// Maximum allowed memory size.
+        /// </summary>
         private static readonly int maxMemSize = 2_000_000;
 
         /// <summary>
@@ -50,12 +58,14 @@ namespace AMx64
         /// </summary>
         private byte[] memory = new byte[maxMemSize];
 
-
         /// <summary>
         /// Next memory block index.
         /// </summary>
         private Int64 nextMemoryLocation = 0;
 
+        /// <summary>
+        /// Current line expression.
+        /// </summary>
         private Expression currentExpr;
 
         /// <summary>
