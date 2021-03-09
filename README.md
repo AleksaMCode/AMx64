@@ -12,10 +12,11 @@
       - [BSS Section (.bss)](#bss-section-bss)
       - [Text Section (.text)](#text-section-text)
     - [Layout of a AMASM Source Line](#layout-of-a-amasm-source-line)
+    - [Comments](#comments)
     - [Labels](#labels)
     - [Numeric Constants](#numeric-constants)
     - [Character Literals](#character-literals)
-    - [Operand/Address Size](#operandaddress-size)
+    - [Operand/Address Size (Data Storage Sizes)](#operandaddress-size-data-storage-sizes)
     - [Supported instructions](#supported-instructions)
       - [ADD - Add](#add---add)
       - [SUB - Subtract](#sub---subtract)
@@ -29,11 +30,13 @@
       - [END](#end)
   - [Memory](#memory)
     - [Registers](#registers)
-      - [General-Purpose Registers](#general-purpose-registers)
+      - [General-Purpose Registers (GPRs)](#general-purpose-registers-gprs)
       - [FLAGS register](#flags-register)
     - [Addressing modes for data](#addressing-modes-for-data)
-      - [Register (Direct) Addressing](#register-direct-addressing)
+      - [Register (direct) Addressing](#register-direct-addressing)
       - [Immediate (literal) Addressing](#immediate-literal-addressing)
+      - [Direct Memory Addressing](#direct-memory-addressing)
+      - [Register Indirect Addressing](#register-indirect-addressing)
   - [Debug - AMDB](#debug---amdb)
     - [Getting Help](#getting-help)
     - [Setting Breakpoints](#setting-breakpoints)
@@ -69,32 +72,44 @@ General-purpose registers are used for processing integral instructions (the mos
 > **_NOTE:_**
 > 
 > <code>.data</code> and <code>.bss</code> sections must come before <code>.text</code> section in asm code.
+> <code>.rodata</code> section isn't supported.
 
 #### Data Section (.data)
-<p align="justify">The data section holds all your variables that are initialized to specific values. This will typically be used only for global variables. The data section is read-write.</p>
+<p align="justify">The data section holds all variables that are initialized to specific values. This will typically be used only for global variables. The initialized data must be declared in the <code>section .data</code> section. There must be a space after the word <i>section</i>. All initialized variables and constants are placed in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name, the data type, and the initial value for the variable.</p>
 
 #### BSS Section (.bss)
-<p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value.</p>
+<p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value. Uninitialized data must be declared in the <code>section .bss</code> section. There must be a space after the word <i>section</i>. All uninitialized variables are declared in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name,the data type, and the count.</p>
 
 #### Text Section (.text)
-<p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size.</p>
+<p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size. The code is placed in the <code>section .text</code> section. There must be a space after the word <i>section</i>. The instructions are specified one per line and each must be a valid instruction with the appropriate required operands. The text section will include some headers or labels that define the initial program entrypoint. The following declarations must be included.</p>
+
+```asm
+global main
+main:
+```
 
 ### Layout of a AMASM Source Line
 <p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
 
 `label: instruction operands ; comment`
 
-<p align="justify">As usual, most of these fields are optional; the presence or absence of any combination of a label, an instruction and a comment is allowed. Of course, the operand field is either required or forbidden by the presence and nature of the instruction field. It doesn't support multiline commands that are available in <b>NASM</b> using the backslash character (\) as the line continuation character. </p>
+<p align="justify">As usual, most of these fields are optional; the presence or absence of any combination of a label, an instruction and a comment is allowed. Of course, the operand field is either required or forbidden by the presence and nature of the instruction field. It doesn't support multiline commands that are available in <b>NASM</b> using the backslash character (\) as the line continuation character.</p>
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
+### Comments
+<p align="justify">The semicolon (';') is used to note program comments. Comments (using the ';') may be placed anywhere, including after an instruction. Any characters after the ';' are ignoredby the interpreter. This can be used to explain steps taken in the code or to comment out sections of code.</p>
+
 ### Labels
+<p align="justify">A program label is the target, or a location to jump to, for control statements. For example, the start of a loop might be marked with a label such as “<i>loopStart</i>”. The code may be re-executed by jumping to the label. Generally, a label starts with a letter, followed by letters, numbers, or symbols (limited to '_'), terminated with a colon (':').</p>
+
 > **_NOTE:_**
 > 
 > Local labels aren't available.
+> <br>Program labels may be defined only once.
 
 ### Numeric Constants
-<p align="justify">A numeric constant is simply a number. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
+<p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
 Numeric constants can have underscores (_) interspersed to break up long strings.</p>
 
 Some examples (all producing exactly the same code):
@@ -118,37 +133,47 @@ Some examples (all producing exactly the same code):
 ```
 
 ### Character Literals
+ <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as "." or "!"), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
 
 > **_NOTE:_**
 > 
-> Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.
+> <p align="justify">Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.</p>
+> 
+> <p align="justify">Characters can be displayed to the console, but cannot be used forcalculations. Integers can be used for calculations, but cannot be displayed  to the console (without changing the representation).</p>
 
-### Operand/Address Size
- <p align="justify">To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). </p>
+### Operand/Address Size (Data Storage Sizes)
+ <p align="justify">The x86-64 architecture supports a specific set of data storage size elements, all based on powers of two. To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). The supported storage sizes are as follows:</p>
  <table>
   <tr>
-    <th>Size Directive</th>
-    <th>Size</th>
+    <th>Storage</th>
+    <th>Size<br>(bits)</th>
+    <th>Size<br>(bytes)</th>
   </tr>
   <tr>
     <td>BYTE</td>
-    <td>8-bit</td>
+    <td>8-bits</td>
+    <td>1 byte</td>
   </tr>
   <tr>
     <td>WORD</td>
-    <td>16-bit</td>
+    <td>16-bits</td>
+    <td>21 byte</td>
   </tr>
   <tr>
-    <td>DWORD</td>
-    <td>32-bit</td>
+    <td>DWORD<br>(Double-word)</td>
+    <td>32-bits</td>
+    <td>4 byte</td>
   </tr>
   <tr>
-    <td>QWORD</td>
-    <td>64-bit</td>
+    <td>QWORD<br>(Quadword)</td>
+    <td>64-bits</td>
+    <td>8 byte</td>
   </tr>
 </table>
  
 ### Supported instructions
+<p align="justify">This chapter provides a basic overview for a simple subset of the x86-64 instruction setfocusing on the integer operation. This section summarizes the notation used is fairly common in the technical literature. In general, an instruction will consist of the instruction or operation itself (e.q., add, sub, etc.) and the operands. The operands refer to where the data (to be operated on) is coming from and/or where the result is to be placed.</p>
+
 #### ADD - Add
 Adds the second argument (source) to the destination (first argument).
 ```asm
@@ -234,7 +259,7 @@ Flags affected:
 5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
 #### JMP - Unconditional Jump
-<p align="justify">Jumps execution to the provided address. This instruction does not depend on the current conditions of theflag bits in the flag register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
+<p align="justify">Jumps execution to the provided location in a program denoted with a program label. This instruction does not depend on the current conditions of the flag bits in the FLAG register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
 
 ```asm
 JMP label
@@ -247,7 +272,9 @@ JMP rel_location
 >  It doesn't affect flags.
 
 #### Jcc - Jump if Condition Is Met (Conditional Jump)
-<p align="justify">Jcc is not a single instruction, it  describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.</p>
+<p align="justify">Jcc is not a single instruction, it describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.<br>
+
+Two steps are required for a Jcc; the compare instruction and the conditional jump instruction. The conditional jump instruction will jump or not jump to the provided label based on the result of the previous comparison operation. The compare instruction will compare two operands and store the results of the comparison in the RFLAG register. This   requires that the compare instruction is immediately followed by the conditional jump instruction. If other instructions are placed between the compare and conditional jump, the RF:AG register will be altered and the conditional jump may not reflect the correct condition.</p>
 
 Intruction | Description | Flags tested | Condition
 | - | - | :-: | :-:
@@ -261,7 +288,7 @@ JL | Jump Less | OF, SF | SF != 0
 >  It doesn't affect flags.
 
 #### END
-<p align="justify">To terminate asm code properly you should do the following:</p>
+<p align="justify">No special label or directives are required to terminate the program. However, to terminate asm code properly you should do the following:</p>
 
 ```asm
 mov rax, 60
@@ -282,7 +309,8 @@ syscall
 
 <b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
-#### General-Purpose Registers
+#### General-Purpose Registers (GPRs)
+<p align="justify">There are sixteen, 64-bit General Purpose Registers (GPRs). The GPRs are described in the following table. A GPR register can be accessed with all 64-bits or some portion or subset accessed.</p>
 <table style="width:80%">
   <tr>
     <th>Naming conventions</th>
@@ -339,9 +367,13 @@ syscall
     <td colspan="2"></td>
   </tr>
 </table>
+<p align="justify">When using data element sizes less than 64-bits (e.q., 32-bit, 16-bit, or 8-bit), the lower portion of the register can be accessed by using a different register name as shown in the table.</p>
 
+> **_NOTE:_**
+> 
+>  Some of the GPR registers are used for dedicated purposes as described inthe later sections. 
 #### FLAGS register
-<p align="justify">Status register contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
+<p align="justify">Status register contains the current state of processor. This register stores status information about the instruction that was justexecuted. It's 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
 
 <table style="width:100%">
   <tr>
@@ -455,9 +487,13 @@ syscall
 </table>
 
 ### Addressing modes for data
-<p align="justify">The addressing mode indicates the manner in which the operand is presented.<p>
+<p align="justify">The addressing mode indicates the manner in which the operand is presented or the addressing modes are the supported methods for accessing a value in memory usingthe address of a data item being accessed (read or written). This might include the nameof a variable or the location in an array.<p>
 
-#### Register (Direct) Addressing
+> **_NOTE:_**
+> 
+> The only way to access memory is with the brackets ('[]'). Omitting the brackets will not access memory and instead obtain the address of the item.
+
+#### Register (direct) Addressing
 ```
 +------+-----+-----+
 | mov  | reg1| reg2| reg1:=reg2
@@ -476,15 +512,30 @@ syscall
 ```asm
 mov ax, 1
 ```
-
 <p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
+
+#### Direct Memory Addressing
+<p align="justify">Direct memory mode addressing means that the operand is a location in memory (accessed via an address). This is also referred to as indirection or dereferencing.</p>
+
+```asm
+mov qword rax, [var]
+```
+<p align="justify">This instruction will access the memory location of the variable <i>var</i> and retrieve the value stored there. This requires that the CPU wait until the value is retrieved before completing the operation and thus might take slightly longer to complete than a similar operation using an immediate value.</p>
 
 > **_NOTE:_**
 > 
->  Direct memory, Direct offset and Register indirect addressing is not currently supported.
+>  Direct offset addressing is not currently supported.
+> 
+#### Register Indirect Addressing
+<p align="justify">For example, when accessing arrays, a more generalized method is usually required. Specifically, an address can be placed in a register and indirection performed using the register (instead of the variable name).</p>
 
 ## Debug - AMDB
-<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.
+<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command. E.q.
+
+```asm
+mov rbx, var
+mov dword eax, [rbx]
+```
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
