@@ -33,8 +33,7 @@ namespace AMx64
                     {
                         ParseOperation(match.Value.TrimEnd());
 
-                        asmLine = asmLine.Substring(match.Value.Length - 1);
-                        asmLine = asmLine.TrimStart();
+                        asmLine = asmLine.Substring(match.Value.Length - 1).TrimStart();
                     }
 
                     if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
@@ -42,7 +41,6 @@ namespace AMx64
                         ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
 
                         asmLine = asmLine.Substring(asmLine.IndexOf(' ')).TrimStart();
-                        asmLine.Trim();
                     }
 
 
@@ -148,23 +146,21 @@ namespace AMx64
                 }
                 else
                 {
+                    ExplicitSize = true;
+
                     switch (explicitSize.ToUpper())
                     {
                         case "BYTE":
                             CodeSize = 0;
-                            ExplicitSize = true;
                             break;
                         case "WORD":
                             CodeSize = 1;
-                            ExplicitSize = true;
                             break;
                         case "DWORD":
                             CodeSize = 2;
-                            ExplicitSize = true;
                             break;
                         case "QWORD":
                             CodeSize = 3;
-                            ExplicitSize = true;
                             break;
                         default:
                             return false;
