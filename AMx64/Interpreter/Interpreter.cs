@@ -576,8 +576,10 @@ namespace AMx64
                     case Operations.Mov:
                     case Operations.BitAnd:
                     case Operations.BitOr:
-                    case Operations.Cmp:
                         return TryProcessBinaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
+                    case Operations.Cmp:
+                        ProcessCmp();
+                        return ErrorCode.None;
                     case Operations.BitNot:
                         return TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     // if Jcc
@@ -865,6 +867,17 @@ namespace AMx64
             }
 
             return true;
+        }
+
+        private void ProcessCmp()
+        {
+            var result = currentExpr.LeftOpValue - currentExpr.RightOpValue;
+
+            // If overflow occurred, set OF flag to true, otherwise to false.
+            OF = result > currentExpr.LeftOpValue;
+            UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+
+            // TODO: set CF flag
         }
 
         private bool TryProcessBinaryOp()
