@@ -162,7 +162,6 @@ namespace AMx64
             ["AL"] = new Tuple<byte, byte, bool>(0, 0, false),
             ["AH"] = new Tuple<byte, byte, bool>(0, 0, true),
 
-
             ["RBX"] = new Tuple<byte, byte, bool>(1, 3, false),
             ["EBX"] = new Tuple<byte, byte, bool>(1, 2, false),
             ["BX"] = new Tuple<byte, byte, bool>(1, 1, false),
@@ -179,7 +178,15 @@ namespace AMx64
             ["EDX"] = new Tuple<byte, byte, bool>(3, 2, false),
             ["DX"] = new Tuple<byte, byte, bool>(3, 1, false),
             ["DL"] = new Tuple<byte, byte, bool>(3, 0, false),
-            ["DH"] = new Tuple<byte, byte, bool>(3, 0, true)
+            ["DH"] = new Tuple<byte, byte, bool>(3, 0, true),
+
+            ["RSI"] = new Tuple<byte, byte, bool>(4, 3, false),
+            ["ESI"] = new Tuple<byte, byte, bool>(4, 2, false),
+            ["SI"] = new Tuple<byte, byte, bool>(3, 1, false),
+
+            ["RDI"] = new Tuple<byte, byte, bool>(5, 3, false),
+            ["EDI"] = new Tuple<byte, byte, bool>(5, 2, false),
+            ["DI"] = new Tuple<byte, byte, bool>(3, 1, false)
         };
 
         /// <summary>
