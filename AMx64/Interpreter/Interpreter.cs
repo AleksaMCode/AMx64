@@ -100,7 +100,7 @@ namespace AMx64
         /// <summary>
         /// Regex for available registers.
         /// </summary>
-        private static readonly Regex asmLineAvailableRegisters = new Regex(@"^((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L)$", RegexOptions.Compiled);
+        private static readonly Regex asmLineAvailableRegisters = new Regex(@"^((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L)|(R|E)(D|S)I$", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for .data section part of asm code (db, dw, dd, dq).
@@ -115,12 +115,12 @@ namespace AMx64
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
         /// </summary>
-        private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([RE]{0,1}[ABCD]X)|[ABCD][HL]|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([RE]{0,1}[ABCD]X|[ABCD][HL])|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
+        private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([_a-zA-Z]+\d*)+|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([_a-zA-Z]+\d*)+|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for NOT instruction not inluding label.
         /// </summary>
-        private static readonly Regex asmLineNotOperRegex = new Regex(@"^(NOT)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}((((R|E){0,1}(A|B|C|D)X)|(A|B|C|D)(H|L))|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
+        private static readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
@@ -128,14 +128,14 @@ namespace AMx64
         private static readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s+$", RegexOptions.Compiled);
 
         /// <summary>
-        /// Command line regex used to check operations.
+        /// Command line regex used to check instructions.
         /// </summary>
-        private static readonly Regex asmLineOperRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s+", RegexOptions.Compiled);
+        private static readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|(J(MP|(N|G)*E|L)))\s+", RegexOptions.Compiled);
 
         /// <summary>
-        /// Command line regex used to check operations with explicit size set.
+        /// Command line regex used to check instructions with explicit size set.
         /// </summary>
-        private static readonly Regex asmLineOperExplSizeRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT)\s+(BYTE|WORD|DWORD|QWORD)\s+", RegexOptions.Compiled);
+        private static readonly Regex asmLineInstrExplSizeRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT)\s+(BYTE|WORD|DWORD|QWORD)\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// GLOBAL symbol regex.

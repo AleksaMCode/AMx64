@@ -27,7 +27,7 @@ namespace AMx64
 
                 if (asmLineRegex.Match(asmLineUpper).Success)
                 {
-                    var match = asmLineOperRegex.Match(asmLineUpper);
+                    var match = asmLineInstrRegex.Match(asmLineUpper);
 
                     if (match.Success)
                     {
@@ -37,7 +37,7 @@ namespace AMx64
                         asmLine = asmLine.TrimStart();
                     }
 
-                    if (asmLineOperExplSizeRegex.Match(asmLineUpper).Success)
+                    if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
                     {
                         ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
 
@@ -66,7 +66,7 @@ namespace AMx64
 
                     return CheckLeftOperand();
                 }
-                else if (asmLineNotOperRegex.Match(asmLineUpper).Success)
+                else if (asmLineNotInstrRegex.Match(asmLineUpper).Success)
                 {
                     var tokens = asmLine.Split((char[])null);
                     ParseOperation(tokens[0].TrimEnd());
