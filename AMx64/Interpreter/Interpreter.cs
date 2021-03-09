@@ -366,7 +366,7 @@ namespace AMx64
                 }
 
                 // Used for debugging.
-                if (debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
+                if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
                     if (debugger.BreakpointIndex + 1 < debugger.Breakpoints.Count && lineNumber >= debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1)
                     {
