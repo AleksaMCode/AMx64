@@ -281,12 +281,62 @@ syscall
 <b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
 #### General-Purpose Registers
- Naming conventions | 64 bits | 32 bits | 16 bits | High 8 bits | Low 8 bits
-| - | :-: | :-: | :-: | :-: | :-:
-| Accumulator | RAX | EAX | AX | AH | AL
-| Base | RBX | EBX | BX | BH | BL 
-| Counter | RCX | ECX | CX | CH | CL 
-| Data | RDX | EDX | DX | DH | DL 
+<table style="width:80%">
+  <tr>
+    <th>Naming conventions</th>
+    <th>64 bits</th>
+    <th>32 bits</th>
+    <th>16 bits</th>
+    <th>High 8 bits</th>
+    <th>Low 8 bits</th>
+  </tr>
+  <tr>
+    <td>Accumulator</td>
+    <td>RAX</td>
+    <td>EAX</td>
+    <td>AX</td>
+    <td>AH</td>
+    <td>AL</td>
+  </tr>
+  <tr>
+    <td>Base</td>
+    <td>RBX</td>
+    <td>EBX</td>
+    <td>BX</td>
+    <td>BH</td>
+    <td>BL</td>
+  </tr>
+  <tr>
+    <td>Counter</td>
+    <td>RCX</td>
+    <td>ECX</td>
+    <td>CX</td>
+    <td>CH</td>
+    <td>CL</td>
+  </tr>
+  <tr>
+    <td>Data</td>
+    <td>RDX</td>
+    <td>EDX</td>
+    <td>DX</td>
+    <td>DH</td>
+    <td>DL</td>
+  </tr>
+  <tr>
+    <td>Destination index</td>
+    <td>RDI</td>
+    <td>EDI</td>
+    <td>DI</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <td>Source index</td>
+    <td>RSI</td>
+    <td>ESI</td>
+    <td>SI</td>
+    <td colspan="2"></td>
+  </tr>
+</table>
 
 #### FLAGS register
 <p align="justify">Status register contains the current state of processor. The register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
