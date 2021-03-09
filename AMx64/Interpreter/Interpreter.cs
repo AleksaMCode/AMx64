@@ -933,21 +933,54 @@ namespace AMx64
             return true;
         }
 
+        /// <summary>
+        /// Gets the result of binary operation and sets the appropriate bits in FLAGS register.
+        /// </summary>
+        /// <returns></returns>
         private UInt64 GetBinaryOpResult()
         {
+            UInt64 result;
+
             switch (currentExpr.Operation)
             {
                 case Operations.Add:
-                    return currentExpr.LeftOpValue + currentExpr.RightOpValue;
+                    result = currentExpr.LeftOpValue + currentExpr.RightOpValue;
+
+                    // If overflow occurred, set OF flag to true, otherwise to false.
+                    OF = result < currentExpr.LeftOpValue;
+                    UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+
+                    // TODO: set CF flag
+
+                    return result;
                 case Operations.Sub:
-                    return currentExpr.LeftOpValue - currentExpr.RightOpValue;
+                    result = currentExpr.LeftOpValue - currentExpr.RightOpValue;
+
+                    // If overflow occurred, set OF flag to true, otherwise to false.
+                    OF = result > currentExpr.LeftOpValue;
+                    UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+
+                    // TODO: set CF flag
+
+                    return result;
                 case Operations.Mov:
+                    // No flag change occurrs.
                     return currentExpr.RightOpValue;
                 case Operations.BitAnd:
-                    return currentExpr.LeftOpValue & currentExpr.RightOpValue;
+                    result = currentExpr.LeftOpValue & currentExpr.RightOpValue;
+
+                    UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+                    CF = OF = false;
+
+                    return result;
                 //case Operations.BitOr:
                 default:
-                    return currentExpr.LeftOpValue | currentExpr.RightOpValue;
+                    result = currentExpr.LeftOpValue | currentExpr.RightOpValue;
+
+                    UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+                    CF = OF = false;
+
+                    return result;
             }
         }
 
@@ -1385,11 +1418,14 @@ namespace AMx64
         /// Updates ZF, SF and PF flags.
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="sizecode"></param>
-        private void UpdateZSPFlags(UInt64 value, UInt64 sizecode)
+        /// <param name="codeSize"></param>
+        private void UpdateZSPFlags(UInt64 value, UInt64 codeSize)
         {
+            // ZF is set if the result is zero and cleared otherwise.
             ZF = value == 0;
-            SF = Utility.Negative(value, sizecode);
+            // SF is set if the result is negative (high bit set) and cleared otherwise.
+            SF = Utility.Negative(value, codeSize);
+            // PF is set if the result has even parity in the low 8 bits and cleared otherwise.
             PF = parityTable[value & 0xff];
         }
 
