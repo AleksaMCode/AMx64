@@ -527,15 +527,15 @@ mov qword rax, [var]
 >  Direct offset addressing is not currently supported.
 > 
 #### Register Indirect Addressing
-<p align="justify">For example, when accessing arrays, a more generalized method is usually required. Specifically, an address can be placed in a register and indirection performed using the register (instead of the variable name).</p>
-
-## Debug - AMDB
-<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command. E.q.
+<p align="justify">For example, when accessing arrays, a more generalized method is usually required. Specifically, an address can be placed in a register and indirection performed using the register (instead of the variable name). E.q.</p>
 
 ```asm
 mov rbx, var
 mov dword eax, [rbx]
 ```
+
+## Debug - AMDB
+<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.</p>
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
