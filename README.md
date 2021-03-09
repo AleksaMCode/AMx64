@@ -297,7 +297,7 @@ syscall
     <th>Mark</th>
     <th>Abbreviation</th>
     <th>Name</th>
-    <th>Description</th>
+    <th colspan="2"><p align="center">Description</p></th>
     <th>=1</th>
     <th>=0</th>
     <th>Implementation status</th>
@@ -307,7 +307,7 @@ syscall
     <td style="text-align:center">0x0001</td>
     <td><p align="center">CF</p></td>
     <td>Carry flag</td>
-    <td><p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p></td>
+    <td colspan="2"><p align="justify">Set if the last arithmetic operation carried (addition) or borrowed (subtraction) a bit beyond the size of the register. This is then checked when the operation is followed with an add-with-carry or subtract-with-borrow to deal with values too large for just one register to contain.</p></td>
     <td>CY (Carry)</td>
     <td>NC (No Carry)</td>
     <td><p align="center">✅</p></td>
@@ -317,7 +317,7 @@ syscall
     <td style="text-align:center">0x0004</td>
     <td><p align="center">PF</p></td>
     <td>Adjust flag</td>
-    <td><p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p></td>
+    <td colspan="2"><p align="justify">Carry of Binary Code Decimal (BCD) numbers arithmetic operations.</p></td>
     <td>AC (Auxiliary Carry)</td>
     <td>NA (No Auxiliary Carry)</td>
     <td><p align="center">✅</p></td>
@@ -327,7 +327,7 @@ syscall
     <td style="text-align:center">0x0010</td>
     <td><p align="center">AF</p></td>
     <td>Parity flag</td>
-    <td><p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p></td>
+    <td colspan="2"><p align="justify">Set if the number of set bits in the least significant byte is a multiple of 2.</p></td>
     <td>PE (Parity Even)</td>
     <td>PO (Parity Odd)</td>
     <td><p align="center">❎</p></td>
@@ -337,7 +337,7 @@ syscall
     <td style="text-align:center">0x0040</td>
     <td><p align="center">ZF</p></td>
     <td>Zero flag</td>
-    <td><p align="justify">Set if the result of an operation is Zero (0).</p></td>
+    <td colspan="2"><p align="justify">Set if the result of an operation is Zero (0).</p></td>
     <td>ZR (Zero)</td>
     <td>NZ (Not Zero)</td>
     <td><p align="center">✅</p></td>
@@ -347,7 +347,7 @@ syscall
     <td style="text-align:center">0x0080</td>
     <td><p align="center">SF</p></td>
     <td>Sign flag</td>
-    <td><p align="justify">Set if the result of an operation is negative.</p></td>
+    <td colspan="2"><p align="justify">Set if the result of an operation is negative.</p></td>
     <td>NG (Negative)</td>
     <td>PL (Positive)</td>
     <td><p align="center">✅</p></td>
@@ -357,7 +357,7 @@ syscall
     <td style="text-align:center">0x0100</td>
     <td><p align="center">TF</p></td>
     <td>Trap flag</td>
-    <td><p align="justify">Set if step by step debugging.</p></td>
+    <td colspan="2"><p align="justify">Set if step by step debugging.</p></td>
     <td colspan="2"></td>
     <td><p align="center">❎</p></td>
   </tr>
@@ -366,7 +366,7 @@ syscall
     <td style="text-align:center">0x0200</td>
     <td><p align="center">IF</p></td>
     <td>Interrupt enable flag</td>
-    <td><p align="justify">Set if interrupts are enabled.</p></td>
+    <td colspan="2"><p align="justify">Set if interrupts are enabled.</p></td>
     <td>EI (Enable Interrupt)</td>
     <td>DI (Disable Interrupt)</td>
     <td><p align="center">❎</p></td>
@@ -376,7 +376,7 @@ syscall
     <td style="text-align:center">0x0400</td>
     <td><p align="center">DF</p></td>
     <td>Direction flag</td>
-    <td><p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p></td>
+    <td colspan="2"><p align="justify">Stream direction. If set, string operations will decrement their pointer rather than incrementing it, reading memory backwards.</p></td>
     <td>DN (Down)</td>
     <td>UP (Up)</td>
     <td><p align="center">❎</p></td>
@@ -386,7 +386,7 @@ syscall
     <td style="text-align:center">0x0800</td>
     <td><p align="center">OF</p></td>
     <td>Overflow flag</td>
-    <td><p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p></td>
+    <td colspan="2"><p align="justify">Set if signed arithmetic operations result in a value too large for the register to contain.</p></td>
     <td>OV (Overflow)</td>
     <td>NV (Not Overflow)</td>
     <td><p align="center">❎</p></td>
@@ -396,7 +396,7 @@ syscall
     <td style="text-align:center">0x3000</td>
     <td><p align="center">IOPL</p></td>
     <td>I/O privilege level</td>
-    <td><p align="justify">I/O Privilege Level of the current process.</p></td>
+    <td colspan="2"><p align="justify">I/O Privilege Level of the current process.</p></td>
     <td colspan="2"></td>
     <td><p align="center">❎</p></td>
   </tr>
