@@ -454,6 +454,7 @@ namespace AMx64
                     case ErrorCode.OutOfBounds:
                     case ErrorCode.AccessViolation:
                     case ErrorCode.MemoryAllocError:
+                    case ErrorCode.UnknownLabel:
                         return;
                     default:
                         Console.WriteLine(errorMsg);
@@ -566,9 +567,6 @@ namespace AMx64
                     return ErrorCode.InvalidAsmLine;
                 }
 
-                // Set operands value.
-                EvaluateOperands();
-
                 switch (currentExpr.Operation)
                 {
                     case Operations.Add:
@@ -576,11 +574,17 @@ namespace AMx64
                     case Operations.Mov:
                     case Operations.BitAnd:
                     case Operations.BitOr:
+                        // Set operands value.
+                        EvaluateOperands();
                         return TryProcessBinaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     case Operations.Cmp:
+                        // Set operands value.
+                        EvaluateOperands();
                         ProcessCmp();
                         return ErrorCode.None;
                     case Operations.BitNot:
+                        // Set operands value.
+                        EvaluateOperands();
                         return TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
                     // if Jcc
                     case Operations.Jmp:
@@ -589,8 +593,8 @@ namespace AMx64
                     case Operations.Jge:
                     case Operations.Jl:
                         return labels.ContainsKey(currentExpr.LeftOp)
-                            ? ErrorCode.InvalidEffectiveAddressesName
-                            : TryProcessJcc() ? ErrorCode.JmpOccurred : ErrorCode.None;
+                            ? TryProcessJcc() ? ErrorCode.JmpOccurred : ErrorCode.None
+                            : ErrorCode.UnknownLabel;
                 }
             }
             // .data section
@@ -1223,7 +1227,7 @@ namespace AMx64
                     }
 
                     // right operand handle
-                    var rightOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
+                    var rightOp = currentExpr.RightOp.Substring(1, currentExpr.RightOp.Length - 2);
 
                     // If operand is a register.
                     if (asmLineAvailableRegisters.Match(rightOp.ToUpper()).Success)

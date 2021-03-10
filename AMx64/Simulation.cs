@@ -12,10 +12,10 @@ namespace AMx64
         public enum ErrorCode
         {
             None, OutOfBounds, UnhandledSyscall, UndefinedBehavior, ArithmeticError, Abort, SectionProblems, GlobalLine,
-            NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition,
+            NotImplemented, StackOverflow, AccessViolation, UnknownOp, Comment, InvalidLabel, InvalidLabelPosition, UnknownLabel,
             EmptyLine, InvalidEffectiveAddressesName, DataSectionProblem, BssSectionProblem, InvalidAsmLine, JmpOccurred,
             SuccessfullyRun, UnsuccessfullyRun, SyscallError, MemoryAllocError, Label
-            //     ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, InvalidLabel, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
+            //     ArgCount, MissingSize, ArgError, FormatError, UsageError, UnknownOp, EmptyFile, SymbolRedefinition, UnknownSymbol, NotImplemented, Assertion, Failure, Comment,
             //OpenFail, NullPath, InvalidPath, DirectoryNotFound, AccessViolation, FileNotFound, PathFormatUnsupported, IOError, MemoryAllocError, ComputerInitError, UnknownError
         }
 
