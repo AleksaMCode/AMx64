@@ -118,6 +118,9 @@ namespace AMx64
                     case "NOT":
                         Operation = Operations.BitNot;
                         break;
+                    case "CMP":
+                        Operation = Operations.Cmp;
+                        break;
                     case "JMP":
                         Operation = Operations.Jmp;
                         break;
