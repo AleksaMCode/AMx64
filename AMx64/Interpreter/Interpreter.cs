@@ -547,7 +547,7 @@ namespace AMx64
             }
             else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection == AsmSegment.TEXT)
             {
-                return SyscallHandel();
+                return SyscallHandle();
             }
             else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection != AsmSegment.TEXT)
             {
@@ -657,8 +657,13 @@ namespace AMx64
             return ErrorCode.UndefinedBehavior;
         }
 
-        private ErrorCode SyscallHandel()
+        /// <summary>
+        /// Handles system services.
+        /// </summary>
+        /// <returns><see cref="ErrorCode.None"/> if handle is successful.</returns>
+        private ErrorCode SyscallHandle()
         {
+            // sys_exit handle
             if (RAX == 60)
             {
                 return RDI switch
@@ -668,6 +673,7 @@ namespace AMx64
                     _ => ErrorCode.SyscallError,
                 };
             }
+            // sys_read handle
             else if (RAX == 0)
             {
                 if (RDI == 0)
@@ -695,11 +701,11 @@ namespace AMx64
                             {
                                 if (userInput.Length > (int)maxLen)
                                 {
-                                    if (!memory.WriteString(index, userInput.Substring(0, (int)maxLen)))
-                                    {
-                                        return ErrorCode.MemoryAllocError;
-                                    }
+                                    userInput = userInput.Substring(0, (int)maxLen);
                                 }
+
+                                // Set return value.
+                                RAX = !memory.WriteString(index, userInput) ? 0xffff_ffff_ffff_ffff : (UInt64)userInput.Length;
                             }
                         }
                     }
@@ -709,6 +715,7 @@ namespace AMx64
                     return ErrorCode.SyscallError;
                 }
             }
+            // sys_write handle
             else if (RAX == 1)
             {
                 if (RDI == 1)
@@ -727,7 +734,9 @@ namespace AMx64
                         }
                         else
                         {
-                            memory.ReadString(index, out var stringFromMem);
+                            // Set return value.
+                            RAX = !memory.ReadString(index, out var stringFromMem) ? 0xffff_ffff_ffff_ffff : (UInt64)stringFromMem.Length;
+                            // Print fetched string.
                             Console.WriteLine(stringFromMem);
                         }
                     }
@@ -736,6 +745,10 @@ namespace AMx64
                 {
                     return ErrorCode.UnhandledSyscall;
                 }
+            }
+            else
+            {
+                return ErrorCode.UnhandledSyscall;
             }
 
             return ErrorCode.None;
