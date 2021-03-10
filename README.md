@@ -740,6 +740,8 @@ syscall
 
 ### Github projects
 Some of the projects that helped me create my project.
+- [NASM](https://github.com/netwide-assembler/nasm)
+- [binutils-gdb](https://github.com/bminor/binutils-gdb)
 
 ## To-Do List
 - [x] Add Direct memory addressing.
