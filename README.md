@@ -534,11 +534,48 @@ mov dword eax, [rbx]
 ```
 
 ## Calling System Services
-<p align="justify">When calling system services, arguments are placed in the standard argument registers. System services do not typically use stack-based arguments. This limits the arguments of a system services to six. To call a system service, the first step is to determine which system service is desired. The general process is that the system service call code is placed in the RAX register. The call code is a number that has been assigned for the specific system service being requested. These are assigned as part of the operating system and cannot be changed by application programs.  <b>AMx64</b> uses a very small subset of system service call codes to a set of constants. If any are needed, the arguments for system services are placed in the RDI, RSI, RDX, R10, R8 and R9 registers (in that order). The following table shows the argument location swhich are consistent with the standard calling convention.</p>
+<p align="justify">When calling system services, arguments are placed in the standard argument registers. System services do not typically use stack-based arguments. This limits the arguments of a system services to six. To call a system service, the first step is to determine which system service is desired. The general process is that the system service call code is placed in the RAX register. The call code is a number that has been assigned for the specific system service being requested. These are assigned as part of the operating system and cannot be changed by application programs.  <b>AMx64</b> uses a very small subset of system service call codes to a set of constants. If any are needed, the arguments for system services are placed in the RDI, RSI, RDX, RCX, R8 and R9 registers (in that order). The following table shows the argument locations which are consistent with the standard calling convention.</p>
+
+<table style="width:30%">
+  <tr>
+    <th>Register</th>
+    <th>Usage</th>
+  </tr>
+  <tr>
+    <td><p align="center">RAX</p></td>
+    <td><p align="left">Call code</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">RDI</p></td>
+    <td><p align="left">1st argument</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">RSI</p></td>
+    <td><p align="left">2nd argument</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">RDX</p></td>
+    <td><p align="left">3rd argument</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">RCX</p></td>
+    <td><p align="left">4th argument</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">R8</p></td>
+    <td><p align="left">5th argument</p></td>
+  </tr>
+  <tr>
+    <td><p align="center">R9</p></td>
+    <td><p align="left">6th argument</p></td>
+  </tr>
+</table>
+
+<p align="justify">Each system call will use a different number of arguments (from none up to 6). However, the system service call code is always required. After the call code and any arguments are set, the syscall instruction is executed. The syscall instruction will pause the interpret process and will attempt to perform the service specified in the RAX register. When the system service returns, the interpret process will be resumed.</p>
 
 > **_NOTE:_**
 > 
->  R10, R8 and R9 registers are not currently available.
+>  R8 and R9 registers are not currently available for usage.
 
 ### Return Codes
 <p align="justify">The system call will return a code in the RAX register. If the value returned is less than 0, that is an indication that an error has occurred. If the operation is successful, the value returned will depend on the specific system service.</p>
@@ -564,7 +601,6 @@ mov dword eax, [rbx]
     <td><p align="center">sys_exit</p></td>
     <td><p align="justify">Terminate executing process.<br>RDI - exit status</p></td>
   </tr>
-
 </table>
 
 ### Console Output
