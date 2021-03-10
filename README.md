@@ -136,7 +136,7 @@ Some examples (all producing exactly the same code):
 ```
 > **_NOTE:_**
 >
-> Numeric constants can have underscores (_) interspersed to break up long strings.
+> Numeric constants can have underscores ('_') interspersed to break up long strings.
 > 
 ### Character Literals
  <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
