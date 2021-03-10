@@ -538,8 +538,8 @@ mov dword eax, [rbx]
 
 <table style="width:30%">
   <tr>
-    <th>Register</th>
-    <th>Usage</th>
+    <th><p align="center">Register</p></th>
+    <th><p align="left">Usage</p></th>
   </tr>
   <tr>
     <td><p align="center">RAX</p></td>
