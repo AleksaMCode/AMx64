@@ -548,18 +548,18 @@ mov dword eax, [rbx]
     <th>Description</th>
   </tr>
   <tr>
-    <td style="text-align:center">0</td>
-    <td style="text-align:center">sys_read</td>
+    <td><p align="center">0</p></td>
+    <td><p align="center">sys_read</p></td>
     <td><p align="justify">Read characters - If unsuccessful, returns negative value. If successful, returns count of characters actually read.<br>RDI - file descriptor<br>RSI - address of where to store characters<br>RDX - number of characters to read</p></td>
   </tr>
   <tr>
-    <td style="text-align:center">1</td>
-    <td style="text-align:center">sys_write</td>
+    <td><p align="center">1</p></td>
+    <td><p align="center">sys_write</p></td>
     <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns countof characters actually written.<br>RDI - file descriptor<br>RSI - address of characters  where to write<br>RDX - number of characters to write</p></td>
   </tr>
   <tr>
-    <td style="text-align:center">60</td>
-    <td style="text-align:center">sys_exit</td>
+    <td><p align="center">60</p></td>
+    <td><p align="center">sys_exit</p></td>
     <td><p align="justify">Terminate executing process.<br>RDI - exit status</p></td>
   </tr>
 
