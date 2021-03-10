@@ -819,8 +819,7 @@ namespace AMx64
 
         private void ProcessJcc()
         {
-            labels.TryGetValue(currentExpr.LeftOp, out var lineNumb);
-            currentLine.CurrentAsmLineNumber = lineNumb;
+            currentLine.CurrentAsmLineNumber = labels[currentExpr.LeftOp];
         }
 
         private bool TryProcessUnaryOp()
