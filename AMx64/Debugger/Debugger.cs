@@ -41,9 +41,13 @@ namespace AMx64
                 }
                 else if (command.Equals("run") || command.Equals("r"))
                 {
-                    if (currentLine.CurrentAsmLineNumber == -1)
+                    if (currentLine.CurrentAsmLineNumber == -1 && debugger.Breakpoints.Count != 0)
                     {
                         return true;
+                    }
+                    else if(currentLine.CurrentAsmLineNumber == -1 && debugger.Breakpoints.Count == 0)
+                    {
+                        Console.WriteLine("An initial breakpoint must be set. Please set a breakpoint and then run amdb.");
                     }
                     else
                     {
