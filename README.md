@@ -27,7 +27,6 @@
       - [CMP - Compare](#cmp---compare)
       - [JMP - Unconditional Jump](#jmp---unconditional-jump)
       - [Jcc - Jump if Condition Is Met (Conditional Jump)](#jcc---jump-if-condition-is-met-conditional-jump)
-      - [END](#end)
   - [Memory](#memory)
     - [Registers](#registers)
       - [General-Purpose Registers (GPRs)](#general-purpose-registers-gprs)
@@ -41,6 +40,7 @@
     - [Return Codes](#return-codes)
     - [Console Output](#console-output)
     - [Console Input](#console-input)
+      - [Proper way to end asm code](#proper-way-to-end-asm-code)
   - [Debug - AMDB](#debug---amdb)
     - [Getting Help](#getting-help)
     - [Setting Breakpoints](#setting-breakpoints)
@@ -290,16 +290,6 @@ JL | Jump Less | OF, SF | SF != 0
 > **_NOTE:_**
 > 
 >  It doesn't affect flags.
-
-#### END
-<p align="justify">No special label or directives are required to terminate the program. However, to terminate asm code properly you should do the following:</p>
-
-```asm
-mov rax, 60
-mov rdi, 0
-syscall
-```
-<p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully it should store value 1 inside of the RDI register.</p>
 
 ## Memory
 <p align="justify">A memory value is an expression that evaluates to the address of some value in memory. In <b>AMx64</b> assembly language, addresses are enclosed in brackets “[…]” with the address expression inside.</p>
@@ -626,8 +616,18 @@ When using the system service to read from the keyboard, much like the write sys
   </tr>
 </table>
 
+#### Proper way to end asm code
+<p align="justify">No special label or directives are required to terminate the program. However, to terminate asm code properly you should do the following:</p>
+
+```asm
+mov rax, 60
+mov rdi, 0
+syscall
+```
+<p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully it should store value 1 inside of the RDI register.</p>
+
 ## Debug - AMDB
-<p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.</p>
+<p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger   is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
