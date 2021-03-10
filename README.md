@@ -137,11 +137,11 @@ Some examples (all producing exactly the same code):
 ```
 
 ### Character Literals
- <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as "." or "!"), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
+ <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
 
 > **_NOTE:_**
 > 
-> <p align="justify">Character escapes are not currently supported. Character literals do support back quotes <code>`</code> however C-style escapes are not enabled.</p>
+> <p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p>
 > 
 > <p align="justify">Characters can be displayed to the console, but cannot be used forcalculations. Integers can be used for calculations, but cannot be displayed  to the console (without changing the representation).</p>
 
@@ -594,12 +594,37 @@ mov dword eax, [rbx]
   </tr>
   <tr>
     <td style="text-align:center">RDX</td>
-    <td style="text-align:left"> Number of characters to output</td>
+    <td style="text-align:left">Number of characters to output</td>
   </tr>
 </table>
 
 ### Console Input
-<p align="justify"></p>
+<p align="justify">The system service to read characters from the console is the system read (sys_read). Like a high-level language, for the console, characters are read from standard input (stdin). The stdin is the default file descriptor for reading characters from the keyboard. The file descriptor is already opened and available for use in program (assembly and high-level languages).
+
+When using the system service to read from the keyboard, much like the write system service, the number of characters to read is required. Of course, we will need to declarean appropriate amount of space to store the characters being read. If we request 10 characters to read and the user types more than 10, the additional characters will be lost.</p>
+
+<table style="width:40%">
+  <tr>
+    <th style="text-align:center">Register</th>
+    <th>sys_read</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">RAX</td>
+    <td style="text-align:left">Call code = sys_read (0)</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RDI</td>
+    <td style="text-align:left">Input location, stdin (0)</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RSI</td>
+    <td style="text-align:left">Address of where to store characters read</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RDX</td>
+    <td style="text-align:left">Number of characters to read</td>
+  </tr>
+</table>
 
 ## Debug - AMDB
 <p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.</p>
