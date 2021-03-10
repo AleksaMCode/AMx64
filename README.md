@@ -113,8 +113,7 @@ main:
 > <li>Program labels may be defined only once.</li></ul>
 
 ### Numeric Constants
-<p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
-Numeric constants can have underscores (_) interspersed to break up long strings.</p>
+<p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!</p>
 
 Some examples (all producing exactly the same code):
  ```asm
@@ -135,7 +134,10 @@ Some examples (all producing exactly the same code):
         mov     ax,0b1100_1000  ; same binary constant yet again 
         mov     ax,0y1100_1000  ; same binary constant yet again
 ```
-
+> **_NOTE:_**
+>
+> Numeric constants can have underscores (_) interspersed to break up long strings.
+> 
 ### Character Literals
  <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
 
