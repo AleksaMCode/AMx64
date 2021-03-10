@@ -75,8 +75,8 @@ General-purpose registers are used for processing integral instructions (the mos
 
 > **_NOTE:_**
 > 
-> <code>.data</code> and <code>.bss</code> sections must come before <code>.text</code> section in asm code.
-> <code>.rodata</code> section isn't supported.
+> <ul><li><code>.data</code> and <code>.bss</code> sections must come before <code>.text</code> section in asm code.</li>
+> <li><code>.rodata</code> section isn't supported.</li></ul>
 
 #### Data Section (.data)
 <p align="justify">The data section holds all variables that are initialized to specific values. This will typically be used only for global variables. The initialized data must be declared in the <code>section .data</code> section. There must be a space after the word <i>section</i>. All initialized variables and constants are placed in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name, the data type, and the initial value for the variable.</p>
@@ -109,8 +109,8 @@ main:
 
 > **_NOTE:_**
 > 
-> Local labels aren't available.
-> <br>Program labels may be defined only once.
+> <ul><li>Local labels aren't available.</li>
+> <li>Program labels may be defined only once.</li></ul>
 
 ### Numeric Constants
 <p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!<br><br>
@@ -495,7 +495,7 @@ syscall
 
 > **_NOTE:_**
 > 
-> The only way to access memory is with the brackets ('[]'). Omitting the brackets will not access memory and instead obtain the address of the item.
+> The only way to access memory is with the brackets ("[]"). Omitting the brackets will not access memory and instead obtain the address of the item.
 
 #### Register (direct) Addressing
 ```
