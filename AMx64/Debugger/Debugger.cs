@@ -45,7 +45,7 @@ namespace AMx64
                     {
                         return true;
                     }
-                    else if(currentLine.CurrentAsmLineNumber == -1 && debugger.Breakpoints.Count == 0)
+                    else if (currentLine.CurrentAsmLineNumber == -1 && debugger.Breakpoints.Count == 0)
                     {
                         Console.WriteLine("An initial breakpoint must be set. Please set a breakpoint and then run amdb.");
                     }
@@ -225,15 +225,26 @@ namespace AMx64
 
             for (; index <= upperLimit; ++index)
             {
-                if (index == currentLine.CurrentAsmLineNumber)
+                if (debugger.Breakpoints.Contains(index + 1))
                 {
-                    Console.BackgroundColor = ConsoleColor.Green;
-                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(string.Format("{0,3}:\t", index + 1));
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("{0,3}:\t" + AsmCode[index], index + 1));
+                    Console.Write(string.Format("{0,3}:\t", index + 1));
+                }
+
+                if (index == currentLine.CurrentAsmLineNumber)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.Write(AsmCode[index] + "\n");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.Write(AsmCode[index] + "\n");
                 }
             }
 
