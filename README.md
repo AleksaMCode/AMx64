@@ -594,7 +594,7 @@ mov dword eax, [rbx]
   <tr>
     <td><p align="center">1</p></td>
     <td><p align="center">sys_write</p></td>
-    <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns countof characters actually written.<br>RDI - file descriptor<br>RSI - address of characters  where to write<br>RDX - number of characters to write</p></td>
+    <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns count of characters actually written.<br>RDI - file descriptor<br>RSI - address of characters  where to write<br>RDX - number of characters to write</p></td>
   </tr>
   <tr>
     <td><p align="center">60</p></td>
