@@ -543,7 +543,7 @@ mov dword eax, [rbx]
 
 <table style="width:100%">
   <tr>
-    <th>Call Code <br>(RAX)</th>
+    <th>Call Code (RAX)</th>
     <th>System Service</th>
     <th>Description</th>
   </tr>
