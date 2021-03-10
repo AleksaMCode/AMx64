@@ -40,7 +40,7 @@
     - [Return Codes](#return-codes)
     - [Console Output](#console-output)
     - [Console Input](#console-input)
-      - [Proper way to end asm code](#proper-way-to-end-asm-code)
+    - [Proper way to end asm code](#proper-way-to-end-asm-code)
   - [Debug - AMDB](#debug---amdb)
     - [Getting Help](#getting-help)
     - [Setting Breakpoints](#setting-breakpoints)
@@ -657,7 +657,7 @@ When using the system service to read from the keyboard, much like the write sys
   </tr>
 </table>
 
-#### Proper way to end asm code
+### Proper way to end asm code
 <p align="justify">No special label or directives are required to terminate the program. However, to terminate asm code properly you should do the following:</p>
 
 ```asm
