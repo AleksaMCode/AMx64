@@ -148,7 +148,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for Jcc operations not inluding label.
         /// </summary>
-        private static readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s+$", RegexOptions.Compiled);
+        private static readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex used to check instructions.
