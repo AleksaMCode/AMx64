@@ -666,12 +666,15 @@ namespace AMx64
             // sys_exit handle
             if (RAX == 60)
             {
-                return RDI switch
+                switch (RDI)
                 {
-                    0 => ErrorCode.SuccessfullyRun,
-                    1 => ErrorCode.UnsuccessfullyRun,
-                    _ => ErrorCode.SyscallError,
-                };
+                    case 0:
+                        return ErrorCode.SuccessfullyRun;
+                    case 1:
+                        return ErrorCode.UnsuccessfullyRun;
+                }
+
+                SetRaxToNegativeValue();
             }
             // sys_read handle
             else if (RAX == 0)
@@ -712,7 +715,7 @@ namespace AMx64
                 }
                 else
                 {
-                    return ErrorCode.SyscallError;
+                    SetRaxToNegativeValue();
                 }
             }
             // sys_write handle
@@ -743,15 +746,20 @@ namespace AMx64
                 }
                 else
                 {
-                    return ErrorCode.UnhandledSyscall;
+                    SetRaxToNegativeValue();
                 }
             }
             else
             {
-                return ErrorCode.UnhandledSyscall;
+                SetRaxToNegativeValue();
             }
 
             return ErrorCode.None;
+        }
+
+        private void SetRaxToNegativeValue()
+        {
+            RAX = 0xffff_ffff_ffff_ffff;
         }
 
         private bool TryProcessJcc()
