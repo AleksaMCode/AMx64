@@ -35,8 +35,7 @@ namespace AMx64
 
                         asmLine = asmLine.Substring(match.Value.Length - 1).TrimStart();
                     }
-
-                    if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
+                    else if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
                     {
                         ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
 
