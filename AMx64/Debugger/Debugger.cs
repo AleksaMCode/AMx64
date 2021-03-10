@@ -55,6 +55,8 @@ namespace AMx64
                         currentLine.CurrentAsmLineValue = "";
 
                         Console.WriteLine("Debugging has been reset.");
+
+                        return true;
                     }
                 }
                 else if (command.StartsWith("delete") || command.StartsWith("d"))
