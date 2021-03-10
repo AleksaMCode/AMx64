@@ -594,7 +594,7 @@ mov dword eax, [rbx]
 ### Console Input
 <p align="justify">The system service to read characters from the console is the system read (sys_read). Like a high-level language, for the console, characters are read from standard input (stdin). The stdin is the default file descriptor for reading characters from the keyboard. The file descriptor is already opened and available for use in program (assembly and high-level languages).
 
-When using the system service to read from the keyboard, much like the write system service, the number of characters to read is required. Of course, we will need to declarean appropriate amount of space to store the characters being read. If we request 10 characters to read and the user types more than 10, the additional characters will be lost.</p>
+When using the system service to read from the keyboard, much like the write system service, the number of characters to read is required. Of course, we will need to declare an appropriate amount of space to store the characters being read. If we request 10 characters to read and the user types more than 10, the additional characters will be lost.</p>
 
 <table style="width:40%">
   <tr>
@@ -631,11 +631,11 @@ syscall
 
 ## Debug - AMDB
 <p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger   is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
-
 <p><img src="./AMx64/resources/list_command.jpg" title="list command"  align="center">
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
+<p><img src="./AMx64/resources/help_command.jpg" title="list command"  align="center">
 
 ### Setting Breakpoints
 <p align="justify">Breakpoints are set with the <code>break</code> command (abbreviated <code>b</code>). This command tells <i>amdb</i> to pause interpretation of your program at some point to allow you to inspect the value of variables and other memory locations. It will pause interpretation just before the specified line number is interpreted.</p>
