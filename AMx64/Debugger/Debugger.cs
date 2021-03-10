@@ -47,7 +47,10 @@ namespace AMx64
                     }
                     else
                     {
-                        Console.WriteLine("Interpreter is already running.");
+                        currentLine.CurrentAsmLineNumber = -1;
+                        currentLine.CurrentAsmLineValue = "";
+
+                        Console.WriteLine("Debugging has been reset.");
                     }
                 }
                 else if (command.StartsWith("delete") || command.StartsWith("d"))
