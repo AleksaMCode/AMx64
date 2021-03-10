@@ -141,9 +141,8 @@ Some examples (all producing exactly the same code):
 
 > **_NOTE:_**
 > 
-> <p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p>
-> 
-> <p align="justify">Characters can be displayed to the console, but cannot be used forcalculations. Integers can be used for calculations, but cannot be displayed  to the console (without changing the representation).</p>
+> <ul><li><p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p></li>
+> <li><p align="justify">Characters can be displayed to the console, but cannot be used forcalculations. Integers can be used for calculations, but cannot be displayed  to the console (without changing the representation).</p></li></ul>
 
 ### Operand/Address Size (Data Storage Sizes)
  <p align="justify">The x86-64 architecture supports a specific set of data storage size elements, all based on powers of two. To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). The supported storage sizes are as follows:</p>
@@ -177,6 +176,10 @@ Some examples (all producing exactly the same code):
  
 ### Supported instructions
 <p align="justify">This chapter provides a basic overview for a simple subset of the x86-64 instruction setfocusing on the integer operation. This section summarizes the notation used is fairly common in the technical literature. In general, an instruction will consist of the instruction or operation itself (e.q., add, sub, etc.) and the operands. The operands refer to where the data (to be operated on) is coming from and/or where the result is to be placed.</p>
+
+> **_NOTE:_**
+>
+> Instructions, register and variable names are case-insensitive.
 
 #### ADD - Add
 Adds the second argument (source) to the destination (first argument).
