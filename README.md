@@ -37,6 +37,10 @@
       - [Immediate (literal) Addressing](#immediate-literal-addressing)
       - [Direct Memory Addressing](#direct-memory-addressing)
       - [Register Indirect Addressing](#register-indirect-addressing)
+  - [Calling System Services](#calling-system-services)
+    - [Return Codes](#return-codes)
+    - [Console Output](#console-output)
+    - [Console Input](#console-input)
   - [Debug - AMDB](#debug---amdb)
     - [Getting Help](#getting-help)
     - [Setting Breakpoints](#setting-breakpoints)
@@ -78,7 +82,7 @@ General-purpose registers are used for processing integral instructions (the mos
 <p align="justify">The data section holds all variables that are initialized to specific values. This will typically be used only for global variables. The initialized data must be declared in the <code>section .data</code> section. There must be a space after the word <i>section</i>. All initialized variables and constants are placed in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name, the data type, and the initial value for the variable.</p>
 
 #### BSS Section (.bss)
-<p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value. Uninitialized data must be declared in the <code>section .bss</code> section. There must be a space after the word <i>section</i>. All uninitialized variables are declared in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name,the data type, and the count.</p>
+<p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value. Uninitialized data must be declared in the <code>section .bss</code> section. There must be a space after the word <i>section</i>. All uninitialized variables are declared in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name, the data type, and the count.</p>
 
 #### Text Section (.text)
 <p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size. The code is placed in the <code>section .text</code> section. There must be a space after the word <i>section</i>. The instructions are specified one per line and each must be a valid instruction with the appropriate required operands. The text section will include some headers or labels that define the initial program entrypoint. The following declarations must be included.</p>
@@ -534,6 +538,69 @@ mov rbx, var
 mov dword eax, [rbx]
 ```
 
+## Calling System Services
+<p align="justify">When calling system services, arguments are placed in the standard argument registers. System services do not typically use stack-based arguments. This limits the arguments of a system services to six. To call a system service, the first step is to determine which system service is desired. The general process is that the system service call code is placed in the RAX register. The call code is a number that has been assigned for the specific system service being requested. These are assigned as part of the operating system and cannot be changed by application programs.  <b>AMx64</b> uses a very small subset of system service call codes to a set of constants. If any are needed, the arguments for system services are placed in the RDI, RSI, RDX, R10, R8 and R9 registers (in that order). The following table shows the argument location swhich are consistent with the standard calling convention.</p>
+
+> **_NOTE:_**
+> 
+>  R10, R8 and R9 registers are not currently available.
+
+### Return Codes
+<p align="justify">The system call will return a code in the RAX register. If the value returned is less than 0, that is an indication that an error has occurred. If the operation is successful, the value returned will depend on the specific system service.</p>
+
+<table style="width:100%">
+  <tr>
+    <th>Call Code <br>(RAX)</th>
+    <th>System Service</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">0</td>
+    <td style="text-align:center">sys_read</td>
+    <td><p align="justify">Read characters - If unsuccessful, returns negative value. If successful, returns count of characters actually read.<br>RDI - file descriptor<br>RSI - address of where to store characters<br>RDX - number of characters to read</p></td>
+  </tr>
+  <tr>
+    <td style="text-align:center">1</td>
+    <td style="text-align:center">sys_write</td>
+    <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns countof characters actually written.<br>RDI - file descriptor<br>RSI - address of characters  where to write<br>RDX - number of characters to write</p></td>
+  </tr>
+  <tr>
+    <td style="text-align:center">60</td>
+    <td style="text-align:center">sys_exit</td>
+    <td><p align="justify">Terminate executing process.<br>RDI - exit status</p></td>
+  </tr>
+
+</table>
+
+### Console Output
+<p align="justify">The system service to output characters to the console is the system write (sys_write). Like a high-level language characters are written to standard out (stdout) which is the console.   The stdout is the default file descriptor for the console. The file descriptor is already opened and available for use in programs (assembly and high-level languages). The arguments for the write system service are as follows:</p>
+
+<table style="width:40%">
+  <tr>
+    <th style="text-align:center">Register</th>
+    <th>sys_write</th>
+  </tr>
+  <tr>
+    <td style="text-align:center">RAX</td>
+    <td style="text-align:left">Call code = sys_write (1)</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RDI</td>
+    <td style="text-align:left">Output location, stdout (1)</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RSI</td>
+    <td style="text-align:left">Address of characters to output</td>
+  </tr>
+  <tr>
+    <td style="text-align:center">RDX</td>
+    <td style="text-align:left"> Number of characters to output</td>
+  </tr>
+</table>
+
+### Console Input
+<p align="justify"></p>
+
 ## Debug - AMDB
 <p align="justify"><b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. You can start <i>amdb</i> session with <code>r</code> (or <code>run</code>) command.</p>
 
@@ -587,6 +654,7 @@ mov dword eax, [rbx]
 <ul>
   <li><p align="justify"><a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel® 64 and IA-32 Architectures, Software Developer’s Manual</p></a></li>
   <li><p align="justify"><a href="http://www.egr.unlv.edu/~ed/assembly64.pdf">Ed Jorgensen - <i>x86-64 Assembly Language Programming with Ubuntu</i></p></a></li>
+  <li><p align="justify"><a href="https://www.amazon.com/Assembly-Language-Step-Step-Programming-ebook/dp/B004QWZXFA">Jeff Duntemann - <i>Assembly Language Step-by-Step: Programming with Linux</i></p></a></li>
   <li><p align="justify"><a href="https://www.amazon.com/Debugging-GDB-GNU-Source-Level-Debugger/dp/1882114884">Richard Stallman, Roland Pesch, Stan Shebs - <i>Debugging with gdb: The gnu Source-Level Debugger</i></p></a></li>
 </ul>
 
