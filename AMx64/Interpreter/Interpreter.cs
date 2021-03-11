@@ -694,8 +694,10 @@ namespace AMx64
                 switch (RDI)
                 {
                     case 0:
+                        RAX = 0;
                         return ErrorCode.SuccessfullyRun;
                     case 1:
+                        RAX = 1;
                         return ErrorCode.UnsuccessfullyRun;
                 }
 
@@ -1068,7 +1070,8 @@ namespace AMx64
                 _ => 8,
             };
 
-            var startLocation = nextMemoryLocation;
+            // Add new variable.
+            variables.Add(tokens[0], nextMemoryLocation);
 
             for (var i = 0; i < values.Length; ++i)
             {
@@ -1077,12 +1080,6 @@ namespace AMx64
                     if (Evaluate(values[i], out var result, out var _, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        // Only add variable once.
-                        if (i == 0)
-                        {
-                            variables.Add(tokens[0], startLocation);
-                        }
-                        startLocation = nextMemoryLocation;
                     }
                     else
                     {
@@ -1094,12 +1091,6 @@ namespace AMx64
                     if (Evaluate(values[i], out var _, out var result, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        // Only add variable once.
-                        if (i == 0)
-                        {
-                            variables.Add(tokens[0], startLocation);
-                        }
-                        startLocation = nextMemoryLocation;
                     }
                     else
                     {
@@ -1139,10 +1130,13 @@ namespace AMx64
         {
             var res = result;
             var limit = 0;
-            while (res != 0)
+            if (result != 0)
             {
-                limit++;
-                res >>= 8;
+                while (res != 0)
+                {
+                    limit++;
+                    res >>= 8;
+                }
             }
 
             // Cut off excess data.
