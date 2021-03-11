@@ -621,11 +621,11 @@ namespace AMx64
             // .data section handle
             else if (currentSection == AsmSegment.DATA)
             {
-                var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
+                var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue.ToUpper());
 
                 if (match.Success)
                 {
-                    var dataTokens = match.Value.Split(' ');
+                    var dataTokens = currentLine.CurrentAsmLineValue.Substring(0, match.Value.TrimEnd().Length).Split(' ');
 
                     if (IsSymbolReserverd(dataTokens[0]) && labels.ContainsKey(dataTokens[0]))
                     {
@@ -1054,7 +1054,11 @@ namespace AMx64
 
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
         {
-            var values = tokens[3].Split(',');
+            var values = tokens[2].Split(',');
+
+            // Trim each token.
+            values = values.Select(values => values.Trim()).ToArray();
+
             var size = (tokens[1].ToUpper()) switch
             {
                 "DB" => 1,
@@ -1074,8 +1078,7 @@ namespace AMx64
                     {
                         AddToMemory(result, size);
                         variables.Add(tokens[0], startLocation);
-
-                        return true;
+                        startLocation = nextMemoryLocation;
                     }
                     else
                     {
@@ -1088,8 +1091,7 @@ namespace AMx64
                     {
                         AddToMemory(result, size);
                         variables.Add(tokens[0], startLocation);
-
-                        return true;
+                        startLocation = nextMemoryLocation;
                     }
                     else
                     {
@@ -1098,8 +1100,7 @@ namespace AMx64
                 }
             }
 
-            // TODO: Check this part!
-            return false;
+            return true;
         }
 
         public bool TryProcessBss(List<string> tokens, ref string errorMsg)
