@@ -1063,21 +1063,25 @@ namespace AMx64
             {
                 "DB" => 1,
                 "DW" => 2,
-                "DD" => 3,
+                "DD" => 4,
                 // case "DQ" is the default case
-                _ => 4,
+                _ => 8,
             };
 
             var startLocation = nextMemoryLocation;
 
-            foreach (var value in values)
+            for (var i = 0; i < values.Length; ++i)
             {
-                if (char.IsDigit(value[0]))
+                if (char.IsDigit(values[i][0]))
                 {
-                    if (Evaluate(value, out var result, out var _, ref errorMsg))
+                    if (Evaluate(values[i], out var result, out var _, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        variables.Add(tokens[0], startLocation);
+                        // Only add variable once.
+                        if (i == 0)
+                        {
+                            variables.Add(tokens[0], startLocation);
+                        }
                         startLocation = nextMemoryLocation;
                     }
                     else
@@ -1087,10 +1091,14 @@ namespace AMx64
                 }
                 else
                 {
-                    if (Evaluate(value, out var _, out var result, ref errorMsg))
+                    if (Evaluate(values[i], out var _, out var result, ref errorMsg))
                     {
                         AddToMemory(result, size);
-                        variables.Add(tokens[0], startLocation);
+                        // Only add variable once.
+                        if (i == 0)
+                        {
+                            variables.Add(tokens[0], startLocation);
+                        }
                         startLocation = nextMemoryLocation;
                     }
                     else
@@ -1129,17 +1137,38 @@ namespace AMx64
 
         private void AddToMemory(UInt64 result, int size)
         {
-            var res = BitConverter.GetBytes(result);
+            var res = result;
+            var limit = 0;
+            while (res != 0)
+            {
+                limit++;
+                res >>= 8;
+            }
 
-            if (nextMemoryLocation + res.Length * size >= maxMemSize)
+            // Cut off excess data.
+            if (limit > size)
+            {
+                limit = size;
+            }
+
+            if (nextMemoryLocation + size >= maxMemSize)
             {
                 throw new Exception("Memory full.");
             }
 
-            for (var i = 0; i < res.Length; ++i)
+            var emptyBlock = new byte[4];
+
+            for (var i = 0; i < limit; ++i)
             {
-                Buffer.BlockCopy(res, i, memory, (int)nextMemoryLocation, 1);
-                nextMemoryLocation += size;
+                memory[(int)nextMemoryLocation + i] = (byte)result;
+                result >>= 8;
+            }
+            nextMemoryLocation += limit;
+
+            if (limit < size)
+            {
+                Buffer.BlockCopy(emptyBlock, 0, memory, (int)nextMemoryLocation, size - limit);
+                nextMemoryLocation += size - limit;
             }
         }
 
