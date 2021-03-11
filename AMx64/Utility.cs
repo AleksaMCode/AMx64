@@ -355,11 +355,11 @@ namespace AMx64
             // Write each character.
             for (var i = 0; i < inputValue.Length; ++i)
             {
-                array[position + (UInt64)i] = (byte)inputValue[i];
+                array[(int)position + i] = (byte)inputValue[i];
             }
 
             // Write a null terminator.
-            array[position + (UInt64)inputValue.Length] = 0;
+            array[(int)position + inputValue.Length] = 0;
 
             return true;
         }

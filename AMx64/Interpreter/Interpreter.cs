@@ -1112,7 +1112,7 @@ namespace AMx64
             {
                 if (nextMemoryLocation + size * amount >= maxMemSize)
                 {
-                    errorMsg = "Memory is full.";
+                    errorMsg = "Failed to write to memory. Memory is full.";
                     return false;
                 }
                 else
@@ -1150,7 +1150,7 @@ namespace AMx64
 
             if (nextMemoryLocation + size >= maxMemSize)
             {
-                throw new Exception("Memory full.");
+                throw new Exception("Failed to write to memory. Memory is full.");
             }
 
             var emptyBlock = new byte[4];
@@ -1171,17 +1171,21 @@ namespace AMx64
 
         private void AddToMemory(string value, int size)
         {
-            var byteArr = Encoding.ASCII.GetBytes(value);
-
-            if (nextMemoryLocation + byteArr.Length * size >= maxMemSize)
+            if (nextMemoryLocation + value.Length * size >= maxMemSize)
             {
-                throw new Exception("Memory full.");
+                throw new Exception("Failed to write to memory. Memory is full.");
             }
+
+            var emptyBlock = new byte[3];
 
             for (var i = 0; i < value.Length; ++i)
             {
-                Buffer.BlockCopy(byteArr, i, memory, (int)nextMemoryLocation, 1);
-                nextMemoryLocation += size;
+                memory[(int)nextMemoryLocation++] = (byte)value[i];
+                if (size != 1)
+                {
+                    Buffer.BlockCopy(emptyBlock, 0, memory, (int)nextMemoryLocation, size - 1);
+                    nextMemoryLocation += size - 1;
+                }
             }
         }
 
