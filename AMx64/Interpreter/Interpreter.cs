@@ -197,11 +197,11 @@ namespace AMx64
 
             ["RSI"] = new Tuple<byte, byte, bool>(4, 3, false),
             ["ESI"] = new Tuple<byte, byte, bool>(4, 2, false),
-            ["SI"] = new Tuple<byte, byte, bool>(3, 1, false),
+            ["SI"] = new Tuple<byte, byte, bool>(4, 1, false),
 
             ["RDI"] = new Tuple<byte, byte, bool>(5, 3, false),
             ["EDI"] = new Tuple<byte, byte, bool>(5, 2, false),
-            ["DI"] = new Tuple<byte, byte, bool>(3, 1, false)
+            ["DI"] = new Tuple<byte, byte, bool>(4, 1, false)
         };
 
         /// <summary>

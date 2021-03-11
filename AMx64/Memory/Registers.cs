@@ -38,10 +38,29 @@ namespace AMx64
         public byte DL { get => CPURegisters[3].x8; set => CPURegisters[3].x8 = value; }
         #endregion
 
+        #region SI register
         public UInt64 RSI { get => CPURegisters[4].x64; set => CPURegisters[4].x64 = value; }
+        public UInt32 ESI { get => CPURegisters[4].x32; set => CPURegisters[4].x32 = value; }
+        public UInt16 SI { get => CPURegisters[4].x16; set => CPURegisters[4].x16 = value; }
+        #endregion
+
+        #region DI register
         public UInt64 RDI { get => CPURegisters[5].x64; set => CPURegisters[5].x64 = value; }
+        public UInt32 EDI { get => CPURegisters[5].x32; set => CPURegisters[5].x32 = value; }
+        public UInt16 DI { get => CPURegisters[5].x16; set => CPURegisters[5].x16 = value; }
+        #endregion
+
+        #region BP register
         public UInt64 RBP { get => CPURegisters[6].x64; set => CPURegisters[6].x64 = value; }
+        public UInt32 EBP { get => CPURegisters[6].x32; set => CPURegisters[6].x32 = value; }
+        public UInt16 BP { get => CPURegisters[6].x16; set => CPURegisters[6].x16 = value; }
+        #endregion
+
+        #region SP register
         public UInt64 RSP { get => CPURegisters[7].x64; set => CPURegisters[7].x64 = value; }
+        public UInt32 ESP { get => CPURegisters[7].x32; set => CPURegisters[7].x32 = value; }
+        public UInt16 SP { get => CPURegisters[7].x16; set => CPURegisters[7].x16 = value; }
+        #endregion
 
         #region FLAGS register
         public UInt64 RFLAGS;
