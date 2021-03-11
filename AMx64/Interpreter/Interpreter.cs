@@ -651,7 +651,7 @@ namespace AMx64
             // .bss section handle
             else if (currentSection == AsmSegment.BSS)
             {
-                var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
+                var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue.ToUpper());
 
                 if (match.Success)
                 {
@@ -1102,22 +1102,37 @@ namespace AMx64
             return true;
         }
 
+        /// <summary>
+        /// Processes data in bss section of asm code.
+        /// </summary>
+        /// <param name="tokens">Tokenized current asm line.</param>
+        /// <param name="errorMsg">Message describing an error.</param>
+        /// <returns>true if memory has been allocated successfully, otherwise false.</returns>
         public bool TryProcessBss(List<string> tokens, ref string errorMsg)
         {
             var size = (tokens[1].ToUpper()) switch
             {
                 "RESB" => 1,
                 "RESW" => 2,
-                "RESD" => 3,
+                "RESD" => 4,
                 // case "RESQ" is the default case
-                _ => 4,
+                _ => 8,
             };
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
                 variables.Add(tokens[0], nextMemoryLocation);
-                nextMemoryLocation += amount * size;
-                return true;
+
+                if (nextMemoryLocation + size * amount >= maxMemSize)
+                {
+                    errorMsg = "Memory is full.";
+                    return false;
+                }
+                else
+                {
+                    nextMemoryLocation += size * amount;
+                    return true;
+                }
             }
             else
             {
