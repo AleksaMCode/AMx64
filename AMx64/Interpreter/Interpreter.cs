@@ -128,12 +128,12 @@ namespace AMx64
         /// <summary>
         /// Regex for .data section part of asm code (db, dw, dd, dq).
         /// </summary>
-        private readonly Regex asmLineDataSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+D(B|W|D|Q)+\s+", RegexOptions.Compiled);
+        private readonly Regex asmLineDataSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+D(B|W|D|Q|T|O)+\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Regex for .bss section part of asm code (resb, resw, resd, resq).
         /// </summary>
-        private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q|T|Z)+\s+", RegexOptions.Compiled);
+        private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q|T|O)+\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
