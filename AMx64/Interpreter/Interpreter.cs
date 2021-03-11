@@ -421,6 +421,7 @@ namespace AMx64
                     {
                         lineNumber = currentLine.CurrentAsmLineNumber;
                         currentSection = AsmSegment.INVALID;
+                        debugger.BreakpointIndex = 0;
                         continue;
                     }
                 }
