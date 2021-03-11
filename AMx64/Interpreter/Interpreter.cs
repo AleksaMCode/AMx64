@@ -564,17 +564,20 @@ namespace AMx64
                 errorMsg = $"GLOBAL can only be used once in a asm code";
                 return ErrorCode.GlobalLine;
             }
-            else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection == AsmSegment.TEXT)
+            else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL")
             {
-                return SyscallHandle();
-            }
-            else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL" && currentSection != AsmSegment.TEXT)
-            {
-                errorMsg = $"syscall is used in wrong section.";
-                return ErrorCode.SectionProblems;
+                if (currentSection == AsmSegment.TEXT)
+                {
+                    return SyscallHandle();
+                }
+                else if (currentSection != AsmSegment.TEXT)
+                {
+                    errorMsg = $"Syscall is used in wrong section.";
+                    return ErrorCode.SectionProblems;
+                }
             }
 
-            // .text section
+            // .text section handle
             if (currentSection == AsmSegment.TEXT)
             {
                 currentExpr = new Expression();
@@ -615,7 +618,7 @@ namespace AMx64
                             : ErrorCode.UnknownLabel;
                 }
             }
-            // .data section
+            // .data section handle
             else if (currentSection == AsmSegment.DATA)
             {
                 var match = asmLineDataSection.Match(currentLine.CurrentAsmLineValue);
@@ -645,7 +648,7 @@ namespace AMx64
                     return ErrorCode.BssSectionProblem;
                 }
             }
-            // .bss section
+            // .bss section handle
             else if (currentSection == AsmSegment.BSS)
             {
                 var match = asmLineBssSection.Match(currentLine.CurrentAsmLineValue);
