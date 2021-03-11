@@ -133,7 +133,7 @@ namespace AMx64
         /// <summary>
         /// Regex for .bss section part of asm code (resb, resw, resd, resq).
         /// </summary>
-        private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q)+\s+", RegexOptions.Compiled);
+        private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q|T|Z)+\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
@@ -1104,8 +1104,10 @@ namespace AMx64
                 "RESB" => 1,
                 "RESW" => 2,
                 "RESD" => 4,
-                // case "RESQ" is the default case
-                _ => 8,
+                "RESQ" => 8,
+                "REST" => 10,
+                // case "RESZ" is the default case
+                _ => 16,
             };
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
