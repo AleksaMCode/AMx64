@@ -398,6 +398,15 @@ namespace AMx64
                 // Used for debugging.
                 if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Next || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
+                    if (debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber)
+                    {
+                        Console.WriteLine($"Breakpoint {debugger.BreakpointIndex + 1} at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}\n{lineNumber + 1}  {currentLine.CurrentAsmLineValue}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentLine.CurrentAsmLineValue} at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}");
+                    }
+
                     if (debugger.BreakpointIndex + 1 < debugger.Breakpoints.Count && lineNumber >= debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1)
                     {
                         debugger.BreakpointIndex++;
@@ -415,6 +424,7 @@ namespace AMx64
                         continue;
                     }
                 }
+
 
                 // Set current section and skip section asm line.
                 if (currentSection != AsmSegment.TEXT)
