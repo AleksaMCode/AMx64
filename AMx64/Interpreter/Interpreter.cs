@@ -407,6 +407,13 @@ namespace AMx64
                     {
                         return;
                     }
+
+                    if (currentLine.CurrentAsmLineNumber == -1)
+                    {
+                        lineNumber = currentLine.CurrentAsmLineNumber;
+                        currentSection = AsmSegment.INVALID;
+                        continue;
+                    }
                 }
 
                 // Set current section and skip section asm line.
