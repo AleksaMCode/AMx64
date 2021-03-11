@@ -62,6 +62,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="asm_tests\bss_section_test.asm" />
     <Content Include="asm_tests\data_section_test -2.asm" />
     <Content Include="asm_tests\data_section_test.asm" />
     <Content Include="asm_tests\cmp_jmp_test.asm" />

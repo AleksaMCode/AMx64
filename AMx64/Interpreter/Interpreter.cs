@@ -655,22 +655,11 @@ namespace AMx64
 
                 if (match.Success)
                 {
-                    var bssTokens = match.Value.Split(' ');
+                    var bssTokens = currentLine.CurrentAsmLineValue.Split(' ');
 
-                    if (IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0]))
-                    {
-                        return ErrorCode.InvalidEffectiveAddressesName;
-                    }
-                    else
-                    {
-
-                        var dataTokensList = new List<string>(bssTokens)
-                            {
-                                currentLine.CurrentAsmLineValue.Substring(match.Value.Length)
-                            };
-
-                        return TryProcessBss(dataTokensList, ref errorMsg) ? ErrorCode.None : ErrorCode.BssSectionProblem;
-                    }
+                    return IsSymbolReserverd(bssTokens[0]) && labels.ContainsKey(bssTokens[0])
+                        ? ErrorCode.InvalidEffectiveAddressesName
+                        : TryProcessBss(bssTokens, ref errorMsg) ? ErrorCode.None : ErrorCode.BssSectionProblem;
                 }
                 else
                 {
@@ -1108,7 +1097,7 @@ namespace AMx64
         /// <param name="tokens">Tokenized current asm line.</param>
         /// <param name="errorMsg">Message describing an error.</param>
         /// <returns>true if memory has been allocated successfully, otherwise false.</returns>
-        public bool TryProcessBss(List<string> tokens, ref string errorMsg)
+        public bool TryProcessBss(string[] tokens, ref string errorMsg)
         {
             var size = (tokens[1].ToUpper()) switch
             {
@@ -1121,8 +1110,6 @@ namespace AMx64
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
-                variables.Add(tokens[0], nextMemoryLocation);
-
                 if (nextMemoryLocation + size * amount >= maxMemSize)
                 {
                     errorMsg = "Memory is full.";
@@ -1130,6 +1117,7 @@ namespace AMx64
                 }
                 else
                 {
+                    variables.Add(tokens[0], nextMemoryLocation);
                     nextMemoryLocation += size * amount;
                     return true;
                 }
