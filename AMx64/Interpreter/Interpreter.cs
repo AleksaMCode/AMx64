@@ -1524,14 +1524,32 @@ namespace AMx64
             // special tokens check
             switch (symbol)
             {
+                case "SYSCALL":
                 // size tokens
                 case "BYTE":
                 case "WORD":
                 case "DWORD":
                 case "QWORD":
+                // section tokens
                 case "DATA":
                 case "BSS":
                 case "TEXT":
+                // directive names
+                case "DB":
+                case "DW":
+                case "DD":
+                case "DQ":
+                case "DO":
+                case "DT":
+                case "TIMES":
+                case "EQU":
+                case "SECTION":
+                case "RESB":
+                case "RESW":
+                case "RESD":
+                case "RESQ":
+                case "REST":
+                case "RESO":
                 {
                     return true;
                 }
