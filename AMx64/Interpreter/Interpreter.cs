@@ -1055,8 +1055,10 @@ namespace AMx64
                 "DB" => 1,
                 "DW" => 2,
                 "DD" => 4,
-                // case "DQ" is the default case
-                _ => 8,
+                "DQ" => 8,
+                "DT" => 10,
+                // case "DO" is the default case
+                _ => 16,
             };
 
             // Add new variable.
