@@ -170,7 +170,7 @@ namespace AMx64
                         case 'E':
                             Console.WriteLine($"RAX = 0x{(UInt32)value:x16}");
                             break;
-                        // if not R, or E register
+                        // if not R or E register
                         default:
                             Console.WriteLine($"RAX = 0x{(UInt16)value:x16}");
                             break;
