@@ -1179,10 +1179,8 @@ namespace AMx64
 
                     var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
 
-                    // Read address value from memory.
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Read value from address.
-                    memory.Read(address, (UInt64)size, out var output);
+                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
 
                     currentExpr.LeftOpValue = output;
                 }
@@ -1193,11 +1191,18 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        // Read address value from memory.
-                        memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Read value from address.
-                        memory.Read(address, (UInt64)size, out var output);
+                        memory.Read((UInt64)index, (UInt64)size, out var output);
 
+                        currentExpr.LeftOpValue = output;
+                    }
+                    // If operand is a numerical value.
+                    else if (Evaluate(currentExpr.LeftOp, out var value, out var _))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read value from address.
+                        memory.Read(value, (UInt64)size, out var output);
                         currentExpr.LeftOpValue = output;
                     }
                     else
@@ -1268,6 +1273,15 @@ namespace AMx64
                             // Read value from address.
                             memory.Read((UInt64)index, (UInt64)size, out var output);
 
+                            currentExpr.RightOpValue = output;
+                        }
+                        // If operand is a numerical value.
+                        else if (Evaluate(currentExpr.RightOp, out var value, out var _))
+                        {
+                            var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                            // Read value from address.
+                            memory.Read(value, (UInt64)size, out var output);
                             currentExpr.RightOpValue = output;
                         }
                         else
