@@ -210,7 +210,7 @@ namespace AMx64
         /// <returns></returns>
         private bool CheckGlobalSymbol(out string errorMsg)
         {
-            if (AsmCode.IndexOf("global") != AsmCode.LastIndexOf("global"))
+            if (AsmCode.Where(line => line.ToUpper().StartsWith("GLOBAL")).Count() > 1)
             {
                 errorMsg = "'global' can only be used once in a asm code.";
                 return false;
