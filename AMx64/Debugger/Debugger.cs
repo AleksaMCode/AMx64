@@ -162,19 +162,7 @@ namespace AMx64
                 try
                 {
                     var value = GetRegisterValue(tokens[1]);
-                    switch (tokens[1].ToUpper()[0])
-                    {
-                        case 'R':
-                            Console.WriteLine($"RAX = 0x{value:x16}");
-                            break;
-                        case 'E':
-                            Console.WriteLine($"RAX = 0x{(UInt32)value:x16}");
-                            break;
-                        // if not R or E register
-                        default:
-                            Console.WriteLine($"RAX = 0x{(UInt16)value:x16}");
-                            break;
-                    }
+                    Console.WriteLine($"{tokens[1]} = 0x{value:x16}");
                 }
                 catch (Exception ex)
                 {
