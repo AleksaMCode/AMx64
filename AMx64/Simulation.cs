@@ -40,7 +40,7 @@ namespace AMx64
             }
 
             // Set asm file full path.
-            if (File.Exists(args[1]))
+            if (File.Exists(args[0]))
             {
                 if(!args[1].EndsWith(".asm"))
                 {
@@ -50,16 +50,16 @@ namespace AMx64
 
                 if (args[1].Contains('\\'))
                 {
-                    AsmFilePath = args[1];
+                    AsmFilePath = args[0];
                 }
                 else
                 {
-                    AsmFilePath += "\\" + args[1];
+                    AsmFilePath += "\\" + args[0];
                 }
             }
             else
             {
-                Console.WriteLine($"File {args[1]} doesn't exist.");
+                Console.WriteLine($"File {args[0]} doesn't exist.");
                 return false;
             }
 
