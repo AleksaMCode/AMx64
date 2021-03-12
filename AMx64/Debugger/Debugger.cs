@@ -157,6 +157,17 @@ namespace AMx64
             {
                 GetCPUDebugStats();
             }
+            else if (tokens.Length == 2)
+            {
+                try
+                {
+                    GetRegisterValue(tokens[1]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
             else if (tokens.Length == 3)
             {
                 var size = (tokens[1].ToUpper()) switch

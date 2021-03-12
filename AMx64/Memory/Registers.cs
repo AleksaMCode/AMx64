@@ -122,7 +122,7 @@ namespace AMx64
         /// Gets a register value.
         /// </summary>
         /// <param name="register">Name of a register whose value is returned.</param>
-        /// <exception cref="Exception">If register name isn't valid.</exception>
+        /// <exception cref="Exception">If registers name isn't valid.</exception>
         /// <returns>Regiser memory value.</returns>
         public UInt64 GetRegisterValue(string register)
         {
