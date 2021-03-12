@@ -397,11 +397,11 @@ namespace AMx64
         /// <param name="position">Beginning index of specified array.</param>
         /// <param name="outputValue">Value read from the array.</param>
         /// <returns>true if value is read, otherwise false.</returns>
-        public static bool ReadString(this byte[] array, UInt64 position, out string outputValue)
+        public static bool ReadString(this byte[] array, UInt64 position, UInt64 maxSize, out string outputValue)
         {
             var cString = new StringBuilder();
 
-            // Read string until a terminator char is reached.
+            // Read string until a terminator char is reached or maximum size is reached.
             for (; ; ++position)
             {
                 if (position >= (UInt64)array.Length)
@@ -410,7 +410,11 @@ namespace AMx64
                     return false;
                 }
 
-                if (array[position] != 0)
+                if (cString.Length == (int)maxSize)
+                {
+                    break;
+                }
+                else if (array[position] != 0)
                 {
                     cString.Append((char)array[position]);
                 }
