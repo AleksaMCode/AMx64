@@ -16,7 +16,9 @@ namespace AMx64
         {
             if (radix != 2 && radix != 8 && radix != 10 && radix != 16)
             {
-                throw new ArgumentException("Radix can only be 2, 8, 10 or 16.");
+                //throw new ArgumentException("Radix can only be 2, 8, 10 or 16.");
+                value = 0;
+                return false;
             }
 
             value = 0;

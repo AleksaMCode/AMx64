@@ -194,7 +194,11 @@ namespace AMx64
                 }
                 else if (tokens[2].StartsWith("0x"))
                 {
-                    tokens[2].Substring(2).TryParseUInt64(out location, 16);
+                    if(!tokens[2].Substring(2).TryParseUInt64(out location, 16))
+                    {
+                        Console.WriteLine($"Failed to parse value '{tokens[2]}'.");
+                        return false;
+                    }
                 }
                 else if (Int64.TryParse(tokens[2], out address))
                 {

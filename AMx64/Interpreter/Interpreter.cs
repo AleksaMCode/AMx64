@@ -1035,7 +1035,15 @@ namespace AMx64
                 {
                     if (Evaluate(values[i], out var result, out var _, ref errorMsg, false))
                     {
-                        AddToMemory(result, size);
+                        try
+                        {
+                            AddToMemory(result, size);
+                        }
+                        catch(Exception ex)
+                        {
+                            errorMsg = ex.Message;
+                            return false;
+                        }
                     }
                     else
                     {
@@ -1046,7 +1054,15 @@ namespace AMx64
                 {
                     if (Evaluate(values[i], out var _, out var result, ref errorMsg, false))
                     {
-                        AddToMemory(result, size);
+                        try
+                        {
+                            AddToMemory(result, size);
+                        }
+                        catch (Exception ex)
+                        {
+                            errorMsg = ex.Message;
+                            return false;
+                        }
                     }
                     else
                     {
