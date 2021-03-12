@@ -175,7 +175,7 @@ namespace AMx64
                     "BYTE" => 1,
                     "WORD" => 2,
                     "DWORD" => 4,
-                    "QWORD" => 6,
+                    "QWORD" => 8,
                     _ => -1,
                 };
 
