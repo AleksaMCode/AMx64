@@ -1068,7 +1068,7 @@ namespace AMx64
             {
                 if (char.IsDigit(values[i][0]))
                 {
-                    if (Evaluate(values[i], out var result, out var _, ref errorMsg))
+                    if (Evaluate(values[i], out var result, out var _, ref errorMsg, false))
                     {
                         AddToMemory(result, size);
                     }
@@ -1079,7 +1079,7 @@ namespace AMx64
                 }
                 else
                 {
-                    if (Evaluate(values[i], out var _, out var result, ref errorMsg))
+                    if (Evaluate(values[i], out var _, out var result, ref errorMsg, false))
                     {
                         AddToMemory(result, size);
                     }
@@ -1387,7 +1387,7 @@ namespace AMx64
             return Evaluate(value, out result, out characters, ref errorMsg);
         }
 
-        private bool Evaluate(string value, out UInt64 result, out string characters, ref string errorMsg)
+        private bool Evaluate(string value, out UInt64 result, out string characters, ref string errorMsg, bool charLimit = true)
         {
             result = 0;
             characters = "";
@@ -1490,7 +1490,7 @@ namespace AMx64
                     errorMsg = $"Ill-formed character string encountered (empty): {value}";
                     return false;
                 }
-                if (characters.Length > 8)
+                if (charLimit && characters.Length > 8)
                 {
                     errorMsg = $"Ill-formed character string encountered (too long): {value}";
                     return false;
