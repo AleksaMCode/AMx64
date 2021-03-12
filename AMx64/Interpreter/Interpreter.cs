@@ -260,7 +260,7 @@ namespace AMx64
         /// Adds a section of asm code (name and asm code line number). It has a value of -1 if the section isn't used in asm code.
         /// Section .text must always be present in asm code.
         /// </summary>
-        /// <param name="section">Section full name.</param>
+        /// <param name="section">Sections full name.</param>
         /// <returns>true if section has been added successfully, otherwise false.</returns>
         private bool AddSection(string section)
         {
@@ -275,13 +275,9 @@ namespace AMx64
                 }
             }
 
-            if (section == "section .text" && index == -1)
-            {
-                return false;
-            }
-
             sections.Add(section, index);
-            return true;
+
+            return index != -1;
         }
 
         /// <summary>
