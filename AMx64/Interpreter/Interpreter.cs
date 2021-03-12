@@ -835,6 +835,16 @@ namespace AMx64
                         // Write result value to a specified address.
                         memory.Write(address, (UInt64)size, GetUnaryOpResult());
                     }
+                    // If operand is a numerical value.
+                    else if (Evaluate(currentExpr.LeftOp, out var value, out var _))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read value from specified address in memory.
+                        memory.Read(value, (UInt64)size, out var address);
+                        // Write result value to a specified address.
+                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
+                    }
                     else
                     {
                         return false;
@@ -909,6 +919,16 @@ namespace AMx64
 
                         // Read value from specified address in memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
+                        // Write result value to a specified address.
+                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
+                    }
+                    // If operand is a numerical value.
+                    else if (Evaluate(currentExpr.LeftOp, out var value, out var _))
+                    {
+                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
+
+                        // Read value from specified address in memory.
+                        memory.Read(value, (UInt64)size, out var address);
                         // Write result value to a specified address.
                         memory.Write(address, (UInt64)size, GetBinaryOpResult());
                     }
