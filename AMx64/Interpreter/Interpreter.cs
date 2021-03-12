@@ -163,7 +163,7 @@ namespace AMx64
         /// <summary>
         /// GLOBAL symbol regex.
         /// </summary>
-        private readonly Regex globalSymbolRegex = new Regex(@"^global\s+([_a-zA-Z]+\d*)+$", RegexOptions.Compiled);
+        private readonly Regex globalSymbolRegex = new Regex(@"^GLOBAL\s+([_a-zA-Z]+\d*)+\s*$", RegexOptions.Compiled);
         #endregion
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace AMx64
         {
             if (AsmCode.IndexOf("global") != AsmCode.LastIndexOf("global"))
             {
-                errorMsg = "GLOBAL can only be used once in a asm code.";
+                errorMsg = "'global' can only be used once in a asm code.";
                 return false;
             }
 
@@ -231,9 +231,11 @@ namespace AMx64
                 }
             }
 
-            if (globalSymbolRegex.Match(AsmCode[index]).Success)
+            var globalLine = AsmCode[index].Substring(0, AsmCode[index].IndexOf(';')).TrimEnd();
+
+            if (globalSymbolRegex.Match(globalLine.ToUpper()).Success)
             {
-                globalSymbol = AsmCode[index].Substring(6).Trim();
+                globalSymbol = globalLine.Substring(6).Trim();
                 errorMsg = "";
                 return true;
             }
@@ -301,28 +303,8 @@ namespace AMx64
             {
                 AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
 
-                //// Remove empty or comment lines.
-                //AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && !string.IsNullOrWhiteSpace(line)).ToList();
-
                 // Trim each line.
                 AsmCode = AsmCode.Select(line => line.Trim()).ToList();
-
-                //// Remove comment part of the asm lines.
-                //for (var i = 0; i < AsmCode.Count; ++i)
-                //{
-                //    AsmCode[i] = AsmCode[i].Trim();
-
-                //    // Skip comment lines.
-                //    if (AsmCode[i].StartsWith(';'))
-                //    {
-                //        continue;
-                //    }
-
-                //    if (AsmCode[i].Contains(";"))
-                //    {
-                //        AsmCode[i] = AsmCode[i].Substring(0, AsmCode[i].IndexOf(';') - 1).TrimEnd();
-                //    }
-                //}
 
                 // Add sections.
                 if (!AddSections())
@@ -364,9 +346,6 @@ namespace AMx64
                 Console.WriteLine($"Asm file uses label before .text section on line {lineNumber}.");
                 return;
             }
-
-            //// Remove empty lines.
-            //AsmCode = AsmCode.Where(line => !string.IsNullOrEmpty(line)).ToList();
 
             // Check if global symbol is used.
             if (!labels.ContainsKey(globalSymbol))
@@ -425,7 +404,6 @@ namespace AMx64
                         continue;
                     }
                 }
-
 
                 // Set current section and skip section asm line.
                 if (currentSection != AsmSegment.TEXT)
@@ -520,15 +498,6 @@ namespace AMx64
 
                         // Save label and label line number.
                         labels.Add(label, lineNumber);
-
-                        // Remove label from asm code.
-                        //else
-                        //{
-                        //    labels.Add(label, lineNumber);
-                        //    AsmCode[lineNumber] = AsmCode[lineNumber].ToUpper() == labelMatch.Value.ToUpper()
-                        //        ? ""
-                        //        : AsmCode[lineNumber].Substring(labelMatch.Length).Trim();
-                        //}
                     }
                 }
             }
@@ -553,15 +522,15 @@ namespace AMx64
                 return ErrorCode.Label;
             }
             // Checks for duplicate sections in asm code.
-            else if (currentLine.CurrentAsmLineValue.Contains("section"))
+            else if (currentLine.CurrentAsmLineValue.ToLower().StartsWith("section"))
             {
                 errorMsg = $"Duplicate section encountered: {currentLine.CurrentAsmLineValue}";
                 return ErrorCode.SectionProblems;
             }
             // Prevents multiple usage of global.
-            else if (currentLine.CurrentAsmLineValue.Contains("global"))
+            else if (currentLine.CurrentAsmLineValue.ToLower().StartsWith("global"))
             {
-                errorMsg = $"GLOBAL can only be used once in a asm code";
+                errorMsg = $"'global' can only be used once in a asm code.";
                 return ErrorCode.GlobalLine;
             }
             else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL")
@@ -723,7 +692,7 @@ namespace AMx64
                                     userInput = userInput.Substring(0, (int)maxLen);
                                 }
 
-                                // Set return value.
+                                // Set return value and write string to memory.
                                 RAX = !memory.WriteString(index, userInput) ? 0xffff_ffff_ffff_ffff : (UInt64)userInput.Length;
                             }
                         }
