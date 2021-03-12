@@ -358,7 +358,7 @@ namespace AMx64
 
                 var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
 
-                // Remove lable from a line. e.q. from a line -> label: OP op1, op2
+                // Remove label from a line. e.q. from a line -> label: OP op1, op2
                 if (labelMatch.Success && labelMatch.Value.Length != currentLine.CurrentAsmLineValue.Length)
                 {
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length).TrimStart();
