@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace AMx64
 {
@@ -116,5 +117,40 @@ namespace AMx64
         public bool ID { get => (RFLAGS & 0x0020_0000ul) != 0; set => RFLAGS = (RFLAGS & ~0x0020_0000ul) | (value ? 0x0020_0000ul : 0); }
         #endregion
         #endregion
+
+        /// <summary>
+        /// Gets a register value.
+        /// </summary>
+        /// <param name="register">Name of a register whose value is returned.</param>
+        /// <exception cref="Exception">If register name isn't valid.</exception>
+        /// <returns>Regiser memory value.</returns>
+        public UInt64 GetRegisterValue(string register)
+        {
+            return register.ToUpper() switch
+            {
+                // x64 registers
+                "RAX" => RAX,
+                "RBX" => RBX,
+                "RCX" => RCX,
+                "RDX" => RDX,
+                "RSI" => RSI,
+                "RDI" => RDI,
+                // x32 registers
+                "EAX" => EAX,
+                "EBX" => EBX,
+                "ECX" => ECX,
+                "EDX" => EDX,
+                "ESI" => ESI,
+                "EDI" => EDI,
+                // x16 registers
+                "AX" => AX,
+                "BX" => BX,
+                "CX" => CX,
+                "DX" => DX,
+                "SI" => SI,
+                "DI" => DI,
+                _ => throw new Exception($"Register '{register}' doesn't exist."),
+            };
+        }
     }
 }
