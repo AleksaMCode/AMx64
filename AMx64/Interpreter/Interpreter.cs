@@ -853,21 +853,21 @@ namespace AMx64
 
                     var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                    // Read address value from memory.
+                    // Read value from specified address in memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
-                    // Write result value from address.
+                    // Write result value to a specified address.
                     memory.Write(address, (UInt64)size, GetUnaryOpResult());
                 }
                 else
                 {
-                    // If operand is a 'variable'.
+                    // If operand is a variable.
                     if (variables.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        // Read address value from memory.
+                        // Read value from specified address in memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
-                        // Write result value from address.
+                        // Write result value to a specified address.
                         memory.Write(address, (UInt64)size, GetUnaryOpResult());
                     }
                     else
@@ -888,7 +888,7 @@ namespace AMx64
                 }
                 else
                 {
-                    // If operand is a 'variable'.
+                    // If operand is a variable.
                     if (variables.TryGetValue(currentExpr.LeftOp, out var index) && currentExpr.ExplicitSize)
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
@@ -930,21 +930,21 @@ namespace AMx64
 
                     var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
 
-                    // Read address value from memory.
+                    // Read value from specified address in memory.
                     memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
-                    // Write result value from address.
+                    // Write result value to a specified address.
                     memory.Write(address, (UInt64)size, GetBinaryOpResult());
                 }
                 else
                 {
-                    // If operand is a 'variable'.
+                    // If operand is a variable.
                     if (variables.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        // Read address value from memory.
+                        // Read value from specified address in memory.
                         memory.Read((UInt64)index, (UInt64)size, out var address);
-                        // Write result value from address.
+                        // Write result value to a specified address.
                         memory.Write(address, (UInt64)size, GetBinaryOpResult());
                     }
                     else
@@ -965,7 +965,7 @@ namespace AMx64
                 }
                 else
                 {
-                    // If operand is a 'variable'.
+                    // If operand is a variable.
                     if (variables.TryGetValue(currentExpr.LeftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
@@ -1223,7 +1223,7 @@ namespace AMx64
                 }
                 else
                 {
-                    // If operand is a 'variable'.
+                    // If operand is a variable.
                     if (variables.TryGetValue(leftOp, out var index))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
@@ -1252,13 +1252,10 @@ namespace AMx64
                 }
                 else
                 {
-                    // If operand is a 'variable'.
-                    if (variables.TryGetValue(currentExpr.RightOp, out var index))
+                    // If operand is a variable.
+                    if (variables.TryGetValue(currentExpr.RightOp, out var value))
                     {
-                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                        memory.Read((UInt64)index, (UInt64)size, out var output);
-                        currentExpr.RightOpValue = output;
+                        currentExpr.RightOpValue = (ulong)value;
                     }
                     // If operand is a numerical value.
                     else if (Evaluate(currentExpr.RightOp, out var output, out var _))
@@ -1291,24 +1288,20 @@ namespace AMx64
 
                         var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
 
-                        // Read address value from memory.
-                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                         // Read value from address.
-                        memory.Read(address, (UInt64)size, out var output);
+                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
 
                         currentExpr.RightOpValue = output;
                     }
                     else
                     {
-                        // If operand is a 'variable'.
+                        // If operand is a variable.
                         if (variables.TryGetValue(rightOp, out var index))
                         {
                             var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                            // Read address value from memory.
-                            memory.Read((UInt64)index, (UInt64)size, out var address);
                             // Read value from address.
-                            memory.Read(address, (UInt64)size, out var output);
+                            memory.Read((UInt64)index, (UInt64)size, out var output);
 
                             currentExpr.RightOpValue = output;
                         }
@@ -1333,12 +1326,9 @@ namespace AMx64
                     else
                     {
                         // If operand is a 'variable'.
-                        if (variables.TryGetValue(currentExpr.RightOp, out var index))
+                        if (variables.TryGetValue(currentExpr.RightOp, out var value))
                         {
-                            var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                            memory.Read((UInt64)index, (UInt64)size, out var output);
-                            currentExpr.RightOpValue = output;
+                            currentExpr.RightOpValue = (ulong)value;
                         }
                         // If operand is a numerical value.
                         else if (Evaluate(currentExpr.RightOp, out var output, out var _))
@@ -1363,13 +1353,10 @@ namespace AMx64
                 }
                 else
                 {
-                    // If operand is a 'variable'.
-                    if (variables.TryGetValue(currentExpr.LeftOp, out var index))
+                    // If operand is a variable.
+                    if (variables.TryGetValue(currentExpr.LeftOp, out var output))
                     {
-                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                        memory.Read((UInt64)index, (UInt64)size, out var output);
-                        currentExpr.LeftOpValue = output;
+                        currentExpr.LeftOpValue = (ulong)output;
                     }
                     else
                     {
