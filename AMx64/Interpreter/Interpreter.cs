@@ -231,7 +231,7 @@ namespace AMx64
                 }
             }
 
-            var globalLine = AsmCode[index].Substring(0, AsmCode[index].IndexOf(';')).TrimEnd();
+            var globalLine = AsmCode[index].Contains(';') ? AsmCode[index].Substring(0, AsmCode[index].IndexOf(';')).TrimEnd() : AsmCode[index];
 
             if (globalSymbolRegex.Match(globalLine.ToUpper()).Success)
             {
