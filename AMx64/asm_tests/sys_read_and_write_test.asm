@@ -1,5 +1,5 @@
 section .bss
-    var resb 10
+    var resb 11
 
 section .text
 global main
@@ -9,14 +9,14 @@ main:
 mov rax, 0      ; read system call
 mov rdi, 0      ; stdin
 mov rsi, var    ; address for storage, declared in section .bss
-mov rdx, 10
+mov rdx, 11
 syscall
 
 ; show user the output
 mov rax, 1      ; write system call
 mov rdi, 1      ; stdout
 mov rsi, var    ; address for storage, declared in section .bss
-mov rdx, 10
+mov rdx, 11
 syscall
 
 ; exit system call
