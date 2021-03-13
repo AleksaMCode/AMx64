@@ -736,6 +736,7 @@ syscall
   <li><p align="justify"><a href="https://cs.baylor.edu/~donahoo/tools/gdb/tutorial.html">How to Debug Using GDB</a></p></li>
   <li><p align="justify"><a href="https://en.wikibooks.org/wiki/X86_Assembly/X86_Architecture">x86 Assembly/X86 Architecture</a></p></li>
   <li><p align="justify"><a href="http://home.myfairpoint.net/fbkotler/nasmdocr.html">Nasm Instruction Set Reference</a></p></li>
+  <li><p align="justify"><a href="https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/">Linux System call table for x86 64</a></p></li>
   <li><p align="justify"><a href="https://able.bio/kerrishotts/building-a-basic-interpreter-80s-style--79a9d703">Building a BASIC Interpreter, '80s style</a></p></li>
   <li><p align="justify"><a href="https://teaching.csse.uwa.edu.au/units/CITS2230/resources/gdb-intro.html">A Quickstart Guide to Debugging C Programs with gdb</a></p></li>
   <li><p align="justify"><a href="https://opensource.com/article/21/1/gnu-project-debugger">A hands-on tutorial for using the GNU Project Debugger</a></p></li>
