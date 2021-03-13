@@ -66,10 +66,10 @@ namespace AMx64
             // if we have arguments simulation can start
             if (args != null)
             {
-                if (args.Length != 2)
+                if (args.Length != 1)
                 {
                     var cml = new CmlnParser();
-                    if (cml.Parse(args.Where((source, index) => index > 1).ToArray()))
+                    if (cml.Parse(args.Where((source, index) => index >= 1).ToArray()))
                     {
                         if (cml.cmlnAction == CmlnAction.Debug && Debug())
                         {
