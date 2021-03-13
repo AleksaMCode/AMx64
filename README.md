@@ -724,6 +724,7 @@ syscall
 ## References
 ### Books
 <ul>
+  <li><p align="justify"><a href="https://www.amazon.com/Hackers-Delight-Henry-S-Warren-ebook-dp-B009GMUMTM/dp/B009GMUMTM/">Henry S. Warren, Jr. - <i>Hacker’s Delight</i></p></a></li>
   <li><p align="justify"><a href="https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf">Intel® 64 and IA-32 Architectures, Software Developer’s Manual</p></a></li>
   <li><p align="justify"><a href="http://www.egr.unlv.edu/~ed/assembly64.pdf">Ed Jorgensen - <i>x86-64 Assembly Language Programming with Ubuntu</i></p></a></li>
   <li><p align="justify"><a href="https://www.amazon.com/Assembly-Language-Step-Step-Programming-ebook/dp/B004QWZXFA">Jeff Duntemann - <i>Assembly Language Step-by-Step: Programming with Linux</i></p></a></li>
