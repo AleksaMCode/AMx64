@@ -42,13 +42,13 @@ namespace AMx64
             // Set asm file full path.
             if (File.Exists(args[0]))
             {
-                if(!args[1].EndsWith(".asm"))
+                if(!args[0].EndsWith(".asm"))
                 {
                     Console.WriteLine("File isn't an .asm file.");
                     return false;
                 }
 
-                if (args[1].Contains('\\'))
+                if (args[0].Contains('\\'))
                 {
                     AsmFilePath = args[0];
                 }
