@@ -35,7 +35,7 @@ List of classes of commands:
             public SortedSet<int> Breakpoints = new SortedSet<int>();
             public int BreakpointIndex = 0;
             public int LineCount;
-            public bool Next = false;
+            public bool Step = false;
 
             public string SetBreakpoints(string[] commandLineTokens)
             {

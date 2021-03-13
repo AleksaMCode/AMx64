@@ -14,7 +14,7 @@ namespace AMx64
 
         public bool InterpretDebugCommandLine()
         {
-            debugger.Next = false;
+            debugger.Step = false;
 
             do
             {
@@ -103,7 +103,7 @@ namespace AMx64
                     }
                     else
                     {
-                        debugger.Next = true;
+                        debugger.Step = true;
                         return true;
                     }
                 }
