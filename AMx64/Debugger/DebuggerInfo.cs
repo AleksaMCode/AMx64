@@ -14,7 +14,7 @@ namespace AMx64
             private const char NULL = (char)0;
 
             public readonly string Prompt = "(amdb) ";
-            private readonly string breakpointErrorMsg = "Error setting breakpoint(s): ";
+            private readonly string breakpointErrorMsg = "Error setting breakpoint";
             public readonly string DebuggerErrorMsg = "Failed to evaluate symbol(s) \"{0}\"";
             public readonly string HelpDebugMessage =
 @"Usage: (amdb) [OPTION]... [ARG]...
@@ -45,7 +45,7 @@ List of classes of commands:
                 }
                 else if (commandLineTokens.Length == 2)
                 {
-                    return Int32.TryParse(commandLineTokens[1], out var breakpoint) ? SetBreakpoint(breakpoint) : breakpointErrorMsg + breakpoint;
+                    return Int32.TryParse(commandLineTokens[1], out var breakpoint) ? SetBreakpoint(breakpoint) : breakpointErrorMsg + ": " + commandLineTokens[1];
                 }
                 else
                 {
@@ -53,8 +53,8 @@ List of classes of commands:
                     var errorMsg = SetBreakpoints(breakpoints);
 
                     return string.IsNullOrEmpty(errorMsg)
-                        ? string.IsNullOrEmpty(errors) ? errorMsg : breakpointErrorMsg + errors
-                        : string.IsNullOrEmpty(errors) ? errorMsg : breakpointErrorMsg + errorMsg + " + " + errors;
+                        ? string.IsNullOrEmpty(errors) ? "" : $"{breakpointErrorMsg}(s): {errors}"
+                        : string.IsNullOrEmpty(errors) ? $"{breakpointErrorMsg}(s): {errorMsg}" : $"{breakpointErrorMsg}(s): {errorMsg}+ {errors}";
                 }
             }
 
@@ -62,11 +62,11 @@ List of classes of commands:
             {
                 var breakpoints = ParseBreakpoints(ref commandLineTokens, out var errorMsg);
 
-                if(breakpoints.Count == 0)
+                if (breakpoints.Count == 0)
                 {
                     Console.WriteLine($"Error occurred while parsing values: {errorMsg}");
                     return;
-                }    
+                }
 
                 foreach (var breakpoint in breakpoints)
                 {
@@ -105,7 +105,7 @@ List of classes of commands:
 
                 if (breakpoint > LineCount)
                 {
-                    return breakpointErrorMsg + breakpoint;
+                    return breakpointErrorMsg + ": " + breakpoint;
                 }
                 else
                 {
@@ -122,7 +122,7 @@ List of classes of commands:
                     LineCount = GetAsmFileLineNumber();
                 }
 
-                var errorMsg = breakpointErrorMsg;
+                var errorMsg = "";
 
                 foreach (var bp in breakpoints)
                 {
@@ -137,7 +137,7 @@ List of classes of commands:
                     }
                 }
 
-                return errorMsg.Length > breakpointErrorMsg.Length ? errorMsg : null;
+                return errorMsg.Length > 1 ? errorMsg : null;
             }
 
             public int GetAsmFileLineNumber()

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AMx64
 {
@@ -20,7 +22,7 @@ namespace AMx64
             {
                 Console.Write(debugger.Prompt);
                 var command = Console.ReadLine();
-                command = command.Trim();
+                command = command.Replace("\t", " ").Trim();
 
                 if (command.Equals("help") || command.Equals("h"))
                 {
@@ -28,11 +30,11 @@ namespace AMx64
                 }
                 else if (command.StartsWith("break ") || command.StartsWith("b "))
                 {
-                    var errorMsg = debugger.SetBreakpoints(command.Split(' '));
+                    var errorMsg = debugger.SetBreakpoints(command.Split(' ').Where(value => !string.IsNullOrWhiteSpace(value)).ToArray());
 
                     if (string.IsNullOrEmpty(errorMsg))
                     {
-                        Console.WriteLine("Breakpoint(s) successfully added.");
+                        Console.WriteLine("Breakpoint" + (command.Split().Length != 2 ? "(s) " : " ") + "successfully added.");
                     }
                     else
                     {
