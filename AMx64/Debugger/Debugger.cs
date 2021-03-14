@@ -153,7 +153,7 @@ namespace AMx64
 
         private bool DebugPrint(string[] tokens)
         {
-            if (tokens.Length == 1)
+            if (tokens.Length == 1 && (tokens[0] == "print" || tokens[0] == "p"))
             {
                 GetCPUDebugStats();
             }
@@ -177,6 +177,8 @@ namespace AMx64
                     "WORD" => 2,
                     "DWORD" => 4,
                     "QWORD" => 8,
+                    //"TWORD" => 10,
+                    //"OWORD" => 16,
                     _ => -1,
                 };
 
@@ -194,7 +196,7 @@ namespace AMx64
                 }
                 else if (tokens[2].StartsWith("0x"))
                 {
-                    if(!tokens[2].Substring(2).TryParseUInt64(out location, 16))
+                    if (!tokens[2].Substring(2).TryParseUInt64(out location, 16))
                     {
                         Console.WriteLine($"Failed to parse value '{tokens[2]}'.");
                         return false;
