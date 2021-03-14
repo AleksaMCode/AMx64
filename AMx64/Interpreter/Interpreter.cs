@@ -370,6 +370,12 @@ namespace AMx64
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).TrimEnd();
                 }
 
+                // Skip global line.
+                if (currentLine.CurrentAsmLineValue.ToLower() == "global " + globalSymbol.Item1.ToLower())
+                {
+                    continue;
+                }
+
                 // Used for debugging.
                 if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Step || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
                 {
@@ -392,11 +398,14 @@ namespace AMx64
                         return;
                     }
 
+                    // if restart debugg is set.
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
                         lineNumber = currentLine.CurrentAsmLineNumber;
                         currentSection = AsmSegment.INVALID;
                         debugger.BreakpointIndex = 0;
+                        // Remove variables.
+                        variables.Clear();
                         continue;
                     }
                 }
@@ -435,9 +444,9 @@ namespace AMx64
                     case ErrorCode.EmptyLine:
                     case ErrorCode.Comment:
                     case ErrorCode.None:
+                    case ErrorCode.Label:
                         continue;
                     // Stop interpreter.
-                    case ErrorCode.GlobalLine:
                     case ErrorCode.SuccessfullyRun:
                     case ErrorCode.UnsuccessfullyRun:
                     case ErrorCode.UnhandledSyscall:
@@ -447,6 +456,7 @@ namespace AMx64
                     case ErrorCode.MemoryAllocError:
                     case ErrorCode.UnknownLabel:
                         return;
+                    case ErrorCode.GlobalLine:
                     default:
                         Console.WriteLine(errorMsg);
                         return;
@@ -519,6 +529,10 @@ namespace AMx64
             else if (currentLine.CurrentAsmLineValue.StartsWith(';'))
             {
                 return ErrorCode.Comment;
+            }
+            else if (asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
+            {
+                return ErrorCode.Label;
             }
             // Checks for duplicate sections in asm code.
             else if (currentLine.CurrentAsmLineValue.ToLower().StartsWith("section"))
@@ -1050,7 +1064,15 @@ namespace AMx64
             };
 
             // Add new variable.
-            variables.Add(tokens[0], nextMemoryLocation);
+            if (!variables.ContainsKey(tokens[0]))
+            {
+                variables.Add(tokens[0], nextMemoryLocation);
+            }
+            else
+            {
+                errorMsg = $"Name {tokens[0]} is already used for different memory address.";
+                return false;
+            }
 
             for (var i = 0; i < values.Length; ++i)
             {
@@ -1125,7 +1147,16 @@ namespace AMx64
                 }
                 else
                 {
-                    variables.Add(tokens[0], nextMemoryLocation);
+                    if (!variables.ContainsKey(tokens[0]))
+                    {
+                        variables.Add(tokens[0], nextMemoryLocation);
+                    }
+                    else
+                    {
+                        errorMsg = $"Name {tokens[0]} is already used for different memory address.";
+                        return false;
+                    }
+
                     nextMemoryLocation += size * amount;
                     return true;
                 }
