@@ -112,7 +112,7 @@ namespace AMx64
         /// <summary>
         /// GLOBAL symbol.
         /// </summary>
-        private string globalSymbol;
+        private Tuple<string, int> globalSymbol;
 
         #region Regex
         /// <summary>
@@ -225,7 +225,7 @@ namespace AMx64
                 {
                     continue;
                 }
-                else
+                else if (AsmCode[index].ToUpper().StartsWith("GLOBAL"))
                 {
                     break;
                 }
@@ -235,7 +235,7 @@ namespace AMx64
 
             if (globalSymbolRegex.Match(globalLine.ToUpper()).Success)
             {
-                globalSymbol = globalLine.Substring(6).Trim();
+                globalSymbol = new Tuple<string, int>(globalLine.Substring(6).Trim(), index - 1);
                 errorMsg = "";
                 return true;
             }
@@ -317,9 +317,9 @@ namespace AMx64
                 }
 
                 // Check global symbol.
-                if (!CheckGlobalSymbol(out var errorMsg))
+                if (!CheckGlobalSymbol(out var error))
                 {
-                    Console.WriteLine(errorMsg);
+                    Console.WriteLine(error);
                     return;
                 }
             }
@@ -330,23 +330,23 @@ namespace AMx64
             }
 
             // Parse asm code labels.
-            var labelError = ParseLabels(out var lineNumber);
+            var labelError = ParseLabels(out var lineNumber, out var errorMsg);
 
             if (labelError == ErrorCode.InvalidLabel)
             {
-                Console.WriteLine($"Asm file uses invalid label name on line {lineNumber}.");
+                Console.WriteLine($"Asm file uses {errorMsg} on line {lineNumber}.");
                 return;
             }
             else if (labelError == ErrorCode.InvalidLabelPosition)
             {
-                Console.WriteLine($"Asm file uses label before .text section on line {lineNumber}.");
+                Console.WriteLine($"Asm file uses label before {errorMsg} on line {lineNumber}.");
                 return;
             }
 
             // Check if global symbol is used.
-            if (!labels.ContainsKey(globalSymbol))
+            if (!labels.ContainsKey(globalSymbol.Item1))
             {
-                Console.WriteLine($"Global symbol \"{globalSymbol}\" is never used.");
+                Console.WriteLine($"Global symbol \"{globalSymbol.Item1}\" is never used.");
                 return;
             }
 
@@ -419,7 +419,7 @@ namespace AMx64
                 }
 
                 // Check for errors in asm line.
-                var interpretResult = InterpretAsmLine(out var errorMsg);
+                var interpretResult = InterpretAsmLine(out errorMsg);
 
                 // If Jcc occurred.
                 if (interpretResult == ErrorCode.JmpOccurred)
@@ -435,10 +435,9 @@ namespace AMx64
                     case ErrorCode.EmptyLine:
                     case ErrorCode.Comment:
                     case ErrorCode.None:
-                    case ErrorCode.GlobalLine:
-                    case ErrorCode.Label:
                         continue;
                     // Stop interpreter.
+                    case ErrorCode.GlobalLine:
                     case ErrorCode.SuccessfullyRun:
                     case ErrorCode.UnsuccessfullyRun:
                     case ErrorCode.UnhandledSyscall:
@@ -468,7 +467,7 @@ namespace AMx64
         /// </summary>
         /// <param name="lineNumber">Current line number.</param>
         /// <returns>true if labels are used correctly, otherwise false.</returns>
-        private ErrorCode ParseLabels(out int lineNumber)
+        private ErrorCode ParseLabels(out int lineNumber, out string errorMsg)
         {
             for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
@@ -479,8 +478,14 @@ namespace AMx64
                     if (labelMatch.Success)
                     {
                         // Labels aren't permitted  before .text section.
-                        if (lineNumber < sections["section .text"])
+                        if (lineNumber <= sections["section .text"])
                         {
+                            errorMsg = ".text section";
+                            return ErrorCode.InvalidLabelPosition;
+                        }
+                        else if (lineNumber <= globalSymbol.Item2)
+                        {
+                            errorMsg = "global symbol definition";
                             return ErrorCode.InvalidLabelPosition;
                         }
 
@@ -489,6 +494,7 @@ namespace AMx64
                         // If used label string is reserved or already used stop interpreting the asm code.
                         if (IsSymbolReserverd(label) || labels.ContainsKey(label))
                         {
+                            errorMsg = "invalid label name";
                             return ErrorCode.InvalidLabel;
                         }
 
@@ -498,6 +504,7 @@ namespace AMx64
                 }
             }
 
+            errorMsg = "";
             return ErrorCode.None;
         }
 
@@ -512,10 +519,6 @@ namespace AMx64
             else if (currentLine.CurrentAsmLineValue.StartsWith(';'))
             {
                 return ErrorCode.Comment;
-            }
-            else if (asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
-            {
-                return ErrorCode.Label;
             }
             // Checks for duplicate sections in asm code.
             else if (currentLine.CurrentAsmLineValue.ToLower().StartsWith("section"))
@@ -1059,7 +1062,7 @@ namespace AMx64
                         {
                             AddToMemory(result, size);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             errorMsg = ex.Message;
                             return false;
