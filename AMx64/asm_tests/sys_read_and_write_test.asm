@@ -1,9 +1,19 @@
+section .data
+    msg db "Enter you string:", 10
+
 section .bss
     var resb 11
 
 section .text
 global main
 main:
+
+; show welcome message
+mov rax, 1      ; write system call
+mov rdi, 1      ; stdout
+mov rsi, msg    ; address for storage, declared in section .bss
+mov rdx, 18
+syscall
 
 ; read in the character
 mov rax, 0      ; read system call
