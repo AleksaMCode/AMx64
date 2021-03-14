@@ -721,7 +721,7 @@ namespace AMx64
                             // Set return value and read string from memory.
                             RAX = !memory.ReadString(index, maxLen, out var stringFromMem) ? 0xffff_ffff_ffff_ffff : (UInt64)stringFromMem.Length;
                             // Print fetched string.
-                            Console.WriteLine(stringFromMem);
+                            Console.Write(stringFromMem);
                         }
                     }
                 }
