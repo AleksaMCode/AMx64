@@ -234,7 +234,7 @@ namespace AMx64
         /// </summary>
         private void DebugShowAsmLines()
         {
-            Console.WriteLine("\n\n");
+            Console.WriteLine();
 
             var upperLimit = currentLine.CurrentAsmLineNumber + 3 >= AsmCode.Count ? AsmCode.Count - 1 : currentLine.CurrentAsmLineNumber + 3;
             var index = currentLine.CurrentAsmLineNumber - 3 < 0 ? 0 : currentLine.CurrentAsmLineNumber - 3;
@@ -264,7 +264,7 @@ namespace AMx64
                 }
             }
 
-            Console.WriteLine("\n\n");
+            Console.WriteLine();
         }
 
         /// <summary>
