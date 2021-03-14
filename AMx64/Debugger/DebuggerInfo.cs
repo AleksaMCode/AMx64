@@ -103,7 +103,7 @@ List of classes of commands:
                     LineCount = GetAsmFileLineNumber();
                 }
 
-                if (breakpoint > LineCount)
+                if (breakpoint >= LineCount)
                 {
                     return breakpointErrorMsg + ": " + breakpoint;
                 }
@@ -126,7 +126,7 @@ List of classes of commands:
 
                 foreach (var bp in breakpoints)
                 {
-                    if (bp > LineCount)
+                    if (bp >= LineCount)
                     {
                         errorMsg += bp + " ";
                     }

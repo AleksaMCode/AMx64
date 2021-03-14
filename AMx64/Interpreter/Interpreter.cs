@@ -352,8 +352,8 @@ namespace AMx64
 
             for (lineNumber = 0; lineNumber < AsmCode.Count; ++lineNumber)
             {
-                // Set current line.
-                currentLine.CurrentAsmLineValue = AsmCode[lineNumber];
+                // Set current line. Replace any '\t' or multiple spaces with '\s'.
+                currentLine.CurrentAsmLineValue = Regex.Replace(AsmCode[lineNumber], @"\s+", " ");
                 currentLine.CurrentAsmLineNumber = lineNumber;
 
                 var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);

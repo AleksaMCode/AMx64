@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AMx64
 {
@@ -22,7 +22,8 @@ namespace AMx64
             {
                 Console.Write(debugger.Prompt);
                 var command = Console.ReadLine();
-                command = command.Replace("\t", " ").Trim();
+                // Remove spaces from command line.
+                command = Regex.Replace(command, @"\s+", " ").Trim();
 
                 if (command.Equals("help") || command.Equals("h"))
                 {
