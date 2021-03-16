@@ -404,6 +404,8 @@ namespace AMx64
                 // Skip global line.
                 if (currentLine.CurrentAsmLineValue.ToLower() == "global " + globalSymbol.Item1.ToLower())
                 {
+                    // Skip to global label.
+                    lineNumber = labels[globalSymbol.Item1] - 1;
                     continue;
                 }
 
@@ -484,7 +486,7 @@ namespace AMx64
 
                     if (labelMatch.Success)
                     {
-                        // Labels aren't permitted  before .text section.
+                        // Labels aren't permitted before .text section.
                         if (lineNumber <= sections["section .text"])
                         {
                             errorMsg = ".text section";
