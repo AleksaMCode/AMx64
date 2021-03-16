@@ -370,12 +370,6 @@ namespace AMx64
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).TrimEnd();
                 }
 
-                // Skip global line.
-                if (currentLine.CurrentAsmLineValue.ToLower() == "global " + globalSymbol.Item1.ToLower())
-                {
-                    continue;
-                }
-
                 // Used for debugging.
                 if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Step || debugger.Breakpoints.Contains(lineNumber + 1)))
                 {
@@ -405,6 +399,12 @@ namespace AMx64
                         variables.Clear();
                         continue;
                     }
+                }
+
+                // Skip global line.
+                if (currentLine.CurrentAsmLineValue.ToLower() == "global " + globalSymbol.Item1.ToLower())
+                {
+                    continue;
                 }
 
                 // Set current section and skip section asm line.
