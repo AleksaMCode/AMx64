@@ -77,14 +77,16 @@ namespace AMx64
                             Console.WriteLine("No breakpoint has been set.");
                         }
                     }
-
-                    if (debugger.Breakpoints.Count != 0)
-                    {
-                        debugger.RemoveBreakpoints(tokens);
-                    }
                     else
                     {
-                        Console.WriteLine("No breakpoint has been set.");
+                        if (debugger.Breakpoints.Count != 0)
+                        {
+                            debugger.RemoveBreakpoints(tokens);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No breakpoint has been set.");
+                        }
                     }
                 }
                 else if (command.Equals("continue") || command.Equals("c"))

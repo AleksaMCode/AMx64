@@ -385,7 +385,10 @@ namespace AMx64
                     }
                     else
                     {
-                        Console.WriteLine($"{currentLine.CurrentAsmLineValue} at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}");
+                        Console.Write($"{currentLine.CurrentAsmLineValue} ");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"at { Path.GetFileName(AsmFilePath)}:{lineNumber + 1}\n");
+                        Console.ResetColor();
                     }
 
                     if (!InterpretDebugCommandLine())
