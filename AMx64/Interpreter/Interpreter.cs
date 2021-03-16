@@ -235,7 +235,7 @@ namespace AMx64
 
             if (globalSymbolRegex.Match(globalLine.ToUpper()).Success)
             {
-                globalSymbol = new Tuple<string, int>(globalLine.Substring(6).Trim(), index - 1);
+                globalSymbol = new Tuple<string, int>(globalLine.Substring(6).Trim(), index);
                 errorMsg = "";
                 return true;
             }
@@ -268,7 +268,7 @@ namespace AMx64
 
             for (var i = 0; i < AsmCode.Count; ++i)
             {
-                if (AsmCode[i].StartsWith(section))
+                if (Regex.Replace(AsmCode[i], @"\s+", " ").StartsWith(section))
                 {
                     index = i;
                     break;
@@ -334,12 +334,12 @@ namespace AMx64
 
             if (labelError == ErrorCode.InvalidLabel)
             {
-                Console.WriteLine($"Asm file uses {errorMsg} on line {lineNumber}.");
+                Console.WriteLine($"Asm file uses {errorMsg} on line {lineNumber + 1}.");
                 return;
             }
             else if (labelError == ErrorCode.InvalidLabelPosition)
             {
-                Console.WriteLine($"Asm file uses label before {errorMsg} on line {lineNumber}.");
+                Console.WriteLine($"Asm file uses label before {errorMsg} on line {lineNumber + 1}.");
                 return;
             }
 
