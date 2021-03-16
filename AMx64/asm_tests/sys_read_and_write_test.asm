@@ -1,5 +1,6 @@
 section .data
-    msg db "Enter you string:", 10
+    msg db "Enter you string: "
+    msg2 db "Your string is: "
 
 section .bss
     var resb 11
@@ -23,6 +24,12 @@ mov rdx, 11
 syscall
 
 ; show user the output
+mov rax, 1      ; write system call
+mov rdi, 1      ; stdout
+mov rsi, msg2   ; address for storage, declared in section .bss
+mov rdx, 16
+syscall
+
 mov rax, 1      ; write system call
 mov rdi, 1      ; stdout
 mov rsi, var    ; address for storage, declared in section .bss
