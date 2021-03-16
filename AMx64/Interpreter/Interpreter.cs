@@ -377,20 +377,15 @@ namespace AMx64
                 }
 
                 // Used for debugging.
-                if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Step || debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber))
+                if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Step || debugger.Breakpoints.Contains(lineNumber + 1)))
                 {
-                    if (debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1 == lineNumber)
+                    if (debugger.Breakpoints.Contains(lineNumber + 1))
                     {
-                        Console.WriteLine($"Breakpoint {debugger.BreakpointIndex + 1} at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}\n{lineNumber + 1}  {currentLine.CurrentAsmLineValue}");
+                        Console.WriteLine($"Breakpoint at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}\n{lineNumber + 1}:   {currentLine.CurrentAsmLineValue}");
                     }
                     else
                     {
                         Console.WriteLine($"{currentLine.CurrentAsmLineValue} at {Path.GetFileName(AsmFilePath)}:{lineNumber + 1}");
-                    }
-
-                    if (debugger.BreakpointIndex + 1 < debugger.Breakpoints.Count && lineNumber >= debugger.Breakpoints.ElementAt(debugger.BreakpointIndex) - 1)
-                    {
-                        debugger.BreakpointIndex++;
                     }
 
                     if (!InterpretDebugCommandLine())
@@ -398,12 +393,11 @@ namespace AMx64
                         return;
                     }
 
-                    // if restart debugg is set.
+                    // If debugg restart is set.
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
                         lineNumber = currentLine.CurrentAsmLineNumber;
                         currentSection = AsmSegment.INVALID;
-                        debugger.BreakpointIndex = 0;
                         // Remove variables.
                         variables.Clear();
                         continue;
