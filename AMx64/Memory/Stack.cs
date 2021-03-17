@@ -39,7 +39,11 @@ namespace AMx64
             }
             else if (RSP > maxMemSize || RSP < nextMemoryLocation)
             {
-                throw new Exception($"Stack pointer RBP out of range: {RSP}");
+                throw new Exception($"Stack pointer RSP out of range: {RSP}");
+            }
+            else if(RSP > RBP)
+            {
+                throw new Exception("Register RSP can't have value larger then RBP.");
             }
         }
     }
