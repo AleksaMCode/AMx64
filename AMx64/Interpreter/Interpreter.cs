@@ -136,12 +136,12 @@ namespace AMx64
         private readonly Regex asmLineBssSection = new Regex(@"^([_a-zA-Z]+\d*)+\s+RES(B|W|D|Q|T|O)+\s+", RegexOptions.Compiled);
 
         /// <summary>
-        /// Command line regex for ADD, SUB, OR, AND or MOV operation not inluding label.
+        /// Command line regex for ADD, SUB, OR, AND or MOV isntruction.
         /// </summary>
         private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|CMP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([_a-zA-Z]+\d*)+|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([_a-zA-Z]+\d*)+|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
 
         /// <summary>
-        /// Command line regex for NOT instruction not inluding label.
+        /// Command line regex for NOT instruction.
         /// </summary>
         private static readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
 
@@ -151,7 +151,7 @@ namespace AMx64
         private static readonly Regex asmLineStackIntrRegex = new Regex(@"^(PUSH|POP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
 
         /// <summary>
-        /// Command line regex for Jcc operations not inluding label.
+        /// Command line regex for Jcc operations.
         /// </summary>
         private static readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s*$", RegexOptions.Compiled);
 
