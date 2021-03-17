@@ -751,7 +751,7 @@ Some of the projects that helped me create my project.
 - [x] Add Direct memory addressing.
 - [ ] Add Direct offset addressing.
 - [x] Add Register indirect addressing.
-- [ ] Implement Stack memory structure.
+- [x] Implement Stack memory structure.
   - [ ] Implement push and pop instructions.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
