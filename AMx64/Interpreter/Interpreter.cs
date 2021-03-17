@@ -146,6 +146,11 @@ namespace AMx64
         private static readonly Regex asmLineNotInstrRegex = new Regex(@"^(NOT)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
 
         /// <summary>
+        /// Command line regex for PUSH/POP instruction.
+        /// </summary>
+        private static readonly Regex asmLineStackIntrRegex = new Regex(@"^(PUSH|POP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
+
+        /// <summary>
         /// Command line regex for Jcc operations not inluding label.
         /// </summary>
         private static readonly Regex asmLineJccRegex = new Regex(@"^(J(MP|(N|G)*E|L))\s+([_a-zA-Z]+\d*)+\s*$", RegexOptions.Compiled);
