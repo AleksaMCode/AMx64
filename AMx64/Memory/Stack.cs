@@ -7,7 +7,8 @@ namespace AMx64
         /// <summary>
         /// Pops a value from the top of the stack.
         /// </summary>
-        /// <returns></returns>
+        /// <exception cref="Exception">Thrown when at least one of the stack pointers is out of range.</exception>
+        /// <returns>Value from the top of stack.</returns>
         public UInt64 Pop()
         {
             CheckStackPointers();
@@ -19,6 +20,7 @@ namespace AMx64
         /// <summary>
         /// Pushes a value to the top of the stack.
         /// </summary>
+        /// <exception cref="Exception">Thrown when at least one of the stack pointers is out of range.</exception>
         /// <param name="value">Value that is being pushed to stack.</param>
         public void Push(UInt64 value)
         {
