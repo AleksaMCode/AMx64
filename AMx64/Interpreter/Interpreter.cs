@@ -66,7 +66,7 @@ namespace AMx64
         /// <summary>
         /// Maximum allowed memory size.
         /// </summary>
-        private static readonly int maxMemSize = 2_000_000;
+        private static readonly uint maxMemSize = 2_000_000;
 
         /// <summary>
         /// 64-bit addressable memory.
@@ -76,7 +76,7 @@ namespace AMx64
         /// <summary>
         /// Next memory block index.
         /// </summary>
-        private Int64 nextMemoryLocation = 0;
+        private UInt64 nextMemoryLocation = 0;
 
         /// <summary>
         /// Current line expression.
@@ -685,7 +685,7 @@ namespace AMx64
                     }
                     else
                     {
-                        if ((int)index > nextMemoryLocation)
+                        if (index > nextMemoryLocation)
                         {
                             return ErrorCode.AccessViolation;
                         }
@@ -721,7 +721,7 @@ namespace AMx64
                 if (RDI == 1)
                 {
                     var index = RSI;
-                    if (index > 2_000_000 || (int)index > nextMemoryLocation)
+                    if (index > maxMemSize || index > nextMemoryLocation)
                     {
                         return ErrorCode.OutOfBounds;
                     }
@@ -1065,7 +1065,7 @@ namespace AMx64
             // Add new variable.
             if (!variables.ContainsKey(tokens[0]))
             {
-                variables.Add(tokens[0], nextMemoryLocation);
+                variables.Add(tokens[0], (long)nextMemoryLocation);
             }
             else
             {
@@ -1139,7 +1139,7 @@ namespace AMx64
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
-                if (nextMemoryLocation + size * amount >= maxMemSize)
+                if ((uint)nextMemoryLocation + size * amount >= maxMemSize)
                 {
                     errorMsg = "Failed to write to memory. Memory is full.";
                     return false;
@@ -1148,7 +1148,7 @@ namespace AMx64
                 {
                     if (!variables.ContainsKey(tokens[0]))
                     {
-                        variables.Add(tokens[0], nextMemoryLocation);
+                        variables.Add(tokens[0], (uint)nextMemoryLocation);
                     }
                     else
                     {
@@ -1156,7 +1156,7 @@ namespace AMx64
                         return false;
                     }
 
-                    nextMemoryLocation += size * amount;
+                    nextMemoryLocation += (UInt64)(size * amount);
                     return true;
                 }
             }
@@ -1186,7 +1186,7 @@ namespace AMx64
                 limit = size;
             }
 
-            if (nextMemoryLocation + size >= maxMemSize)
+            if (nextMemoryLocation + (UInt64)size >= maxMemSize)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }
@@ -1198,18 +1198,18 @@ namespace AMx64
                 memory[(int)nextMemoryLocation + i] = (byte)result;
                 result >>= 8;
             }
-            nextMemoryLocation += limit;
+            nextMemoryLocation += (UInt64)limit;
 
             if (limit < size)
             {
                 Buffer.BlockCopy(emptyBlock, 0, memory, (int)nextMemoryLocation, size - limit);
-                nextMemoryLocation += size - limit;
+                nextMemoryLocation += (UInt64)(size - limit);
             }
         }
 
         private void AddToMemory(string value, int size)
         {
-            if (nextMemoryLocation + value.Length * size >= maxMemSize)
+            if ((int)nextMemoryLocation + value.Length * size >= maxMemSize)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }
@@ -1222,7 +1222,7 @@ namespace AMx64
                 if (size != 1)
                 {
                     Buffer.BlockCopy(emptyBlock, 0, memory, (int)nextMemoryLocation, size - 1);
-                    nextMemoryLocation += size - 1;
+                    nextMemoryLocation += (UInt64)(size - 1);
                 }
             }
         }

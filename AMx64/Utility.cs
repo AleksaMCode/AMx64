@@ -339,6 +339,41 @@ namespace AMx64
             return true;
         }
 
+        #region Stack handel
+        /// <summary>
+        /// Writes a specified value to stack.
+        /// </summary>
+        /// <param name="array">Specified array in which to store the value.</param>
+        /// <param name="position">Starting index of specified array.</param>
+        /// <param name="inputValue">Specified value to write to the array.</param>
+        /// <param name="size">Size of the value in bytes. Always set to 8.</param>
+        public static void WriteToStack(this byte[] array, UInt64 position, UInt64 inputValue, UInt64 size = 8)
+        {
+            for (var i = 0; i < (int)size; ++i)
+            {
+                array[(int)position - i] = (byte)inputValue;
+                inputValue >>= 8;
+            }
+        }
+
+        /// <summary>
+        /// Reads value from stack.
+        /// </summary>
+        /// <param name="array">Specified array from which to read value.</param>
+        /// <param name="position">Beginning index of specified array.</param>
+        /// <param name="outputValue">Value read from the array.</param>
+        /// <param name="size">Size of the value in bytes. Always set to 8.</param>
+        public static void ReadFromStack(this byte[] array, UInt64 position, out UInt64 outputValue, UInt64 size = 8)
+        {
+            outputValue = 0;
+
+            for (var i = (int)size - 1; i >= 0; --i)
+            {
+                outputValue = (outputValue << 8) | array[(int)position - i];
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Writes ASCII C-style string value to memory.
         /// </summary>

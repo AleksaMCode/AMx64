@@ -33,6 +33,9 @@ namespace AMx64
                 CPURegisters[i] = new CPURegister(randomValue.NextUInt64());
             }
 
+            // Set stack pointer.
+            RBP = RSP = (UInt64)maxMemSize - 1;
+
             // Initialize x64 user memory.
             for (var i = 0; i < maxMemSize; ++i)
             {
@@ -42,7 +45,7 @@ namespace AMx64
             // Set asm file full path.
             if (File.Exists(args[0]))
             {
-                if(!args[0].EndsWith(".asm"))
+                if (!args[0].EndsWith(".asm"))
                 {
                     Console.WriteLine("File isn't an .asm file.");
                     return false;

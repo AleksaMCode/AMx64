@@ -217,7 +217,7 @@ namespace AMx64
                     return false;
                 }
 
-                if (location <= 2_000_000)
+                if (location < maxMemSize)
                 {
                     memory.Read(location, (UInt64)size, out var value);
                     Console.WriteLine($"0x{location:x16}:   {value}");
