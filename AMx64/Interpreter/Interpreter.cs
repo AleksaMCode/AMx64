@@ -11,10 +11,10 @@ namespace AMx64
     /// </summary>
     internal enum AsmSegment
     {
+        INVALID = -1,
         DATA,
-        BSS,
-        TEXT,
-        INVALID
+        BSS,    
+        TEXT
     }
 
     /// <summary>

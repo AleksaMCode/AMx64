@@ -21,7 +21,7 @@ namespace AMx64
             do
             {
                 Console.Write(debugger.Prompt);
-                var command = Console.ReadLine();
+                var command = Console.ReadLine().ToLower();
                 // Remove spaces from command line.
                 command = Regex.Replace(command, @"\s+", " ").Trim();
 

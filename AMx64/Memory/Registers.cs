@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace AMx64
 {
@@ -149,7 +148,16 @@ namespace AMx64
                 "DX" => DX,
                 "SI" => SI,
                 "DI" => DI,
-                _ => throw new Exception($"Register '{register}' doesn't exist."),
+                // x8 registers
+                "AH" => AH,
+                "BH" => BH,
+                "CH" => CH,
+                "DH" => DH,
+                "AL" => AL,
+                "BL" => BL,
+                "CL" => CL,
+                "DL" => DL,
+                _ => throw new Exception($"Register '{register}' doesn't exist.")
             };
         }
     }
