@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace AMx64
 {
+    /// <summary>
+    /// Segments in asm code.
+    /// </summary>
     internal enum AsmSegment
     {
         DATA,
@@ -15,6 +17,9 @@ namespace AMx64
         INVALID
     }
 
+    /// <summary>
+    /// Implemented operations in AMx64 interpreter.
+    /// </summary>
     public enum Operations
     {
         None,
@@ -37,9 +42,6 @@ namespace AMx64
 
     public partial class AMX64
     {
-        private const char commentSymbol = ';';
-        private const char labelDefSymbol = ':';
-
         /// <summary>
         /// A lookup table of parity for 8-bit values.
         /// </summary>
@@ -56,7 +58,7 @@ namespace AMx64
         };
 
         /// <summary>
-        /// Path to asm file path.
+        /// Path to asm file.
         /// </summary>
         public static string AsmFilePath = Environment.CurrentDirectory;
 
@@ -95,7 +97,6 @@ namespace AMx64
         /// </summary>
         private Dictionary<string, long> variables = new Dictionary<string, long>();
 
-
         /// <summary>
         /// Used to store sections locations in asm code.
         /// </summary>
@@ -114,6 +115,9 @@ namespace AMx64
         /// <summary>
         /// GLOBAL symbol.
         /// </summary>
+        /// <remarks>
+        /// Global symbol string and its location in asm code.
+        /// </remarks>
         private Tuple<string, int> globalSymbol;
 
         #region Regex
@@ -238,6 +242,7 @@ namespace AMx64
                 }
             }
 
+            // If line contains comment part, remove it.
             var globalLine = AsmCode[index].Contains(';') ? AsmCode[index].Substring(0, AsmCode[index].IndexOf(';')).TrimEnd() : AsmCode[index];
 
             if (globalSymbolRegex.Match(globalLine.ToUpper()).Success)
@@ -254,7 +259,7 @@ namespace AMx64
         /// <summary>
         /// Adds all sections of asm code (names and asm code line numbers).
         /// </summary>
-        /// <returns>true if sections have been added successfully, otherwise false.</returns>
+        /// <returns>true if .text section has been added successfully, otherwise false.</returns>
         private bool AddSections()
         {
             AddSection("section .data");
@@ -290,6 +295,9 @@ namespace AMx64
         /// <summary>
         /// Checks if sections are in a proper order in asm code.
         /// </summary>
+        /// <remarks>
+        /// .bss and .data sections have to come before .text section. Their particular order isn't relavent.
+        /// </remarks>
         /// <returns>true if sections are in proper order, otherwise false.</returns>
         private bool CheckSections()
         {
@@ -304,6 +312,7 @@ namespace AMx64
         {
             if (File.Exists(AsmFilePath))
             {
+                // Read all asm lines to memory.
                 AsmCode = new List<string>(File.ReadAllLines(AsmFilePath));
 
                 // Trim each line.
@@ -339,6 +348,7 @@ namespace AMx64
             // Parse asm code labels.
             var labelError = ParseLabels(out var lineNumber, out var errorMsg);
 
+            // Handle label errors.
             if (labelError == ErrorCode.InvalidLabel)
             {
                 Console.WriteLine($"Asm file uses {errorMsg} on line {lineNumber + 1}.");
@@ -365,19 +375,19 @@ namespace AMx64
 
                 var labelMatch = asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue);
 
-                // Remove label from a line. e.q. from a line -> label: OP op1, op2
+                // Remove label from a current asm line. E.q. label: OP op1, op2 => OP op1 op2
                 if (labelMatch.Success && labelMatch.Value.Length != currentLine.CurrentAsmLineValue.Length)
                 {
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(labelMatch.Value.Length).TrimStart();
                 }
 
-                // Remove comment part of the asm lines.
+                // Remove comment part from the current asm line. E.q. OP op1, op2 ; comment => OP op1, op2
                 if (!currentLine.CurrentAsmLineValue.StartsWith(';') && currentLine.CurrentAsmLineValue.Contains(";"))
                 {
                     currentLine.CurrentAsmLineValue = currentLine.CurrentAsmLineValue.Substring(0, currentLine.CurrentAsmLineValue.IndexOf(';') - 1).TrimEnd();
                 }
 
-                // Used for debugging.
+                // Debug handel.
                 if (debugger != null && debugger.Breakpoints.Count > 0 && (debugger.Step || debugger.Breakpoints.Contains(lineNumber + 1)))
                 {
                     if (debugger.Breakpoints.Contains(lineNumber + 1))
@@ -397,7 +407,7 @@ namespace AMx64
                         return;
                     }
 
-                    // If debugg restart is set.
+                    // If debug restart is set. Debug is restarted if the run command is used at breakpoint.
                     if (currentLine.CurrentAsmLineNumber == -1)
                     {
                         lineNumber = currentLine.CurrentAsmLineNumber;
@@ -433,16 +443,8 @@ namespace AMx64
                     }
                 }
 
-                // Check for errors in asm line.
+                // Check for errors and interpret the current asm line.
                 var interpretResult = InterpretAsmLine(out errorMsg);
-
-                // If Jcc occurred.
-                if (interpretResult == ErrorCode.JmpOccurred)
-                {
-                    // Reduce by one to offset for loop increment.
-                    lineNumber = currentLine.CurrentAsmLineNumber - 1;
-                    continue;
-                }
 
                 switch (interpretResult)
                 {
@@ -451,6 +453,11 @@ namespace AMx64
                     case ErrorCode.Comment:
                     case ErrorCode.None:
                     case ErrorCode.Label:
+                        continue;
+                    // If Jmp or Jcc occurred.
+                    case ErrorCode.JmpOccurred:
+                        // Reduce by one to offset for loop increment.
+                        lineNumber = currentLine.CurrentAsmLineNumber - 1;
                         continue;
                     // Stop interpreter.
                     case ErrorCode.SuccessfullyRun:
@@ -465,20 +472,20 @@ namespace AMx64
                     case ErrorCode.StackUnderflow:
                     case ErrorCode.StackOverflow:
                     case ErrorCode.StackError:
+                    case ErrorCode.UndefinedBehavior:
                     case ErrorCode.GlobalLine:
                     default:
                         Console.WriteLine(errorMsg);
                         return;
                 }
             }
+            //// Reset current line.
+            //currentLine.CurrentAsmLineValue = "";
+            //currentLine.CurrentAsmLineNumber = -1;
 
-            // Reset current line.
-            currentLine.CurrentAsmLineValue = "";
-            currentLine.CurrentAsmLineNumber = -1;
-
-            labels.Clear();
-            sections.Clear();
-            currentSection = AsmSegment.INVALID;
+            //labels.Clear();
+            //sections.Clear();
+            //currentSection = AsmSegment.INVALID;
         }
 
         /// <summary>
@@ -508,6 +515,7 @@ namespace AMx64
                             return ErrorCode.InvalidLabelPosition;
                         }
 
+                        // Remove label symbol from label name.
                         var label = labelMatch.Value.Remove(labelMatch.Value.Length - 1);
 
                         // If used label string is reserved or already used stop interpreting the asm code.
@@ -527,18 +535,26 @@ namespace AMx64
             return ErrorCode.None;
         }
 
+        /// <summary>
+        /// Interprets asm line.
+        /// </summary>
+        /// <param name="errorMsg">Error message is used when asm line interpreting isn't possible.</param>
+        /// <returns>Interpreting result.</returns>
         private ErrorCode InterpretAsmLine(out string errorMsg)
         {
             errorMsg = "";
 
+            // Checks is line is empty.
             if (string.IsNullOrEmpty(currentLine.CurrentAsmLineValue))
             {
                 return ErrorCode.EmptyLine;
             }
+            // Checks if a line is a comment.
             else if (currentLine.CurrentAsmLineValue.StartsWith(';'))
             {
                 return ErrorCode.Comment;
             }
+            // Checks if asm line only contains label.
             else if (asmLineLabelRegex.Match(currentLine.CurrentAsmLineValue).Success)
             {
                 return ErrorCode.Label;
@@ -555,15 +571,17 @@ namespace AMx64
                 errorMsg = $"'global' can only be used once in a asm code.";
                 return ErrorCode.GlobalLine;
             }
+            // Handles syscall.
             else if (currentLine.CurrentAsmLineValue.ToUpper() == "SYSCALL")
             {
+                // Syscall can only be found in .text section.
                 if (currentSection == AsmSegment.TEXT)
                 {
                     return SyscallHandle();
                 }
                 else if (currentSection != AsmSegment.TEXT)
                 {
-                    errorMsg = $"Syscall is used in wrong section.";
+                    errorMsg = "Syscall is used in wrong section.";
                     return ErrorCode.SectionProblems;
                 }
             }
@@ -573,6 +591,7 @@ namespace AMx64
             {
                 currentExpr = new Expression();
 
+                // Parse current line in to tokens.
                 if (!currentExpr.ParseAsmLine(currentLine.CurrentAsmLineValue))
                 {
                     errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber + 1}: {currentLine.CurrentAsmLineValue}";
@@ -665,84 +684,87 @@ namespace AMx64
                 }
             }
 
+            errorMsg = $"Undifinde behaviour detected on line {currentLine.CurrentAsmLineNumber + 1}.";
             return ErrorCode.UndefinedBehavior;
         }
 
+        #region Syscall handle
         /// <summary>
         /// Handles system services.
         /// </summary>
-        /// <returns><see cref="ErrorCode.None"/> if handle is successful.</returns>
+        /// <remarks>
+        /// Currently only three system services are available, sys_exit, sys_read, sys_write.
+        /// </remarks>
+        /// <returns>Appropriate <see cref="ErrorCode"/>.</returns>
         private ErrorCode SyscallHandle()
         {
-            // sys_exit handle
-            if (RAX == 60)
+            switch (RAX)
             {
-                switch (RDI)
-                {
-                    case 0:
-                        RAX = 0;
-                        return ErrorCode.SuccessfullyRun;
-                    case 1:
-                        RAX = 1;
-                        return ErrorCode.UnsuccessfullyRun;
-                }
-
-                SetRaxToNegativeValue();
+                // sys_read handle
+                case 0:
+                    return HandleSysRead();
+                // sys_write handle
+                case 1:
+                    return HandleSysWrite();
+                // sys_exit handle
+                case 60:
+                    return HandleSysExit();
+                default:
+                    SetRaxToNegativeValue();
+                    return ErrorCode.None;
             }
-            // sys_read handle
-            else if (RAX == 0)
-            {
-                if (RDI == 0)
-                {
-                    var index = RSI;
-                    if (index > 2_000_000)
-                    {
-                        return ErrorCode.OutOfBounds;
-                    }
-                    else
-                    {
-                        if (index > nextMemoryLocation)
-                        {
-                            return ErrorCode.AccessViolation;
-                        }
-                        else
-                        {
-                            var userInput = Console.ReadLine();
-                            var maxLen = RDX;
-                            if (maxLen > int.MaxValue / 4)
-                            {
-                                return ErrorCode.MemoryAllocError;
-                            }
-                            else
-                            {
-                                if (userInput.Length > (int)maxLen)
-                                {
-                                    userInput = userInput.Substring(0, (int)maxLen);
-                                }
+        }
 
-                                // Set return value and write string to memory.
-                                RAX = !memory.WriteString(index, userInput) ? 0xffff_ffff_ffff_ffff : (UInt64)userInput.Length;
-                            }
-                        }
-                    }
+        /// <summary>
+        /// Sets RAX to -1;
+        /// </summary>
+        private void SetRaxToNegativeValue()
+        {
+            RAX = 0xffff_ffff_ffff_ffff;
+        }
+
+        /// <summary>
+        /// Handles sys_exit.
+        /// </summary>
+        /// <returns>Appropriate <see cref="ErrorCode"/>.</returns>
+        private ErrorCode HandleSysExit()
+        {
+            switch (RDI)
+            {
+                case 0:
+                    RAX = 0;
+                    return ErrorCode.SuccessfullyRun;
+                case 1:
+                    RAX = 1;
+                    return ErrorCode.UnsuccessfullyRun;
+                default:
+                    SetRaxToNegativeValue();
+                    return ErrorCode.None;
+            }
+        }
+
+        /// <summary>
+        /// Handles sys_read.
+        /// </summary>
+        /// <returns>Appropriate <see cref="ErrorCode"/>.</returns>
+        private ErrorCode HandleSysRead()
+        {
+            if (RDI == 0)
+            {
+                var index = RSI;
+                if (index > 2_000_000)
+                {
+                    return ErrorCode.OutOfBounds;
                 }
                 else
                 {
-                    SetRaxToNegativeValue();
-                }
-            }
-            // sys_write handle
-            else if (RAX == 1)
-            {
-                if (RDI == 1)
-                {
-                    var index = RSI;
-                    if (index > maxMemSize || index > nextMemoryLocation)
+                    if (index > nextMemoryLocation)
                     {
-                        return ErrorCode.OutOfBounds;
+                        return ErrorCode.AccessViolation;
                     }
                     else
                     {
+                        var userInput = Console.ReadLine();
                         var maxLen = RDX;
                         if (maxLen > int.MaxValue / 4)
                         {
@@ -750,16 +772,15 @@ namespace AMx64
                         }
                         else
                         {
-                            // Set return value and read string from memory.
-                            RAX = !memory.ReadString(index, maxLen, out var stringFromMem) ? 0xffff_ffff_ffff_ffff : (UInt64)stringFromMem.Length;
-                            // Print fetched string.
-                            Console.Write(stringFromMem);
+                            if (userInput.Length > (int)maxLen)
+                            {
+                                userInput = userInput.Substring(0, (int)maxLen);
+                            }
+
+                            // Set return value and write string to memory.
+                            RAX = !memory.WriteString(index, userInput) ? 0xffff_ffff_ffff_ffff : (UInt64)userInput.Length;
                         }
                     }
-                }
-                else
-                {
-                    SetRaxToNegativeValue();
                 }
             }
             else
@@ -770,11 +791,48 @@ namespace AMx64
             return ErrorCode.None;
         }
 
-        private void SetRaxToNegativeValue()
+        /// <summary>
+        /// Handles sys_write.
+        /// </summary>
+        /// <returns>Appropriate <see cref="ErrorCode"/>.</returns>
+        private ErrorCode HandleSysWrite()
         {
-            RAX = 0xffff_ffff_ffff_ffff;
-        }
+            if (RDI == 1)
+            {
+                var index = RSI;
+                if (index > maxMemSize || index > nextMemoryLocation)
+                {
+                    return ErrorCode.OutOfBounds;
+                }
+                else
+                {
+                    var maxLen = RDX;
+                    if (maxLen > int.MaxValue / 4)
+                    {
+                        return ErrorCode.MemoryAllocError;
+                    }
+                    else
+                    {
+                        // Set return value and read string from memory.
+                        RAX = !memory.ReadString(index, maxLen, out var stringFromMem) ? 0xffff_ffff_ffff_ffff : (UInt64)stringFromMem.Length;
+                        // Print fetched string.
+                        Console.Write(stringFromMem);
+                    }
+                }
+            }
+            else
+            {
+                SetRaxToNegativeValue();
+            }
 
+            return ErrorCode.None;
+        }
+        #endregion
+
+        /// <summary>
+        /// Tries to process Jmp or Jcc instruction.
+        /// </summary>
+        /// <returns>true if processing is successful, otherwise false.</returns>
         private bool TryProcessJcc()
         {
             switch (currentExpr.Operation)
@@ -826,6 +884,9 @@ namespace AMx64
             }
         }
 
+        /// <summary>
+        /// Sets the current line number in a way a jump to an appropriate asm line can be achieved.
+        /// </summary>
         private void ProcessJcc()
         {
             currentLine.CurrentAsmLineNumber = labels[currentExpr.LeftOp];
@@ -919,7 +980,7 @@ namespace AMx64
                 Push(currentExpr.LeftOpValue);
                 return ErrorCode.None;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 errorMsg = ex.Message;
 
