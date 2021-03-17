@@ -13,7 +13,7 @@ namespace AMx64
     {
         INVALID = -1,
         DATA,
-        BSS,    
+        BSS,
         TEXT
     }
 
@@ -752,7 +752,7 @@ namespace AMx64
             if (RDI == 0)
             {
                 var index = RSI;
-                if (index > 2_000_000)
+                if (index > maxMemSize * .2)
                 {
                     return ErrorCode.OutOfBounds;
                 }
@@ -766,7 +766,7 @@ namespace AMx64
                     {
                         var userInput = Console.ReadLine();
                         var maxLen = RDX;
-                        if (maxLen > int.MaxValue / 4)
+                        if (maxLen > maxMemSize * .2 || maxLen + index > maxMemSize * .2)
                         {
                             return ErrorCode.MemoryAllocError;
                         }
@@ -800,14 +800,14 @@ namespace AMx64
             if (RDI == 1)
             {
                 var index = RSI;
-                if (index > maxMemSize || index > nextMemoryLocation)
+                if (index > maxMemSize * .2 || index > nextMemoryLocation)
                 {
                     return ErrorCode.OutOfBounds;
                 }
                 else
                 {
                     var maxLen = RDX;
-                    if (maxLen > int.MaxValue / 4)
+                    if (maxLen > maxMemSize * .2 || maxLen + index > maxMemSize * .2)
                     {
                         return ErrorCode.MemoryAllocError;
                     }
@@ -892,6 +892,26 @@ namespace AMx64
             currentLine.CurrentAsmLineNumber = labels[currentExpr.LeftOp];
         }
 
+
+        /// <summary>
+        /// Tries to process Cmp instruction.
+        /// </summary>
+        /// <returns>true if processing is successful, otherwise false.</returns>
+        private void ProcessCmp()
+        {
+            var result = currentExpr.LeftOpValue - currentExpr.RightOpValue;
+
+            // If overflow occurred, set OF flag to true, otherwise to false.
+            OF = result > currentExpr.LeftOpValue;
+            UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
+
+            // TODO: set CF flag
+        }
+
+        /// <summary>
+        /// Tries to process unary instruction.
+        /// </summary>
+        /// <returns>true if processing is successful, otherwise false.</returns>
         private bool TryProcessUnaryOp()
         {
             // if OP [op1]
@@ -973,34 +993,10 @@ namespace AMx64
             return true;
         }
 
-        private ErrorCode ProcessPush(ref string errorMsg)
-        {
-            try
-            {
-                Push(currentExpr.LeftOpValue);
-                return ErrorCode.None;
-            }
-            catch (Exception ex)
-            {
-                errorMsg = ex.Message;
-
-                return ex is StackOverflowException
-                    ? ErrorCode.StackOverflow
-                    : ex is InvalidOperationException ? ErrorCode.StackUnderflow : ErrorCode.StackError;
-            }
-        }
-
-        private void ProcessCmp()
-        {
-            var result = currentExpr.LeftOpValue - currentExpr.RightOpValue;
-
-            // If overflow occurred, set OF flag to true, otherwise to false.
-            OF = result > currentExpr.LeftOpValue;
-            UpdateZSPFlags(result, (UInt64)(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1));
-
-            // TODO: set CF flag
-        }
-
+        /// <summary>
+        /// Tries to process binary instruction.
+        /// </summary>
+        /// <returns>true if processing is successful, otherwise false.</returns>
         private bool TryProcessBinaryOp()
         {
             // if OP [op1], op2
@@ -1078,9 +1074,30 @@ namespace AMx64
         }
 
         /// <summary>
+        /// Tries to process Push instruction.
+        /// </summary>
+        /// <returns><see cref="ErrorCode.None"/> if processing is successful.</returns>
+        private ErrorCode ProcessPush(ref string errorMsg)
+        {
+            try
+            {
+                Push(currentExpr.LeftOpValue);
+                return ErrorCode.None;
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.Message;
+
+                return ex is StackOverflowException
+                    ? ErrorCode.StackOverflow
+                    : ex is InvalidOperationException ? ErrorCode.StackUnderflow : ErrorCode.StackError;
+            }
+        }
+
+        /// <summary>
         /// Gets the result of binary operation and sets the appropriate bits in FLAGS register.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result of binary operation.</returns>
         private UInt64 GetBinaryOpResult()
         {
             UInt64 result;
@@ -1128,6 +1145,10 @@ namespace AMx64
             }
         }
 
+        /// <summary>
+        /// Gets the result of unary operation.
+        /// </summary>
+        /// <returns>Result of unary operation.</returns>
         private UInt64 GetUnaryOpResult()
         {
             switch (currentExpr.Operation)
@@ -1141,6 +1162,12 @@ namespace AMx64
             }
         }
 
+        /// <summary>
+        /// Tries to process data in .data section of asm code.
+        /// </summary>
+        /// <param name="tokens">Tokenized current asm line.</param>
+        /// <param name="errorMsg">Message describing an error.</param>
+        /// <returns>true if memory has been allocated successfully, otherwise false.</returns>
         public bool TryProcessData(List<string> tokens, ref string errorMsg)
         {
             var values = tokens[2].Split(',');
@@ -1216,7 +1243,7 @@ namespace AMx64
         }
 
         /// <summary>
-        /// Processes data in bss section of asm code.
+        /// Tries to process data in .bss section of asm code.
         /// </summary>
         /// <param name="tokens">Tokenized current asm line.</param>
         /// <param name="errorMsg">Message describing an error.</param>
@@ -1236,7 +1263,7 @@ namespace AMx64
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
-                if ((uint)nextMemoryLocation + size * amount >= maxMemSize)
+                if ((uint)nextMemoryLocation + size * amount >= maxMemSize * .2)
                 {
                     errorMsg = "Failed to write to memory. Memory is full.";
                     return false;
@@ -1264,6 +1291,12 @@ namespace AMx64
             }
         }
 
+        /// <summary>
+        /// Adds value to memory.
+        /// </summary>
+        /// <param name="result">Specified value to write to the memory.</param>
+        /// <param name="size">Size of the value in bytes.</param>
+        /// <exception cref="Exception">Thrown when there isn't enough memory available.</exception>
         private void AddToMemory(UInt64 result, int size)
         {
             var res = result;
@@ -1283,7 +1316,7 @@ namespace AMx64
                 limit = size;
             }
 
-            if (nextMemoryLocation + (UInt64)size >= maxMemSize)
+            if (nextMemoryLocation + (UInt64)size >= maxMemSize * .2)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }
@@ -1304,9 +1337,15 @@ namespace AMx64
             }
         }
 
+        /// <summary>
+        /// Adds a string value to memory.
+        /// </summary>
+        /// <param name="value">Specified string value to write to the memory.</param>
+        /// <param name="size">Size of the value in bytes.</param>
+        /// <exception cref="Exception">Thrown when there isn't enough memory available.</exception>
         private void AddToMemory(string value, int size)
         {
-            if ((int)nextMemoryLocation + value.Length * size >= maxMemSize)
+            if ((int)nextMemoryLocation + value.Length * size >= maxMemSize * .2)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }
@@ -1654,6 +1693,11 @@ namespace AMx64
             PF = parityTable[value & 0xff];
         }
 
+        /// <summary>
+        /// Checks if symbol is a reserved string.
+        /// </summary>
+        /// <param name="symbol">Symbol value being checked.</param>
+        /// <returns>true if symbol is reserved, otherwise false.</returns>
         public bool IsSymbolReserverd(string symbol)
         {
             // Reserved symbols are case insensitive.

@@ -339,7 +339,7 @@ namespace AMx64
             return true;
         }
 
-        #region Stack handel
+        #region Stack handle
         /// <summary>
         /// Writes a specified value to stack.
         /// </summary>
@@ -495,7 +495,7 @@ namespace AMx64
         /// <returns>true if array bounds have been exceeded, otherwise false.</returns>
         private static bool MemoryBoundsExceeded(UInt64 position, UInt64 size, UInt64 arrayLimit)
         {
-            return position >= arrayLimit || position + size > arrayLimit;
+            return position >= arrayLimit * .2 || position + size >= arrayLimit * .2;
         }
     }
 }
