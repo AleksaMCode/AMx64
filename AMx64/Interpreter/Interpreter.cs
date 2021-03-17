@@ -31,6 +31,8 @@ namespace AMx64
 
         Jmp,                // unary operation
         Je, Jne, Jge, Jl,   // unary operation
+
+        Push, Pop           // unary operation
     }
 
     public partial class AMX64
@@ -460,6 +462,9 @@ namespace AMx64
                     case ErrorCode.MemoryAllocError:
                     case ErrorCode.UnknownLabel:
                         return;
+                    case ErrorCode.StackUnderflow:
+                    case ErrorCode.StackOverflow:
+                    case ErrorCode.StackError:
                     case ErrorCode.GlobalLine:
                     default:
                         Console.WriteLine(errorMsg);
@@ -576,6 +581,7 @@ namespace AMx64
 
                 switch (currentExpr.Operation)
                 {
+                    // If BinaryOp:
                     case Operations.Add:
                     case Operations.Sub:
                     case Operations.Mov:
@@ -589,11 +595,16 @@ namespace AMx64
                         EvaluateOperands();
                         ProcessCmp();
                         return ErrorCode.None;
+                    case Operations.Push:
+                        EvaluateOperands();
+                        return ProcessPush(ref errorMsg);
+                    // If UnaryOp:
+                    case Operations.Pop:
                     case Operations.BitNot:
                         // Set operands value.
                         EvaluateOperands();
                         return TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior;
-                    // if Jcc
+                    // If Jmp or Jcc:
                     case Operations.Jmp:
                     case Operations.Je:
                     case Operations.Jne:
@@ -901,6 +912,23 @@ namespace AMx64
             return true;
         }
 
+        private ErrorCode ProcessPush(ref string errorMsg)
+        {
+            try
+            {
+                Push(currentExpr.LeftOpValue);
+                return ErrorCode.None;
+            }
+            catch(Exception ex)
+            {
+                errorMsg = ex.Message;
+
+                return ex is StackOverflowException
+                    ? ErrorCode.StackOverflow
+                    : ex is InvalidOperationException ? ErrorCode.StackUnderflow : ErrorCode.StackError;
+            }
+        }
+
         private void ProcessCmp()
         {
             var result = currentExpr.LeftOpValue - currentExpr.RightOpValue;
@@ -1043,6 +1071,9 @@ namespace AMx64
         {
             switch (currentExpr.Operation)
             {
+                case Operations.Pop:
+                    // Exception can be thrown here.
+                    return Pop();
                 // case Operations.BitNot
                 default:
                     return ~currentExpr.LeftOpValue;

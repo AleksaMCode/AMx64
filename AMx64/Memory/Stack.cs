@@ -12,7 +12,14 @@ namespace AMx64
         public UInt64 Pop()
         {
             CheckStackPointers();
-            memory.ReadFromStack(RSI++, out var value);
+
+            if (RSI + 8 > RBP)
+            {
+                throw new InvalidOperationException("Stack Underflow occurred.");
+            }
+
+            memory.ReadFromStack(RSI, out var value);
+            RSI += 8;
 
             return value;
         }
@@ -25,7 +32,14 @@ namespace AMx64
         public void Push(UInt64 value)
         {
             CheckStackPointers();
-            memory.WriteToStack(RSI--, value);
+
+            if (RSI - 8 < nextMemoryLocation)
+            {
+                throw new StackOverflowException("Stack Overflow occurred.");
+            }
+
+            memory.WriteToStack(RSI, value);
+            RSI -= 8;
         }
 
         /// <summary>
@@ -41,9 +55,9 @@ namespace AMx64
             {
                 throw new Exception($"Stack pointer RSP out of range: {RSP}");
             }
-            else if(RSP > RBP)
+            else if (RSP > RBP)
             {
-                throw new Exception("Register RSP can't have value larger then RBP.");
+                throw new InvalidOperationException("Stack Underflow occurred.");
             }
         }
     }
