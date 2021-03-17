@@ -286,6 +286,8 @@ namespace AMx64
                 $"RDX:      0x{RDX:x16}\n" +
                 $"RDI:      0x{RDI:x16}\n" +
                 $"RSI:      0x{RSI:x16}\n" +
+                $"RBP:      0x{RBP:x16}\n" +
+                $"RSP:      0x{RSP:x16}\n" +
                 $"RFLAGS:   0x{RFLAGS:x16}\n\n" +
                 $"CF:   {(CF ? 1 : 0)}\n" +
                 $"PF:   {(PF ? 1 : 0)}\n" +
