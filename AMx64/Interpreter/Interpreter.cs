@@ -608,7 +608,7 @@ namespace AMx64
                     case Operations.BitOr:
                         // Set operands value if possible and process instruction.
                         return EvaluateOperands(ref errorMsg, false)
-                            ? TryProcessBinaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior
+                            ? TryProcessOp(ref errorMsg, false) ? ErrorCode.None : ErrorCode.UndefinedBehavior
                             : ErrorCode.UndefinedBehavior;
                     case Operations.Cmp:
                         // Set operands value if possible and process instruction.
@@ -629,7 +629,7 @@ namespace AMx64
                     case Operations.BitNot:
                         // Set operands value if possible and process instruction.
                         return EvaluateOperands(ref errorMsg, true)
-                            ? TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior
+                            ? TryProcessOp(ref errorMsg, true) ? ErrorCode.None : ErrorCode.UndefinedBehavior
                             : ErrorCode.UndefinedBehavior;
                     // If Jmp or Jcc:
                     case Operations.Jmp:
@@ -923,19 +923,16 @@ namespace AMx64
         }
 
         /// <summary>
-        /// Tries to process unary instruction.
+        /// Tries to process instruction.
         /// </summary>
+        /// <param name="errorMsg">Description of an error that occurred.</param>
+        /// <param name="unaryInstruction">Set to true if the current instruction is unary.</param>
         /// <returns>true if processing is successful, otherwise false.</returns>
-        private bool TryProcessUnaryOp()
+        private bool TryProcessOp(ref string errorMsg, bool unaryInstruction)
         {
-            // if OP [op1]
+            // if OP [op1], op2 or OP [op1]
             if (currentExpr.LeftOp.EndsWith(']'))
             {
-                if (!currentExpr.ExplicitSize)
-                {
-                    return false;
-                }
-
                 var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
 
                 // If operand is a register.
@@ -945,10 +942,8 @@ namespace AMx64
 
                     var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                    // Read value from specified address in memory.
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
                     // Write result value to a specified address.
-                    memory.Write(address, (UInt64)size, GetUnaryOpResult());
+                    memory.Write(CPURegisters[info.Item1][info.Item2], (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
                 }
                 else
                 {
@@ -957,28 +952,25 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        // Read value from specified address in memory.
-                        memory.Read((UInt64)index, (UInt64)size, out var address);
                         // Write result value to a specified address.
-                        memory.Write(address, (UInt64)size, GetUnaryOpResult());
+                        memory.Write((UInt64)index, (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
                     }
                     // If operand is a numerical value.
                     else if (Evaluate(currentExpr.LeftOp, out var value, out var _))
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        // Read value from specified address in memory.
-                        memory.Read(value, (UInt64)size, out var address);
                         // Write result value to a specified address.
-                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
+                        memory.Write(value, (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
                     }
                     else
                     {
+                        errorMsg = $"Failed to process operand '{leftOp}'.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                         return false;
                     }
                 }
             }
-            // if OP op1
+            // if OP op1, * or OP op1
             else
             {
                 // If operand is a register.
@@ -986,87 +978,7 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][info.Item2] = GetUnaryOpResult();
-                }
-                else
-                {
-                    // If operand is a variable.
-                    if (variables.TryGetValue(currentExpr.LeftOp, out var index) && currentExpr.ExplicitSize)
-                    {
-                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                        memory.Write((UInt64)index, (UInt64)size, GetUnaryOpResult());
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Tries to process binary instruction.
-        /// </summary>
-        /// <returns>true if processing is successful, otherwise false.</returns>
-        private bool TryProcessBinaryOp()
-        {
-            // if OP [op1], op2
-            if (currentExpr.LeftOp.EndsWith(']'))
-            {
-                var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
-
-                // If operand is a register.
-                if (asmLineAvailableRegisters.Match(leftOp.ToUpper()).Success)
-                {
-                    CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
-
-                    var size = info.Item2 == 3 ? 8 : info.Item2 == 2 ? 4 : info.Item2 == 1 ? 2 : 1;
-
-                    // Read value from specified address in memory.
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var address);
-                    // Write result value to a specified address.
-                    memory.Write(address, (UInt64)size, GetBinaryOpResult());
-                }
-                else
-                {
-                    // If operand is a variable.
-                    if (variables.TryGetValue(leftOp, out var index))
-                    {
-                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                        // Read value from specified address in memory.
-                        memory.Read((UInt64)index, (UInt64)size, out var address);
-                        // Write result value to a specified address.
-                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
-                    }
-                    // If operand is a numerical value.
-                    else if (Evaluate(currentExpr.LeftOp, out var value, out var _))
-                    {
-                        var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
-
-                        // Read value from specified address in memory.
-                        memory.Read(value, (UInt64)size, out var address);
-                        // Write result value to a specified address.
-                        memory.Write(address, (UInt64)size, GetBinaryOpResult());
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            // if OP op1, *
-            else
-            {
-                // If operand is a register.
-                if (asmLineAvailableRegisters.Match(currentExpr.LeftOp.ToUpper()).Success)
-                {
-                    CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
-
-                    CPURegisters[info.Item1][info.Item2] = GetBinaryOpResult();
+                    CPURegisters[info.Item1][currentExpr.CodeSize] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
                 }
                 else
                 {
@@ -1075,10 +987,11 @@ namespace AMx64
                     {
                         var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
-                        memory.Write((UInt64)index, (UInt64)size, GetBinaryOpResult());
+                        memory.Write((UInt64)index, (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
                     }
                     else
                     {
+                        errorMsg = $"Failed to process operand '{currentExpr.LeftOp}'.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                         return false;
                     }
                 }
@@ -1381,13 +1294,13 @@ namespace AMx64
         /// Evaluates and sets operands value and size.
         /// </summary>
         /// <param name="errorMsg">Description of an error that occurred.</param>
-        /// <param name="unaryInstractuon">Set to true if the current instruction is unary.</param>
+        /// <param name="unaryInstruction">Set to true if the current instruction is unary.</param>
         /// <returns>true if evaluation was successful, otherwise false.</returns>
-        private bool EvaluateOperands(ref string errorMsg, bool unaryInstractuon)
+        private bool EvaluateOperands(ref string errorMsg, bool unaryInstruction)
         {
-            int codeSize = -1;
+            var codeSize = -1;
 
-            if (currentExpr.RightOp == null && !unaryInstractuon)
+            if (currentExpr.RightOp == null && !unaryInstruction)
             {
                 errorMsg = $"Right operand is missing.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                 return false;
@@ -1535,6 +1448,7 @@ namespace AMx64
                         return false;
                     }
 
+                    currentExpr.CodeSize = (byte)codeSize;
                     return true;
                 }
             }
@@ -1718,6 +1632,7 @@ namespace AMx64
                 }
             }
 
+            currentExpr.CodeSize = (byte)codeSize;
             return true;
         }
 
