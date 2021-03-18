@@ -978,7 +978,7 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][currentExpr.CodeSize] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
+                    CPURegisters[info.Item1][info.Item2] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
                 }
                 else
                 {
@@ -1595,10 +1595,11 @@ namespace AMx64
 
                     if (codeSize != -1)
                     {
-                        // Check if operand sizes match. E.q. mov qword eax, [op2] or mov qword eax, rbx
-                        if (codeSize != info.Item2)
+                        // Check if operand sizes match. E.q. mov qword eax, [op2] or mov qword eax, rbx is wrong, but
+                        // mov byte rax, [op2] is acceptable.
+                        if (codeSize > info.Item2)
                         {
-                            errorMsg = $"Instruction operands must be the same size.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                            errorMsg = $"Instruction operands size problem.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                             return false;
                         }
                         else

@@ -35,12 +35,12 @@ namespace AMx64
                         ParseOperation(match.Value.TrimEnd());
                         asmLine = asmLine.Substring(match.Value.Length - 1).TrimStart();
                     }
-                    else if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
+
+                    if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
                     {
-                        ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
+                        ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ')));
                         asmLine = asmLine.Substring(asmLine.IndexOf(' ')).TrimStart();
                     }
-
 
                     var tokens = asmLine.Split(',');
                     LeftOp = tokens[0].Trim();
