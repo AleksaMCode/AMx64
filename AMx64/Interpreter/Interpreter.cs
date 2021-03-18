@@ -942,8 +942,10 @@ namespace AMx64
 
                     var size = currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : currentExpr.CodeSize == 1 ? 2 : 1;
 
+                    var registerValue = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
+
                     // Write result value to a specified address.
-                    memory.Write(CPURegisters[info.Item1][info.Item2], (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
+                    memory.Write(registerValue, (UInt64)size, unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult());
                 }
                 else
                 {
@@ -978,7 +980,14 @@ namespace AMx64
                 {
                     CPURegisterMap.TryGetValue(currentExpr.LeftOp.ToUpper(), out var info);
 
-                    CPURegisters[info.Item1][info.Item2] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
+                    if (info.Item3)
+                    {
+                        CPURegisters[info.Item1][4] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
+                    }
+                    else
+                    {
+                        CPURegisters[info.Item1][info.Item2] = unaryInstruction ? GetUnaryOpResult() : GetBinaryOpResult();
+                    }
                 }
                 else
                 {
@@ -1324,17 +1333,16 @@ namespace AMx64
                     {
                         CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                        UInt64 value;
+                        UInt64 value = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
 
                         if (currentExpr.ExplicitSize)
                         {
                             codeSize = currentExpr.CodeSize;
-                            value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
+                            value = SetOperandWithExplicitSize(value);
                         }
                         else
                         {
                             codeSize = info.Item2;
-                            value = CPURegisters[info.Item1][info.Item2];
                         }
 
                         // Set the right operand.
@@ -1389,7 +1397,8 @@ namespace AMx64
                 if (asmLineAvailableRegisters.Match(leftOp.ToUpper()).Success)
                 {
                     CPURegisterMap.TryGetValue(leftOp.ToUpper(), out var info);
-                    int size;
+
+                    var registerValue = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
 
                     if (codeSize == -1)
                     {
@@ -1405,10 +1414,10 @@ namespace AMx64
                         }
                     }
 
-                    size = codeSize == 3 ? 8 : codeSize == 2 ? 4 : codeSize == 1 ? 2 : 1;
+                    var size = codeSize == 3 ? 8 : codeSize == 2 ? 4 : codeSize == 1 ? 2 : 1;
 
                     // Read value from address.
-                    memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
+                    memory.Read(registerValue, (UInt64)size, out var output);
 
                     // Set the left operand.
                     currentExpr.LeftOpValue = output;
@@ -1475,10 +1484,12 @@ namespace AMx64
                     {
                         CPURegisterMap.TryGetValue(rightOp.ToUpper(), out var info);
 
+                        var registerValue = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
+
                         var size = codeSize == 3 ? 8 : codeSize == 2 ? 4 : codeSize == 1 ? 2 : 1;
 
                         // Read value from address.
-                        memory.Read(CPURegisters[info.Item1][info.Item2], (UInt64)size, out var output);
+                        memory.Read(registerValue, (UInt64)size, out var output);
 
                         // Set the right operand.
                         currentExpr.RightOpValue = output;
@@ -1525,17 +1536,16 @@ namespace AMx64
                         {
                             CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                            UInt64 value;
+                            var value = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
 
                             if (currentExpr.ExplicitSize)
                             {
                                 codeSize = currentExpr.CodeSize;
-                                value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
+                                value = SetOperandWithExplicitSize(value);
                             }
                             else
                             {
                                 codeSize = info.Item2;
-                                value = CPURegisters[info.Item1][info.Item2];
                             }
 
                             // Set the right operand.
@@ -1604,14 +1614,12 @@ namespace AMx64
                         }
                         else
                         {
-                            value = CPURegisters[info.Item1][info.Item2];
+                            value = info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2];
                         }
                     }
                     else /*if (codeSize == -1)*/
                     {
-                        value = currentExpr.ExplicitSize
-                            ? SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2])
-                            : CPURegisters[info.Item1][info.Item2];
+                        value = SetOperandWithExplicitSize(info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2]);
                     }
 
                     // Set the left operand.

@@ -46,6 +46,10 @@ namespace AMx64
                     {
                         return x8;
                     }
+                    case 4:
+                    {
+                        return x8h;
+                    }
                     default:
                     {
                         throw new ArgumentOutOfRangeException("Registers code size out of range.");
@@ -77,6 +81,11 @@ namespace AMx64
                         x8 = (byte)value;
                         break;
                     }
+                    case 4:
+                    {
+                        x8h = (byte)value;
+                        break;
+                    }    
                     default:
                     {
                         throw new ArgumentOutOfRangeException("Registers code size out of range.");
