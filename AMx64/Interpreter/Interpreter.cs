@@ -164,12 +164,12 @@ namespace AMx64
         /// <summary>
         /// Command line regex used to check instructions.
         /// </summary>
-        private static readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|CMP|(J(MP|(N|G)*E|L)))\s+", RegexOptions.Compiled);
+        private static readonly Regex asmLineInstrRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|CMP|PUSH|POP|(J(MP|(N|G)*E|L)))\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex used to check instructions with explicit size set.
         /// </summary>
-        private static readonly Regex asmLineInstrExplSizeRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|CMP)\s+(BYTE|WORD|DWORD|QWORD)\s+", RegexOptions.Compiled);
+        private static readonly Regex asmLineInstrExplSizeRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|NOT|CMP|PUSH|POP)\s+(BYTE|WORD|DWORD|QWORD)\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// GLOBAL symbol regex.
