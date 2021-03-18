@@ -63,7 +63,7 @@ namespace AMx64
 
                     return CheckLeftOperand();
                 }
-                else if (asmLineNotInstrRegex.Match(asmLineUpper).Success)
+                else if (asmLineNotInstrRegex.Match(asmLineUpper).Success || asmLineStackIntrRegex.Match(asmLineUpper).Success)
                 {
                     var tokens = asmLine.Split((char[])null);
                     ParseOperation(tokens[0].TrimEnd());
