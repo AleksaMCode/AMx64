@@ -124,6 +124,12 @@ namespace AMx64
                     case "CMP":
                         Operation = Operations.Cmp;
                         break;
+                    case "PUSH":
+                        Operation = Operations.Push;
+                        break;
+                    case "POP":
+                        Operation = Operations.Pop;
+                        break;
                     case "JMP":
                         Operation = Operations.Jmp;
                         break;

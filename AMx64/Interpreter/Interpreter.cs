@@ -607,12 +607,12 @@ namespace AMx64
                     case Operations.BitAnd:
                     case Operations.BitOr:
                         // Set operands value if possible and process instruction.
-                        return EvaluateOperands(ref errorMsg)
+                        return EvaluateOperands(ref errorMsg, false)
                             ? TryProcessBinaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior
                             : ErrorCode.UndefinedBehavior;
                     case Operations.Cmp:
                         // Set operands value if possible and process instruction.
-                        if (EvaluateOperands(ref errorMsg))
+                        if (EvaluateOperands(ref errorMsg, false))
                         {
                             ProcessCmp();
                             return ErrorCode.None;
@@ -623,12 +623,12 @@ namespace AMx64
                         }
                     case Operations.Push:
                         // Set operands value if possible and process instruction.
-                        return EvaluateOperands(ref errorMsg) ? ProcessPush(ref errorMsg) : ErrorCode.UndefinedBehavior;
+                        return EvaluateOperands(ref errorMsg, true) ? ProcessPush(ref errorMsg) : ErrorCode.UndefinedBehavior;
                     // If UnaryOp:
                     case Operations.Pop:
                     case Operations.BitNot:
                         // Set operands value if possible and process instruction.
-                        return EvaluateOperands(ref errorMsg)
+                        return EvaluateOperands(ref errorMsg, true)
                             ? TryProcessUnaryOp() ? ErrorCode.None : ErrorCode.UndefinedBehavior
                             : ErrorCode.UndefinedBehavior;
                     // If Jmp or Jcc:
@@ -1382,9 +1382,15 @@ namespace AMx64
         /// </summary>
         /// <param name="errorMsg">Description of an error that occurred.</param>
         /// <returns>true if evaluation was successful, otherwise false.</returns>
-        private bool EvaluateOperands(ref string errorMsg)
+        private bool EvaluateOperands(ref string errorMsg, bool unaryInstractuon)
         {
             var codeSize = 3;
+
+            if (currentExpr.RightOp == null && !unaryInstractuon)
+            {
+                errorMsg = $"Right operand is missing.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                return false;
+            }
 
             // if OP [op1], op2
             if (currentExpr.LeftOp.EndsWith(']'))
@@ -1392,67 +1398,68 @@ namespace AMx64
                 // Direct memory manipulation isn't allowed.
                 if (currentExpr.RightOp.EndsWith(']'))
                 {
-                    errorMsg = $"Direct memory manipulation isn't allowed. Line {currentLine.CurrentAsmLineValue}: {currentLine.CurrentAsmLineNumber}";
+                    errorMsg = $"Direct memory manipulation isn't allowed.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
                     return false;
                 }
 
                 // Right operand handle.
-
-                // If operand is a register.
-                if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
+                if (currentExpr.RightOp != null)
                 {
-                    CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
-
-                    UInt64 value;
-
-                    if (currentExpr.ExplicitSize)
+                    // If operand is a register.
+                    if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
                     {
-                        codeSize = currentExpr.CodeSize;
-                        value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
-                    }
-                    else
-                    {
-                        codeSize = info.Item2;
-                        value = CPURegisters[info.Item1][info.Item2];
-                    }
+                        CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                    // Set the right operand.
-                    currentExpr.RightOpValue = value;
-                }
-                else
-                {
-                    // If operand is a variable. Memory is 64-bit addressable; implicit size is always 8 bytes.
-                    if (variables.TryGetValue(currentExpr.RightOp, out var value))
-                    {
-                        if (currentExpr.ExplicitSize)
-                        {
-                            codeSize = currentExpr.CodeSize;
-                            value = (Int64)SetOperandWithExplicitSize((UInt64)value);
-                        }
-
-                        // Set the right operand.
-                        currentExpr.RightOpValue = (ulong)value;
-                    }
-                    // If operand is a numerical value.
-                    else if (Evaluate(currentExpr.RightOp, out var output, out var _))
-                    {
+                        UInt64 value;
 
                         if (currentExpr.ExplicitSize)
                         {
                             codeSize = currentExpr.CodeSize;
-                            output = SetOperandWithExplicitSize(output);
+                            value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
+                        }
+                        else
+                        {
+                            codeSize = info.Item2;
+                            value = CPURegisters[info.Item1][info.Item2];
                         }
 
                         // Set the right operand.
-                        currentExpr.RightOpValue = output;
+                        currentExpr.RightOpValue = value;
                     }
                     else
                     {
-                        errorMsg = $"Unknown right operand used.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
-                        return false;
+                        // If operand is a variable. Memory is 64-bit addressable; implicit size is always 8 bytes.
+                        if (variables.TryGetValue(currentExpr.RightOp, out var value))
+                        {
+                            if (currentExpr.ExplicitSize)
+                            {
+                                codeSize = currentExpr.CodeSize;
+                                value = (Int64)SetOperandWithExplicitSize((UInt64)value);
+                            }
+
+                            // Set the right operand.
+                            currentExpr.RightOpValue = (ulong)value;
+                        }
+                        // If operand is a numerical value.
+                        else if (Evaluate(currentExpr.RightOp, out var output, out var _))
+                        {
+
+                            if (currentExpr.ExplicitSize)
+                            {
+                                codeSize = currentExpr.CodeSize;
+                                output = SetOperandWithExplicitSize(output);
+                            }
+
+                            // Set the right operand.
+                            currentExpr.RightOpValue = output;
+                        }
+                        else
+                        {
+                            errorMsg = $"Unknown right operand used.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                            return false;
+                        }
                     }
                 }
-
                 // Left operand handle. Removes square brackets.
                 var leftOp = currentExpr.LeftOp.Substring(1, currentExpr.LeftOp.Length - 2);
 
@@ -1503,7 +1510,7 @@ namespace AMx64
             else
             {
                 // if OP op1, [op2]
-                if (currentExpr.RightOp.EndsWith(']'))
+                if (currentExpr.RightOp != null && currentExpr.RightOp.EndsWith(']'))
                 {
                     // If explicit size isn't used.
                     if (!currentExpr.ExplicitSize)
@@ -1566,63 +1573,65 @@ namespace AMx64
                 else
                 {
                     // Right operand handle.
-
-                    // If operand is a register.
-                    if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
+                    if (currentExpr.RightOp != null)
                     {
-                        CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
-
-                        UInt64 value;
-
-                        if (currentExpr.ExplicitSize)
+                        // If operand is a register.
+                        if (asmLineAvailableRegisters.Match(currentExpr.RightOp.ToUpper()).Success)
                         {
-                            codeSize = currentExpr.CodeSize;
-                            value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
-                        }
-                        else
-                        {
-                            codeSize = info.Item2;
-                            value = CPURegisters[info.Item1][info.Item2];
-                        }
+                            CPURegisterMap.TryGetValue(currentExpr.RightOp.ToUpper(), out var info);
 
-                        // Set the right operand.
-                        currentExpr.RightOpValue = value;
-                    }
-                    else
-                    {
-                        // If operand is a 'variable'.
-                        if (variables.TryGetValue(currentExpr.RightOp, out var value))
-                        {
+                            UInt64 value;
+
                             if (currentExpr.ExplicitSize)
                             {
                                 codeSize = currentExpr.CodeSize;
-                                value = (Int64)SetOperandWithExplicitSize((UInt64)value);
+                                value = SetOperandWithExplicitSize(CPURegisters[info.Item1][info.Item2]);
                             }
-
-                            // Set the right operand.
-                            currentExpr.RightOpValue = (ulong)value;
-                        }
-                        // If operand is a numerical value.
-                        else if (Evaluate(currentExpr.RightOp, out var output, out var _))
-                        {
-                            if (currentExpr.ExplicitSize)
+                            else
                             {
-                                codeSize = currentExpr.CodeSize;
-                                output = SetOperandWithExplicitSize(output);
+                                codeSize = info.Item2;
+                                value = CPURegisters[info.Item1][info.Item2];
                             }
 
                             // Set the right operand.
-                            currentExpr.RightOpValue = output;
+                            currentExpr.RightOpValue = value;
                         }
                         else
                         {
-                            errorMsg = $"Unknown right operand used.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
-                            return false;
+                            // If operand is a 'variable'.
+                            if (variables.TryGetValue(currentExpr.RightOp, out var value))
+                            {
+                                if (currentExpr.ExplicitSize)
+                                {
+                                    codeSize = currentExpr.CodeSize;
+                                    value = (Int64)SetOperandWithExplicitSize((UInt64)value);
+                                }
+
+                                // Set the right operand.
+                                currentExpr.RightOpValue = (ulong)value;
+                            }
+                            // If operand is a numerical value.
+                            else if (Evaluate(currentExpr.RightOp, out var output, out var _))
+                            {
+                                if (currentExpr.ExplicitSize)
+                                {
+                                    codeSize = currentExpr.CodeSize;
+                                    output = SetOperandWithExplicitSize(output);
+                                }
+
+                                // Set the right operand.
+                                currentExpr.RightOpValue = output;
+                            }
+                            else
+                            {
+                                errorMsg = $"Unknown right operand used.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                                return false;
+                            }
                         }
                     }
                 }
 
-                // Left operand handle for OP op1, op2 or OP op1, [op2].
+                // Left operand handle for OP op1, op2 or OP op1, [op2] or OP op1
 
                 // If operand is a register.
                 if (asmLineAvailableRegisters.Match(currentExpr.LeftOp.ToUpper()).Success)
