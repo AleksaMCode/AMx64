@@ -594,7 +594,7 @@ namespace AMx64
                 // Parse current line in to tokens.
                 if (!currentExpr.ParseAsmLine(currentLine.CurrentAsmLineValue, out var parsedLineError))
                 {
-                    errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber + 1}: {currentLine.CurrentAsmLineValue}\nError: {parsedLineError}";
+                    errorMsg = $"Error parsing asm line {currentLine.CurrentAsmLineNumber + 1}: {currentLine.CurrentAsmLineValue}" + (string.IsNullOrEmpty(parsedLineError) ? "": $"\nError: {parsedLineError}");
                     return ErrorCode.InvalidAsmLine;
                 }
 

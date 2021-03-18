@@ -44,10 +44,7 @@ namespace AMx64
 
                     var tokens = asmLine.Split(',');
                     LeftOp = tokens[0].Trim();
-                    if (tokens.Length == 2)
-                    {
-                        RightOp = tokens[1].Trim();
-                    }
+                    RightOp = tokens[1].Trim();
 
                     // If operands are different sizes.
                     if (!ExplicitSize && ((LeftOp[0] == 'E' && RightOp[0] == 'R') || (LeftOp[0] != 'R' && LeftOp[0] != 'E' && (RightOp[0] == 'E' || RightOp[0] == 'R'))))
