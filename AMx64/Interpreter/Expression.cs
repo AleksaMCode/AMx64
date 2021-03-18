@@ -12,7 +12,7 @@ namespace AMx64
 
             public UInt64 LeftOpValue, RightOpValue;
 
-            public UInt64 CodeSize;
+            public byte CodeSize;
 
             public bool ExplicitSize = false;
 
@@ -21,8 +21,9 @@ namespace AMx64
             /// </summary>
             public UInt64 Result = 0;
 
-            public bool ParseAsmLine(string asmLine)
+            public bool ParseAsmLine(string asmLine, out string errorMsg)
             {
+                errorMsg = "";
                 var asmLineUpper = asmLine.ToUpper();
 
                 if (asmLineRegex.Match(asmLineUpper).Success)
@@ -32,24 +33,26 @@ namespace AMx64
                     if (match.Success)
                     {
                         ParseOperation(match.Value.TrimEnd());
-
                         asmLine = asmLine.Substring(match.Value.Length - 1).TrimStart();
                     }
                     else if (asmLineInstrExplSizeRegex.Match(asmLineUpper).Success)
                     {
                         ParseExplicitSize(asmLine.Substring(0, asmLine.IndexOf(' ') - 1));
-
                         asmLine = asmLine.Substring(asmLine.IndexOf(' ')).TrimStart();
                     }
 
 
                     var tokens = asmLine.Split(',');
                     LeftOp = tokens[0].Trim();
-                    RightOp = tokens[1].Trim();
-
-                    // If e.q. MOV RAX, RAX or first operand is smaller in size than the second operand.
-                    if (LeftOp == RightOp || (LeftOp[0] == 'E' && RightOp[0] == 'R') || (LeftOp[0] != 'R' && LeftOp[0] != 'E' && (RightOp[0] == 'E' || RightOp[0] == 'R')))
+                    if (tokens.Length == 2)
                     {
+                        RightOp = tokens[1].Trim();
+                    }
+
+                    // If operands are different sizes.
+                    if (!ExplicitSize && ((LeftOp[0] == 'E' && RightOp[0] == 'R') || (LeftOp[0] != 'R' && LeftOp[0] != 'E' && (RightOp[0] == 'E' || RightOp[0] == 'R'))))
+                    {
+                        errorMsg = "Instruction operands must be the same size.";
                         return false;
                     }
 
@@ -164,6 +167,7 @@ namespace AMx64
                         case "QWORD":
                             CodeSize = 3;
                             break;
+                        // Default case can never happen.
                         default:
                             return false;
                     }
