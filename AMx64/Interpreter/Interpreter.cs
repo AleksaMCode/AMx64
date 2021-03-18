@@ -1543,7 +1543,7 @@ namespace AMx64
                         }
                         else
                         {
-                            // If operand is a 'variable'.
+                            // If operand is a variable.
                             if (variables.TryGetValue(currentExpr.RightOp, out var value))
                             {
                                 if (currentExpr.ExplicitSize)
