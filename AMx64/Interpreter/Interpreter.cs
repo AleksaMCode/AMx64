@@ -1022,7 +1022,7 @@ namespace AMx64
             }
             catch (Exception ex)
             {
-                errorMsg = ex.Message;
+                errorMsg = ex.Message + $"\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
 
                 return ex is StackOverflowException
                     ? ErrorCode.StackOverflow
@@ -1084,6 +1084,7 @@ namespace AMx64
         /// <summary>
         /// Gets the result of unary operation.
         /// </summary>
+        /// <exception cref="Exception">Thrown when at least one of the stack pointers is out of range.</exception>
         /// <returns>Result of unary operation.</returns>
         private UInt64 GetUnaryOpResult()
         {
@@ -1091,7 +1092,14 @@ namespace AMx64
             {
                 case Operations.Pop:
                     // Exception can be thrown here.
-                    return Pop();
+                    try
+                    {
+                        return Pop();
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new Exception(ex.Message + $"\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}");
+                    }
                 // case Operations.BitNot
                 default:
                     return ~currentExpr.LeftOpValue;
