@@ -1627,6 +1627,8 @@ namespace AMx64
                     }
                     else /*if (codeSize == -1)*/
                     {
+                        codeSize = currentExpr.ExplicitSize ? currentExpr.CodeSize : info.Item2;
+                        currentExpr.CodeSize = (byte)codeSize;
                         value = SetOperandWithExplicitSize(info.Item3 ? CPURegisters[info.Item1][4] : CPURegisters[info.Item1][info.Item2]);
                     }
 
@@ -1638,8 +1640,15 @@ namespace AMx64
                     // If operand is a variable.
                     if (variables.TryGetValue(currentExpr.LeftOp, out var output))
                     {
+                        if(codeSize == -1)
+                        {
+                            codeSize = currentExpr.ExplicitSize ? currentExpr.CodeSize : 3;
+                        }
+
+                        currentExpr.CodeSize = (byte)codeSize;
+
                         // Set the left operand.
-                        currentExpr.LeftOpValue = (ulong)output;
+                        currentExpr.LeftOpValue = SetOperandWithExplicitSize((UInt64)output);
                     }
                     else
                     {
@@ -1649,7 +1658,7 @@ namespace AMx64
                 }
             }
 
-            currentExpr.CodeSize = (byte)codeSize;
+            //currentExpr.CodeSize = (byte)codeSize;
             return true;
         }
 
