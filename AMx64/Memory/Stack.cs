@@ -13,13 +13,13 @@ namespace AMx64
         {
             CheckStackPointers();
 
-            if (RSI + 8 > RBP)
+            if (RSP + 8 > RBP)
             {
                 throw new InvalidOperationException("Stack Underflow occurred.");
             }
 
-            memory.ReadFromStack(RSI, out var value);
-            RSI += 8;
+            memory.ReadFromStack(RSP, out var value);
+            RSP += 8;
 
             return value;
         }
@@ -33,13 +33,13 @@ namespace AMx64
         {
             CheckStackPointers();
 
-            if (RSI - 8 < nextMemoryLocation)
+            if (RSP - 8 < nextMemoryLocation)
             {
                 throw new StackOverflowException("Stack Overflow occurred.");
             }
 
-            memory.WriteToStack(RSI, value);
-            RSI -= 8;
+            memory.WriteToStack(RSP, value);
+            RSP -= 8;
         }
 
         /// <summary>

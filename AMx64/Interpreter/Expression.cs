@@ -71,11 +71,11 @@ namespace AMx64
                     if (tokens.Length == 3)
                     {
                         ParseExplicitSize(tokens[1].Trim());
-                        LeftOp = tokens[3];
+                        LeftOp = tokens[2];
                     }
                     else
                     {
-                        LeftOp = tokens[2];
+                        LeftOp = tokens[1];
                     }
 
                     return CheckLeftOperand();
