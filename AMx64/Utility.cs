@@ -351,7 +351,7 @@ namespace AMx64
         {
             for (var i = 0; i < (int)size; ++i)
             {
-                array[(int)position - i] = (byte)inputValue;
+                array[(int)position + i] = (byte)inputValue;
                 inputValue >>= 8;
             }
         }
@@ -369,7 +369,7 @@ namespace AMx64
 
             for (var i = (int)size - 1; i >= 0; --i)
             {
-                outputValue = (outputValue << 8) | array[(int)position - i];
+                outputValue = (outputValue << 8) | array[(int)position + i];
             }
         }
         #endregion

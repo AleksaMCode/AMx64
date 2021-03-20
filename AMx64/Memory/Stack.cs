@@ -38,8 +38,7 @@ namespace AMx64
                 throw new StackOverflowException("Stack Overflow occurred.");
             }
 
-            memory.WriteToStack(RSP, value);
-            RSP -= 8;
+            memory.WriteToStack(RSP -= 8, value);
         }
 
         /// <summary>
