@@ -30,6 +30,7 @@
       - [PUSH](#push)
       - [POP](#pop)
   - [Memory](#memory)
+    - [Stack](#stack)
     - [Registers](#registers)
       - [General-Purpose Registers (GPRs)](#general-purpose-registers-gprs)
       - [FLAGS register](#flags-register)
@@ -380,7 +381,9 @@ PUSH imm/r/m
 
 > **_NOTE:_**
 > 
->  It doesn't affect flags.
+> <ul><li>It doesn't affect flags.</li>
+> <li><p align="justify">The operand size (16, 32, or 64 bits) determines the amount by which the stack pointer is decremented (2, 4 or 8).</p></li>
+> <li><p align="justify">If the source operand is an immediate of size less than the operand size, a sign-extended value is pushed on the stack.</p></li></ul>
 
 #### POP
 <p align="justify">Loads the value from the top of the stack to the location specified with the destination operand (or explicit opcode) and then increments the stack pointer. The destination operand can be a general-purpose register, memory location, or segment register.</p>
@@ -393,13 +396,14 @@ POP r/m
 Format:
 
 ```asm
-pop value
-dest <- value
+pop value;
+dest ← value;
 ```
 
 > **_NOTE:_**
 > 
->  It doesn't affect flags.
+> <ul><li>It doesn't affect flags.</li>
+> <li><p align="justify">The operand size (16, 32, or 64 bits) determines the amount by which the stack pointer is incremented (2, 4 or 8).</p></li></ul>
 
 ## Memory
 <p align="justify">A memory value is an expression that evaluates to the address of some value in memory. In <b>AMx64</b> assembly language, addresses are enclosed in brackets “[…]” with the address expression inside.</p>
@@ -407,6 +411,18 @@ dest <- value
 > **_NOTE:_**
 > 
 >  Despite the fact that you can use 64-bit address, you only have 2 GB of memory available due to internal limits of C# in Visual Studio.
+
+### Stack
+<p align="justify">In a computer, a stack is a type of data structure where items are added and then removed from the stack in reverse order. That is, the most recently added item is the very first one that is removed. This is often referred to as Last-In, First-Out (LIFO). A stack is heavily used in programming for the storage of information during procedure or function calls.
+
+In most languages (even low-level ones) the stack is completely hidden from the programmer. In these languages we can only indirectly impact it. We already know that declaring a variable sets aside space on the stack, and that calling a function uses the stack as well. The difference now is that in assembly language, the programmer is responsible for managing the stack.
+
+The stack is managed by RBP and RSP (base pointer and stack pointer). Upon program initialization, RBP and RSP are set to the address of the top of the stack, which begins at the high side of the program's available memory and grows downward. Because of this, RSP will always point to the most-recently-added item on the stack. To add an item to the stack you can use the PUSH instruction. To remove an item, you can use the POP instruction.</p>
+
+> **_NOTE:_**
+> 
+>  <ul><li>RSP can modified directly without damaging the stack structure, but care should be taken when doing so.</li>
+> <li>You can't push 8 bit value on stack.</li></ul>
 
 ### Registers
 <p align="justify">Register operand refers to the contents of a register. <b>AMx64</b> has a total of 16 registers, but not all of the currently in use. To refer to one of the avaliable registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. <code>mov eax, [var]</code>) loads a 32-bit value from memory into the 32-bit partition of RAX.
@@ -485,7 +501,7 @@ dest <- value
     <td colspan="2"></td>
   </tr>
 </table>
-<p align="justify">When using data element sizes less than 64-bits (e.q., 32-bit, 16-bit, or 8-bit), the lower portion of the register can be accessed by using a different register name as shown in the table.</p>
+<p align="justify">When using data element sizes less than 64-bits (e.q. 32-bit, 16-bit, or 8-bit), the lower portion of the register can be accessed by using a different register name as shown in the table.</p>
 
 > **_NOTE:_**
 > 
