@@ -669,11 +669,11 @@ syscall
 
 ## Debug - AMDB
 <p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger   is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
-<p><img src="./AMx64/resources/list_command.jpg" title="list command"  align="center">
+<p><img src="./AMx64/resources/list_command.jpg" title="list command"  align="center"></p>
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
-<p><img src="./AMx64/resources/help_command.jpg" title="help command"  align="center">
+<p><img src="./AMx64/resources/help_command.jpg" title="help command"  align="center"></p>
 
 ### Setting Breakpoints
 <p align="justify">Breakpoints are set with the <code>break</code> command (abbreviated <code>b</code>). This command tells <i>amdb</i> to pause interpretation of your program at some point to allow you to inspect the value of variables and other memory locations. It will pause interpretation just before the specified line number is interpreted.</p>
@@ -700,7 +700,7 @@ syscall
 <p align="justify">Once you have paused a interpretation, you can use the <code>p</code> (or <code>print</code>) command to print the values of variables, specified memory locations or registers.</p>
 <dl>
   <dt><b>print</b></dt>
-  <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.<p><img src="./AMx64/resources/print_command.jpg" title="print command"  align="center"></dd>
+  <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.<p><img src="./AMx64/resources/print_command.jpg" title="print command" align="center"></p></dd>
   <dt><b>print register</b></dt>
   <dd>Shows value stored in a specified register. E.q. <code>print RAX</code>.</dd>
   <dt><b>print size variable</b></dt>
@@ -715,11 +715,12 @@ syscall
   <dt><b>continue</b> or <b>c</b></dt>
   <dd>Continues interpretation until the end of the file or unitil it reaches the next breakpoint.</dd>
   <dt><b>step</b> or <b>s</b></dt>
-  <dd>Interprets the current and stop interpretation on the next line.</dd>
+  <dd>Interprets the current and stop interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="step command"  align="center"></p></dd>
 </dl>
 
 ### Quitting
 <p align="justify">To quit from a <i>amdb</i> session, type <code>q</code> (short for quit) or <code>quit</code>. <i>amdb</i> will ask if you really want to quit. If you do, type <code>y</code> followed by the <code>Enter</code> key. This check may see a little unnecessary, but it helps prevent people quitting accidentally at that crucial moment in a lengthy debugging session.</p>
+<p><img src="./AMx64/resources/quit_command.jpg" title="quit command"  align="center"></p>
 
 ## References
 ### Books
