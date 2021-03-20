@@ -413,7 +413,7 @@ dest ← value;
 >  Despite the fact that you can use 64-bit address, you only have 2 GB of memory available due to internal limits of C# in Visual Studio.
 
 ### Stack
-<p align="justify">In a computer, a stack is a type of data structure where items are added and then removed from the stack in reverse order. That is, the most recently added item is the very first one that is removed. This is often referred to as Last-In, First-Out (LIFO). A stack is heavily used in programming for the storage of information during procedure or function calls.
+<p align="justify"><img src="./AMx64/resources/stack-in-program-memory.jpg" width="350" title="Figure used from Jeff Duntemann - Assembly Language Step-by-Step: Programming with Linux" align="right" hspace="5" vspace="5">In a computer, a stack is a type of data structure where items are added and then removed from the stack in reverse order. That is, the most recently added item is the very first one that is removed. This is often referred to as Last-In, First-Out (LIFO). A stack is heavily used in programming for the storage of information during procedure or function calls.
 
 In most languages (even low-level ones) the stack is completely hidden from the programmer. In these languages we can only indirectly impact it. We already know that declaring a variable sets aside space on the stack, and that calling a function uses the stack as well. The difference now is that in assembly language, the programmer is responsible for managing the stack.
 
