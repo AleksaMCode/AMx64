@@ -29,16 +29,17 @@ namespace AMx64
         /// </summary>
         /// <exception cref="Exception">Thrown when at least one of the stack pointers is out of range.</exception>
         /// <param name="value">Value that is being pushed to stack.</param>
-        public void Push(UInt64 value)
+        /// <param name="size">Amount by which the stack pointer is decremented (2, 4 or 8).</param>
+        public void Push(UInt64 value, int size)
         {
             CheckStackPointers();
 
-            if (RSP - 8 < nextMemoryLocation)
+            if (RSP - (UInt64)size < nextMemoryLocation)
             {
                 throw new StackOverflowException("Stack Overflow occurred.");
             }
 
-            memory.WriteToStack(RSP -= 8, value);
+            memory.WriteToStack(RSP -= (UInt64)size, value, (UInt64)size);
         }
 
         /// <summary>

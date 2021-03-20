@@ -346,8 +346,8 @@ namespace AMx64
         /// <param name="array">Specified array in which to store the value.</param>
         /// <param name="position">Starting index of specified array.</param>
         /// <param name="inputValue">Specified value to write to the array.</param>
-        /// <param name="size">Size of the value in bytes. Always set to 8.</param>
-        public static void WriteToStack(this byte[] array, UInt64 position, UInt64 inputValue, UInt64 size = 8)
+        /// <param name="size">Size of the value in bytes.</param>
+        public static void WriteToStack(this byte[] array, UInt64 position, UInt64 inputValue, UInt64 size)
         {
             for (var i = 0; i < (int)size; ++i)
             {

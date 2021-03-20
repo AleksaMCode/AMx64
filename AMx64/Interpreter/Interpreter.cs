@@ -1017,7 +1017,15 @@ namespace AMx64
         {
             try
             {
-                Push(currentExpr.LeftOpValue);
+                // Prevent 8 bits from being pushed to stack.
+                if (currentExpr.CodeSize == 0)
+                {
+                    errorMsg = $"You can't push 8 bit value on stack.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}";
+                    return ErrorCode.StackError;
+                }
+
+                // The operand size (16, 32, or 64 bits) determines the amount by which the stack pointer is decremented (2, 4 or 8).
+                Push(currentExpr.LeftOpValue, currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : 2);
                 return ErrorCode.None;
             }
             catch (Exception ex)
@@ -1096,7 +1104,7 @@ namespace AMx64
                     {
                         return Pop();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw new Exception(ex.Message + $"\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}");
                     }
@@ -1640,7 +1648,7 @@ namespace AMx64
                     // If operand is a variable.
                     if (variables.TryGetValue(currentExpr.LeftOp, out var output))
                     {
-                        if(codeSize == -1)
+                        if (codeSize == -1)
                         {
                             codeSize = currentExpr.ExplicitSize ? currentExpr.CodeSize : 3;
                         }
