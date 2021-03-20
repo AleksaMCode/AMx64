@@ -362,8 +362,8 @@ namespace AMx64
         /// <param name="array">Specified array from which to read value.</param>
         /// <param name="position">Beginning index of specified array.</param>
         /// <param name="outputValue">Value read from the array.</param>
-        /// <param name="size">Size of the value in bytes. Always set to 8.</param>
-        public static void ReadFromStack(this byte[] array, UInt64 position, out UInt64 outputValue, UInt64 size = 8)
+        /// <param name="size">Size of the value in bytes.</param>
+        public static void ReadFromStack(this byte[] array, UInt64 position, out UInt64 outputValue, UInt64 size)
         {
             outputValue = 0;
 

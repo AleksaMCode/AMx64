@@ -1102,7 +1102,14 @@ namespace AMx64
                     // Exception can be thrown here.
                     try
                     {
-                        return Pop();
+                        // You can't pop to a 8 bit location.
+                        if (currentExpr.CodeSize == 0)
+                        {
+                            throw new Exception($"You can't pop to a 8 bit location from stack.\nError on line {currentLine.CurrentAsmLineNumber}: {currentLine.CurrentAsmLineValue}");
+                        }
+
+                        // The operand size(16, 32, or 64 bits) determines the amount by which the stack pointer is incremented(2, 4 or 8).
+                        return Pop(currentExpr.CodeSize == 3 ? 8 : currentExpr.CodeSize == 2 ? 4 : 2);
                     }
                     catch (Exception ex)
                     {

@@ -8,18 +8,19 @@ namespace AMx64
         /// Pops a value from the top of the stack.
         /// </summary>
         /// <exception cref="Exception">Thrown when at least one of the stack pointers is out of range.</exception>
+        /// <param name="size">Amount by which the stack pointer is incremented (2, 4 or 8).</param>
         /// <returns>Value from the top of stack.</returns>
-        public UInt64 Pop()
+        public UInt64 Pop(int size)
         {
             CheckStackPointers();
 
-            if (RSP + 8 > RBP)
+            if (RSP + (UInt64)size > RBP)
             {
                 throw new InvalidOperationException("Stack Underflow occurred.");
             }
 
-            memory.ReadFromStack(RSP, out var value);
-            RSP += 8;
+            memory.ReadFromStack(RSP, out var value, (UInt64)size);
+            RSP += (UInt64)size;
 
             return value;
         }
