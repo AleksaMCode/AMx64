@@ -27,6 +27,8 @@
       - [CMP - Compare](#cmp---compare)
       - [JMP - Unconditional Jump](#jmp---unconditional-jump)
       - [Jcc - Jump if Condition Is Met (Conditional Jump)](#jcc---jump-if-condition-is-met-conditional-jump)
+      - [PUSH](#push)
+      - [POP](#pop)
   - [Memory](#memory)
     - [Registers](#registers)
       - [General-Purpose Registers (GPRs)](#general-purpose-registers-gprs)
@@ -184,11 +186,20 @@ Some examples (all producing exactly the same code):
 > Instructions, register and variable names are case-insensitive.
 
 #### ADD - Add
-Adds the second argument (source) to the destination (first argument).
+<p align="justify">Adds the destination operand (first operand) and the source operand (second operand) and then stores the result in the destination operand. The destination operand can be a register or a memory location; the source operand can be an immediate, a register, or a memory location. (However, two memory operands cannot be used in one instruction.) When an immediate value is used as an operand, it is sign-extended to the length of the destination operand format.</p>
+
+Usage:
 ```asm
-ADD reg, value
-ADD reg1, reg2
+ADD r, imm/r/m
+ADD m, imm/r
 ```
+
+Format:
+
+```asm
+DEST ← DEST + SRC;
+```
+
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
@@ -196,12 +207,26 @@ Flags affected:
 4. **CF** is set if the addition caused a carry out from the high bit; it's cleared otherwise.
 5. **OF** is set if the addition resulted in arithmetic under/overflow; it's cleared otherwise.
 
+> **_NOTE:_**
+>
+> The ADD instruction performs integer addition. 
+
 #### SUB - Subtract
-Subtracts the source (second argument) from the destination (first argument).
+<p align="justify">Subtracts the second operand (source operand) from the first operand (destination operand) and stores the result in the destination operand. The destination operand can be a register or a memory location; the source operand can be an immediate, register, or memory location. (However, two memory operands cannot be used in one instruction.) When an immediate value is used as an operand, it is sign-extended to the length of the destination operand format.</p>
+
+
+Usage:
 ```asm
-SUB reg, value
-SUB reg1, reg2
+SUB r, imm/r/m
+SUB m, imm/r
 ```
+
+Format:
+
+```asm
+DEST ← (DEST – SRC);
+```
+
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
@@ -209,12 +234,25 @@ Flags affected:
 4. **CF** is set if the subtraction caused a borrow from the low 4 bits; it's cleared otherwise.
 5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
+> **_NOTE:_**
+>
+> The SUB instruction performs integer subtraction.
+> 
 #### AND - Bitwise AND
-ANDs the destination with the source.
+<p align="justify">Performs a bitwise AND operation on the destination (first) and source (second) operands and stores the result in the destination operand location. The source operand can be an immediate, a register, or a memory location; the destination operand can be a register or a memory location. (However, two memory operands cannot be used in one instruction.) Each bit of the result is set to 1 if both corresponding bits of the first and second operands are 1; otherwise, it is set to 0.</p>
+
+Usage:
 ```asm
-AND reg, value
-AND reg1, reg2
+AND r, imm/r/m
+AND m, imm/r
 ```
+
+Format:
+
+```asm
+DEST ← DEST AND SRC;
+```
+
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
@@ -222,11 +260,21 @@ Flags affected:
 4. **CF** and **OF** are cleared.
 
 #### OR - Bitwise OR
-ORs the destination with the source.
+<p align="justify">Performs a bitwise inclusive OR operation between the destination (first) and source (second) operands and stores the result in the destination operand location. The source operand can be an immediate, a register, or a memory location; the destination operand can be a register or a memory location. (However, two memory operands cannot be used in one instruction.) Each bit of the result of the OR instruction is set to 0 if both corresponding bits of the first and second operands are 0; otherwise, each bit is set to 1.</p>
+
+Usage:
+
 ```asm
-OR reg, value
-OR reg1, reg2
+OR r, imm/r/m
+OR m, imm/r
 ```
+
+Format:
+
+```asm
+DEST ← DEST OR SRC;
+```
+
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
@@ -234,32 +282,54 @@ Flags affected:
 4. **CF** and **OF** are cleared.
 
 #### NOT - Bitwise NOT
-Performs a bitwise NOT on the destination.
+<p align="justify">Performs a bitwise NOT operation (each 1 is set to 0, and each 0 is set to 1) on the destination operand and stores the result in the destination operand location. The destination operand can be a register or a memory location.</p>
+
+Usage:
 ```asm
-NOT reg
+NOT r/m
 ```
+
+Format:
+
+```asm
+DEST ← NOT DEST;
+```
+
 > **_NOTE:_**
 > 
 >  It doesn't affect flags.
 
 #### MOV - Move
-<p align="justify">Copies a value from some source to a destination. Does not support  memory-to-memory transfers.</p>
+<p align="justify">Copies the second operand (source operand) to the first operand (destination operand). The source operand can be an immediate value, general-purpose register or memory location; the destination register can be a general-purpose register or memory location. Both operands must be the same size, which can be a byte, a word, a doubleword, or a quadword.</p>
+
+Usage:
 
 ```asm
-MOV reg, value
-MOV reg1, reg2
+MOV r, imm/r/m
+MOV m, imm/r
 ```
+
 > **_NOTE:_**
 > 
 >  It doesn't affect flags.
 
 #### CMP - Compare
-<p align="justify">CMP performs a 'mental' subtraction of its second operand from its first operand, and affects the flags as if the subtraction had taken place, but does not store the result of the subtraction anywhere. This operation is identical to SUB (result is discarded); SUB should be used in place of CMP when the result is needed. CMP is often used with <i>conditional jump</i>.</p>
+<p align="justify">Compares the first source operand with the second source operand and sets the status flags in the EFLAGS register according to the results. The comparison is performed by subtracting the second operand from the first operand and then setting the status flags in the same manner as the SUB instruction. When an immediate value is used as an operand, it is sign-extended to the length of the first operand. SUB should be used in place of CMP when the result is needed. The condition codes used by the Jcc instructions are based on the results of a CMP instruction. 
+
+Usage:
 
 ```asm
-CMP reg, value
-CMP reg1, reg2
+CMP r, imm/r/m
+CMP m, imm/r
 ```
+
+Format:
+
+```asm
+temp ← SRC1 − SignExtend(SRC2);
+ModifyStatusFlags;
+```
+
 Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
@@ -268,13 +338,12 @@ Flags affected:
 5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
 #### JMP - Unconditional Jump
-<p align="justify">Jumps execution to the provided location in a program denoted with a program label. This instruction does not depend on the current conditions of the flag bits in the FLAG register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
+<p align="justify">Jumps execution to the provided location in a program denoted with a program label. This instruction does not depend on the current conditions of the flag bits in the EFLAG register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
+Usage:
 
 ```asm
 JMP label
-JMP rel_location
 ```
-<p align="justify">The JMP instruction provides a label name where the flow of control is transferred immediately. It can use a relative location, that can be a positive or a negative integer, while the transfer of control is moving forwards or backwards, respectively.</p>
 
 > **_NOTE:_**
 > 
@@ -283,7 +352,12 @@ JMP rel_location
 #### Jcc - Jump if Condition Is Met (Conditional Jump)
 <p align="justify">Jcc is not a single instruction, it describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.<br>
 
-Two steps are required for a Jcc; the compare instruction and the conditional jump instruction. The conditional jump instruction will jump or not jump to the provided label based on the result of the previous comparison operation. The compare instruction will compare two operands and store the results of the comparison in the RFLAG register. This   requires that the compare instruction is immediately followed by the conditional jump instruction. If other instructions are placed between the compare and conditional jump, the RF:AG register will be altered and the conditional jump may not reflect the correct condition.</p>
+Two steps are required for a Jcc; the compare instruction and the conditional jump instruction. The conditional jump instruction will jump or not jump to the provided label based on the result of the previous comparison operation. The compare instruction will compare two operands and store the results of the comparison in the EFLAG register. This requires that the compare instruction is immediately followed by the conditional jump instruction. If other instructions are placed between the compare and conditional jump, the EFLAG register will be altered and the conditional jump may not reflect the correct condition.</p>
+Usage:
+
+```asm
+Jcc label
+```
 
 Intruction | Description | Flags tested | Condition
 | - | - | :-: | :-:
@@ -291,6 +365,37 @@ JE | Jump Equal | ZF | ZF == 1
 JNE | Jump not Equal | ZF | ZF == 0
 JGE | Jump Greater/Equal | OF, SF | SF == 0
 JL | Jump Less | OF, SF | SF != 0
+
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
+
+#### PUSH
+<p align="justify">Decrements the stack pointer and then stores the source operand on the top of the stack. The size parameter determines the size of the value that is pushed.</p>
+Usage:
+
+```asm
+PUSH imm/r/m
+```
+
+> **_NOTE:_**
+> 
+>  It doesn't affect flags.
+
+#### POP
+<p align="justify">Loads the value from the top of the stack to the location specified with the destination operand (or explicit opcode) and then increments the stack pointer. The destination operand can be a general-purpose register, memory location, or segment register.</p>
+Usage:
+
+```asm
+POP r/m
+```
+
+Format:
+
+```asm
+pop value
+dest <- value
+```
 
 > **_NOTE:_**
 > 
@@ -352,10 +457,17 @@ JL | Jump Less | OF, SF | SF != 0
     <td>DL</td>
   </tr>
   <tr>
-    <td>Destination index</td>
-    <td>RDI</td>
-    <td>EDI</td>
-    <td>DI</td>
+    <td>Stack pointer</td>
+    <td>RSP</td>
+    <td>ESP</td>
+    <td>SP</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <td>Stack base pointer</td>
+    <td>RBP</td>
+    <td>EBP</td>
+    <td>BP</td>
     <td colspan="2"></td>
   </tr>
   <tr>
@@ -363,6 +475,13 @@ JL | Jump Less | OF, SF | SF != 0
     <td>RSI</td>
     <td>ESI</td>
     <td>SI</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <td>Destination index</td>
+    <td>RDI</td>
+    <td>EDI</td>
+    <td>DI</td>
     <td colspan="2"></td>
   </tr>
 </table>
@@ -498,7 +617,11 @@ JL | Jump Less | OF, SF | SF != 0
 | mov  | reg1| reg2| reg1:=reg2
 +------+-----+-----+
 ```
-<p align="justify">This "addressing mode" does not have an effective address and is not considered to be an addressing mode on some computers. In this example, all the operands are in registers, and the result is placed in a register.<p>
+<p align="justify">This "addressing mode" does not have an effective address and is not considered to be an addressing mode on some computers. In this example, all the operands are in registers, and the result is placed in a register. E.q.<p>
+
+```asm
+mov ax, bx  ; moves contents of register bx into ax
+```
 
 #### Immediate (literal) Addressing
 ```
@@ -506,10 +629,10 @@ JL | Jump Less | OF, SF | SF != 0
 | add  | reg1|    constant    |    reg1 := reg1 + constant;
 +------+-----+----------------+
 ```
-<p align="justify">This "addressing mode" does not have an effective address, and is not considered to be an addressing mode on some computers. For example,<p>
+<p align="justify">This "addressing mode" does not have an effective address, and is not considered to be an addressing mode on some computers. E.q.<p>
 
 ```asm
-mov ax, 1
+mov ax, 1 ; moves value of 1 into register ax
 ```
 <p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
 
@@ -517,7 +640,7 @@ mov ax, 1
 <p align="justify">Direct memory mode addressing means that the operand is a location in memory (accessed via an address). This is also referred to as indirection or dereferencing.</p>
 
 ```asm
-mov qword rax, [var]
+mov qword rax, [var] ; copy var content into rax
 ```
 <p align="justify">This instruction will access the memory location of the variable <i>var</i> and retrieve the value stored there. This requires that the CPU wait until the value is retrieved before completing the operation and thus might take slightly longer to complete than a similar operation using an immediate value.</p>
 
@@ -715,7 +838,7 @@ syscall
   <dt><b>continue</b> or <b>c</b></dt>
   <dd>Continues interpretation until the end of the file or unitil it reaches the next breakpoint.</dd>
   <dt><b>step</b> or <b>s</b></dt>
-  <dd>Interprets the current and stop interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="step command"  align="center"></p></dd>
+  <dd>Interprets the current and stops interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="step command"  align="center"></p></dd>
 </dl>
 
 ### Quitting
@@ -746,6 +869,7 @@ syscall
 ### Github projects
 Some of the projects that helped me create my project.
 - [NASM](https://github.com/netwide-assembler/nasm)
+- [Asm-Dude](https://github.com/HJLebbink/asm-dude)
 - [binutils-gdb](https://github.com/bminor/binutils-gdb)
 
 ## To-Do List
