@@ -78,7 +78,7 @@ namespace AMx64
                         LeftOp = tokens[1];
                     }
 
-                    return CheckLeftOperand();
+                    return LeftOp.StartsWith('[') && !ExplicitSize ? false : CheckLeftOperand();
                 }
                 else
                 {

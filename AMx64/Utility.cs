@@ -24,7 +24,9 @@ namespace AMx64
             value = 0;
             uint addAmount;
 
-            if (str == null || str.Length == 0)
+            if (str == null || str.Length == 0 ||
+                (radix == 16 && str.Length > 16) || (radix == 10 && str.Length > 19) ||
+                (radix == 2 && str.Length > 64) || (radix == 8 && str.Length > 21))
             {
                 return false;
             }

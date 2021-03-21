@@ -219,8 +219,16 @@ namespace AMx64
 
                 if (location < maxMemSize)
                 {
-                    memory.Read(location, (UInt64)size, out var value);
-                    Console.WriteLine($"0x{location:x16}:   {value}");
+                    if (!memory.Read(location, (UInt64)size, out var value))
+                    {
+                        Console.WriteLine("Memory out of bound error.");
+                        return false;
+                    }
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"0x{location:x6}: ");
+                    Console.ResetColor();
+                    Console.Write($"0x{value:x}\n");
                 }
                 else
                 {

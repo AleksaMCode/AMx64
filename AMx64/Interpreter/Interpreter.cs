@@ -154,7 +154,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for PUSH/POP instruction.
         /// </summary>
-        private static readonly Regex asmLineStackIntrRegex = new Regex(@"^(PUSH|POP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([a-zA-Z_]+\d*)+|\[([a-zA-Z_]+\d*)+\])\s*$", RegexOptions.Compiled);
+        private static readonly Regex asmLineStackIntrRegex = new Regex(@"^(PUSH|POP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([_a-zA-Z]+\d*)+|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+){1}\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for Jcc operations.
@@ -1664,6 +1664,24 @@ namespace AMx64
 
                         // Set the left operand.
                         currentExpr.LeftOpValue = SetOperandWithExplicitSize((UInt64)output);
+                    }
+                    // If operand is a numerical value.
+                    else if (currentExpr.Operation == Operations.Push && Evaluate(currentExpr.LeftOp, out var numValue, out var _))
+                    {
+                        if (currentExpr.ExplicitSize)
+                        {
+                            codeSize = currentExpr.CodeSize;
+                            numValue = SetOperandWithExplicitSize(numValue);
+                        }
+                        else
+                        {
+                            codeSize = 3;
+                        }
+
+                        currentExpr.CodeSize = (byte)codeSize;
+
+                        // Set the right operand.
+                        currentExpr.LeftOpValue = numValue;
                     }
                     else
                     {
