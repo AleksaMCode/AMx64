@@ -77,6 +77,7 @@
 
 <p align="justify">You can use <code>-help</code> (abbreviated <code>-h</code>) with no arguments to display a short list of commands available in AMx64,
 <p><img src="./AMx64/resources/amx64-help_command.jpg" title="amx64 help command" align="center">
+
 or you can run your program in debug mode by using a <code>--debug</code> or <code>-d</code> option.</p>
 
 ```powershell
