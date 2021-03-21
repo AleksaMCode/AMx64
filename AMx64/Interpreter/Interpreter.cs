@@ -766,7 +766,7 @@ namespace AMx64
             if (RDI == 0)
             {
                 var index = RSI;
-                if (index > maxMemSize * .2)
+                if (index > maxMemSize /** .2*/)
                 {
                     return ErrorCode.OutOfBounds;
                 }
@@ -780,7 +780,7 @@ namespace AMx64
                     {
                         var userInput = Console.ReadLine();
                         var maxLen = RDX;
-                        if (maxLen > maxMemSize * .2 || maxLen + index > maxMemSize * .2)
+                        if (maxLen > maxMemSize /** .2*/ || maxLen + index > maxMemSize /** .2*/)
                         {
                             return ErrorCode.MemoryAllocError;
                         }
@@ -814,14 +814,14 @@ namespace AMx64
             if (RDI == 1)
             {
                 var index = RSI;
-                if (index > maxMemSize * .2 || index > nextMemoryLocation)
+                if (index > maxMemSize /** .2*/ || index > nextMemoryLocation)
                 {
                     return ErrorCode.OutOfBounds;
                 }
                 else
                 {
                     var maxLen = RDX;
-                    if (maxLen > maxMemSize * .2 || maxLen + index > maxMemSize * .2)
+                    if (maxLen > maxMemSize /** .2*/ || maxLen + index > maxMemSize /** .2*/)
                     {
                         return ErrorCode.MemoryAllocError;
                     }
@@ -1222,7 +1222,7 @@ namespace AMx64
 
             if (Int32.TryParse(tokens[2].Replace("_", ""), out var amount))
             {
-                if ((uint)nextMemoryLocation + size * amount >= maxMemSize * .2)
+                if ((uint)nextMemoryLocation + size * amount >= maxMemSize /** .2*/)
                 {
                     errorMsg = "Failed to write to memory. Memory is full.";
                     return false;
@@ -1275,7 +1275,7 @@ namespace AMx64
                 limit = size;
             }
 
-            if (nextMemoryLocation + (UInt64)size >= maxMemSize * .2)
+            if (nextMemoryLocation + (UInt64)size >= maxMemSize /** .2*/)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }
@@ -1304,7 +1304,7 @@ namespace AMx64
         /// <exception cref="Exception">Thrown when there isn't enough memory available.</exception>
         private void AddToMemory(string value, int size)
         {
-            if ((int)nextMemoryLocation + value.Length * size >= maxMemSize * .2)
+            if ((int)nextMemoryLocation + value.Length * size >= maxMemSize /** .2*/)
             {
                 throw new Exception("Failed to write to memory. Memory is full.");
             }

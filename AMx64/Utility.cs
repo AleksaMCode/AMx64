@@ -497,7 +497,7 @@ namespace AMx64
         /// <returns>true if array bounds have been exceeded, otherwise false.</returns>
         private static bool MemoryBoundsExceeded(UInt64 position, UInt64 size, UInt64 arrayLimit)
         {
-            return position >= arrayLimit * .2 || position + size >= arrayLimit * .2;
+            return position >= arrayLimit /** .2*/ || position + size >= arrayLimit /** .2*/;
         }
     }
 }
