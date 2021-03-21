@@ -63,6 +63,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="asm_tests\stack_test.asm" />
     <Content Include="asm_tests\sys_read_and_write_test.asm" />
     <Content Include="asm_tests\sys_write_test.asm" />
     <Content Include="asm_tests\bss_section_test.asm" />
