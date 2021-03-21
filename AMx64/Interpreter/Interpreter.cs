@@ -206,6 +206,14 @@ namespace AMx64
             ["DL"] = new Tuple<byte, byte, bool>(3, 0, false),
             ["DH"] = new Tuple<byte, byte, bool>(3, 0, true),
 
+            ["RSP"] = new Tuple<byte, byte, bool>(7, 3, false),
+            ["ESP"] = new Tuple<byte, byte, bool>(7, 2, false),
+            ["SP"] = new Tuple<byte, byte, bool>(7, 1, false),
+
+            ["RBP"] = new Tuple<byte, byte, bool>(6, 3, false),
+            ["EBP"] = new Tuple<byte, byte, bool>(6, 2, false),
+            ["BP"] = new Tuple<byte, byte, bool>(6, 1, false),
+
             ["RSI"] = new Tuple<byte, byte, bool>(4, 3, false),
             ["ESI"] = new Tuple<byte, byte, bool>(4, 2, false),
             ["SI"] = new Tuple<byte, byte, bool>(4, 1, false),
