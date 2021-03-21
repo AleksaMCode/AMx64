@@ -510,7 +510,7 @@ The stack is managed by RBP and RSP (base pointer and stack pointer). Upon progr
 <b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
 #### General-Purpose Registers (GPRs)
-<p align="justify">There are sixteen, 64-bit General Purpose Registers (GPRs). The GPRs are described in the following table. A GPR register can be accessed with all 64-bits or some portion or subset accessed.</p>
+<p align="justify">There are sixteen, 64-bit General Purpose Registers (GPRs). The currently available GPRs are described in the following table. A GPR register can be accessed with all 64-bits or some portion or subset accessed.</p>
 <table style="width:80%">
   <tr>
     <th>Naming conventions</th>
