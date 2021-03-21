@@ -5,6 +5,7 @@
 - [AMx64](#amx64)
   - [Table of contents](#table-of-contents)
   - [Introduction](#introduction)
+  - [Usage](#usage)
   - [CPU details](#cpu-details)
   - [The AMASM Language (AMx64 Assembly Language)](#the-amasm-language-amx64-assembly-language)
     - [Sections](#sections)
@@ -12,10 +13,15 @@
       - [BSS Section (.bss)](#bss-section-bss)
       - [Text Section (.text)](#text-section-text)
     - [Layout of a AMASM Source Line](#layout-of-a-amasm-source-line)
+    - [Pseudo−Instructions](#pseudoinstructions)
+      - [DB and Friends: Declaring Initialized Data](#db-and-friends-declaring-initialized-data)
+      - [RESB and Friends: Declaring Uninitialized Data](#resb-and-friends-declaring-uninitialized-data)
+    - [Numeric Constants](#numeric-constants)
+    - [Character Strings](#character-strings)
+    - [Character Constants](#character-constants)
+    - [String Constants](#string-constants)
     - [Comments](#comments)
     - [Labels](#labels)
-    - [Numeric Constants](#numeric-constants)
-    - [Character Literals](#character-literals)
     - [Operand/Address Size (Data Storage Sizes)](#operandaddress-size-data-storage-sizes)
     - [Supported instructions](#supported-instructions)
       - [ADD - Add](#add---add)
@@ -62,6 +68,21 @@
 ## Introduction
 <p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations.</p>
 
+## Usage
+<p align="justify">To start the interpreter all you need to do is run the following command: </p>
+
+```powershell
+.\AMx64.exe program.asm
+```
+
+<p align="justify">You can use <code>-help</code> (abbreviated <code>-h</code>) with no arguments to display a short list of commands available in AMx64,
+<p><img src="./AMx64/resources/amx64-help_command.jpg" title="amx64 help command" align="center">
+or you can run your program in debug mode by using a <code>--debug</code> or <code>-d</code> option.</p>
+
+```powershell
+.\AMx64.exe program.asm -d
+```
+
 ## CPU details
 <p align="justify">Registers are small storage cells built directly into a processor that are vastly faster than main memory (RAM) but are also more expensive per byte. Because of this price factor, there is not typically much room in a processor for storing data. The execution of a typical program is: move data from memory to registers, perform computations, move processed data from registers to memory and repeat.<br><br>
 General-purpose registers are used for processing integral instructions (the most common type) and are under the complete control of the programmer.</p>
@@ -95,6 +116,10 @@ global main
 main:
 ```
 
+> **_NOTE:_**
+> 
+> <p align="justify">AMx64 require asm file to define the program entry point, where execution will begin when the program is run. In NASM you specify the entry point by declaring the special symbol ..start at the point where you wish execution to begin. In AMASM you can use user defined entry point.</p>
+
 ### Layout of a AMASM Source Line
 <p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
 
@@ -103,6 +128,95 @@ main:
 <p align="justify">As usual, most of these fields are optional; the presence or absence of any combination of a label, an instruction and a comment is allowed. Of course, the operand field is either required or forbidden by the presence and nature of the instruction field. It doesn't support multiline commands that are available in <b>NASM</b> using the backslash character (\) as the line continuation character.</p>
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
+
+### Pseudo−Instructions
+<p align="justify">Pseudo−instructions are things which, though not real x86 machine instructions, are used in the instruction
+field anyway because that’s the most convenient place to put them. The current pseudo−instructions are DB, DW, DD and DQ; their uninitialized counterparts RESB, RESW, RESD and RESQ.</p>
+
+> **_NOTE:_**
+>
+> <ul><li>The INCBIN command, the EQU command, and the TIMES prefix are not currently available.</li>
+> <li>Pseudo−instructions DT, DO, DY, REST, RESO and RESY are also not available.</li></ul>
+
+#### DB and Friends: Declaring Initialized Data
+<p align="justify">DB, DW, DD and DQ are used, much as in MASM, to declare initialized data in the output file. They can be invoked in a wide range of ways:</p>
+
+```asm
+  db 0x55 ; just the byte 0x55
+  db 0x55,0x56,0x57 ; three bytes in succession
+  db 'a',0x55 ; character constants are OK
+  db 'hello',13,10,'$' ; so are string constants
+  dw 0x1234 ; 0x34 0x12
+  dw 'a' ; 0x61 0x00 (it’s just a number)
+  dw 'ab' ; 0x61 0x62 (character constant)
+  dw 'abc' ; 0x61 0x62 0x63 0x00 (string)
+  dd 0x12345678 ; 0x78 0x56 0x34 0x12
+  dq 0x123456789abcdef0 ; eight byte constant
+```
+
+#### RESB and Friends: Declaring Uninitialized Data
+<p align="justify">RESB, RESW, RESD, RESQ, REST, RESO and RESY are designed to be used in the BSS section of a module: they declare uninitialized storage space. Each takes a single operand, which is the number of bytes, words, doublewords or whatever to reserve. For example:</p>
+
+```asm
+  buffer resb 64 ; reserve 64 bytes
+  wordvar resw 1 ; reserve a word
+  realarray resq 10 ; array of ten reals
+```
+
+### Numeric Constants
+<p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!</p>
+
+Some examples (all producing exactly the same code):
+ ```asm
+  mov ax,200 ; decimal
+  mov ax,0200 ; still decimal
+  mov ax,0200d ; explicitly decimal
+  mov ax,0d200 ; also decimal
+  mov ax,0c8h ; hex
+  mov ax,0xc8 ; hex yet again
+  mov ax,0hc8 ; still hex
+  mov ax,310q ; octal
+  mov ax,310o ; octal again
+  mov ax,0o310 ; octal yet again
+  mov ax,0q310 ; hex yet again
+  mov ax,11001000b ; binary
+  mov ax,1100_1000b ; same binary constant
+  mov ax,0b1100_1000 ; same binary constant yet again
+```
+> **_NOTE:_**
+>
+> Numeric constants can have underscores ('_') interspersed to break up long strings.
+> 
+
+### Character Strings
+<p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace.<br>A character string consists of up to eight characters enclosed in either single quotes ('...'), double quotes ("...") or backquotes (`...`). Single or double quotes are equivalent to NASM (except of course that surrounding the constant with single quotes allows double quotes to appear within it and vice versa); the contents of those are represented verbatim. The general concept also includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control characters include carriage return or tab.</p>
+
+> **_NOTE:_**
+> 
+> <ul><li><p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p></li>
+> <li><p align="justify">Characters can be displayed to the console, but cannot be used for calculations. Integers can be used for calculations, but cannot be displayed to the console (without changing the representation).</p></li></ul>
+
+### Character Constants
+ <p align="justify">A character constant consists of a string up to eight bytes long, used in an expression context. It is treated as if
+it was an integer. A character constant with more than one byte will be arranged with little−endian order in mind: if you code</p>
+
+```asm
+mov eax,’abcd’
+```
+
+<p align="justify">then the constant generated is not 0x61626364, but 0x64636261, so that if you were then to store the value into memory, it would read abcd rather than dcba.</p>
+
+### String Constants
+<p align="justify">String constants are character strings used in the context of some pseudo−instructions, namely the DB family. A string constant looks like a character constant, only longer. It is treated as a concatenation of maximum−size character constants for the conditions. So the following are equivalent:</p>
+
+```asm
+db 'hello' ; string constant
+db 'h','e','l','l','o'   ; equivalent character constants
+```
+
+> **_NOTE:_**
+>
+> When used in a string−supporting context, quoted strings are treated as a string constants even if they are short enough to be a character constant, because otherwise db ’ab’ would have the same effect as db ’a’, which would be silly.
 
 ### Comments
 <p align="justify">The semicolon (';') is used to note program comments. Comments (using the ';') may be placed anywhere, including after an instruction. Any characters after the ';' are ignoredby the interpreter. This can be used to explain steps taken in the code or to comment out sections of code.</p>
@@ -114,40 +228,6 @@ main:
 > 
 > <ul><li>Local labels aren't available.</li>
 > <li>Program labels may be defined only once.</li></ul>
-
-### Numeric Constants
-<p align="justify">A numeric constant is simply a number. Number values may be specified in decimal, hex, or octal. <b>AMASM</b> allows you to specify numbers in a variety of number bases, in a variety of ways: you can suffix <i>H</i> or <i>X</i>, <i>D</i> or <i>T</i>, <i>Q</i> or <i>O</i>, and <i>B</i> or </i>Y</i> for hexadecimal, decimal, octal and binary respectively, or you can prefix <i>0x</i>, for hexadecimal in the style of C. In addition, AMASM accept the prefix <i>0h</i> for hexadecimal, <i>0d</i> or <i>0t</i> for decimal, <i>0o</i> or <i>0q</i> for octal, and <i>0b</i> or <i>0y</i> for binary. Please note that unlike C, a <i>0</i> prefix by itself does not imply an octal constant!</p>
-
-Some examples (all producing exactly the same code):
- ```asm
-        mov     ax,200          ; decimal 
-        mov     ax,0200         ; still decimal 
-        mov     ax,0200d        ; explicitly decimal 
-        mov     ax,0d200        ; also decimal 
-        mov     ax,0c8h         ; hex 
-        mov     ax,0xc8         ; hex yet again 
-        mov     ax,0hc8         ; still hex 
-        mov     ax,310q         ; octal 
-        mov     ax,310o         ; octal again 
-        mov     ax,0o310        ; octal yet again 
-        mov     ax,0q310        ; octal yet again 
-        mov     ax,11001000b    ; binary 
-        mov     ax,1100_1000b   ; same binary constant 
-        mov     ax,1100_1000y   ; same binary constant once more 
-        mov     ax,0b1100_1000  ; same binary constant yet again 
-        mov     ax,0y1100_1000  ; same binary constant yet again
-```
-> **_NOTE:_**
->
-> Numeric constants can have underscores ('_') interspersed to break up long strings.
-> 
-### Character Literals
- <p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace. The general conceptalso includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control charactersinclude carriage return or tab.</p>
-
-> **_NOTE:_**
-> 
-> <ul><li><p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p></li>
-> <li><p align="justify">Characters can be displayed to the console, but cannot be used forcalculations. Integers can be used for calculations, but cannot be displayed  to the console (without changing the representation).</p></li></ul>
 
 ### Operand/Address Size (Data Storage Sizes)
  <p align="justify">The x86-64 architecture supports a specific set of data storage size elements, all based on powers of two. To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). The supported storage sizes are as follows:</p>
@@ -807,11 +887,11 @@ syscall
 
 ## Debug - AMDB
 <p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger   is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
-<p><img src="./AMx64/resources/list_command.jpg" title="list command"  align="center"></p>
+<p><img src="./AMx64/resources/list_command.jpg" title="amdb list command" align="center"></p>
 
 ### Getting Help
 <p align="justify">You can always ask <i>amdb</i> itself for information on its commands, using the command <code>help</code>. You can use <code>help</code> (abbreviated <code>h</code>) with no arguments to display a short list of commands.</p>
-<p><img src="./AMx64/resources/help_command.jpg" title="help command"  align="center"></p>
+<p><img src="./AMx64/resources/help_command.jpg" title="amdb help command" align="center"></p>
 
 ### Setting Breakpoints
 <p align="justify">Breakpoints are set with the <code>break</code> command (abbreviated <code>b</code>). This command tells <i>amdb</i> to pause interpretation of your program at some point to allow you to inspect the value of variables and other memory locations. It will pause interpretation just before the specified line number is interpreted.</p>
@@ -838,7 +918,7 @@ syscall
 <p align="justify">Once you have paused a interpretation, you can use the <code>p</code> (or <code>print</code>) command to print the values of variables, specified memory locations or registers.</p>
 <dl>
   <dt><b>print</b></dt>
-  <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.<p><img src="./AMx64/resources/print_command.jpg" title="print command" align="center"></p></dd>
+  <dd>Shows internal state of all available registers as well as the values of flags inside of the FLAGS register.<p><img src="./AMx64/resources/print_command.jpg" title="amdb print command" align="center"></p></dd>
   <dt><b>print register</b></dt>
   <dd>Shows value stored in a specified register. E.q. <code>print RAX</code>.</dd>
   <dt><b>print size variable</b></dt>
@@ -853,12 +933,12 @@ syscall
   <dt><b>continue</b> or <b>c</b></dt>
   <dd>Continues interpretation until the end of the file or unitil it reaches the next breakpoint.</dd>
   <dt><b>step</b> or <b>s</b></dt>
-  <dd>Interprets the current and stops interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="step command"  align="center"></p></dd>
+  <dd>Interprets the current and stops interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="amdb step command" align="center"></p></dd>
 </dl>
 
 ### Quitting
 <p align="justify">To quit from a <i>amdb</i> session, type <code>q</code> (short for quit) or <code>quit</code>. <i>amdb</i> will ask if you really want to quit. If you do, type <code>y</code> followed by the <code>Enter</code> key. This check may see a little unnecessary, but it helps prevent people quitting accidentally at that crucial moment in a lengthy debugging session.</p>
-<p><img src="./AMx64/resources/quit_command.jpg" title="quit command"  align="center"></p>
+<p><img src="./AMx64/resources/quit_command.jpg" title="amdb quit command" align="center"></p>
 
 ## References
 ### Books
@@ -896,3 +976,5 @@ Some of the projects that helped me create my project.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
 - [ ] Implement C-style character escapes.
+- [ ] Implement Character Constants.
+- [ ] Add pseudo−instruction EQU.
