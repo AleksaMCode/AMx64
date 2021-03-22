@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text;
 
 namespace AMx64
 {
@@ -144,7 +145,7 @@ namespace AMx64
         /// <summary>
         /// Command line regex for ADD, SUB, OR, AND or MOV isntruction.
         /// </summary>
-        private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|CMP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([_a-zA-Z]+\d*)+|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([_a-zA-Z]+\d*)+|\[([_a-zA-Z_]+\d*)+\]|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
+        private static readonly Regex asmLineRegex = new Regex(@"^(ADD|SUB|MOV|AND|OR|CMP)\s+((BYTE|WORD|DWORD|QWORD){0,1}\s+){0,1}(([_a-zA-Z]+\d*)+|\[([_a-zA-Z]+\d*)+\])\s*,\s*(([_a-zA-Z]+\d*)+|\[([_a-zA-Z_]+\d*)+\]|('|`)[\w\W]+('|`)|0[XH][0-9ABCDEF_]+|[0-9ABCDEF_]+[HX]|0([OQ][0-8_]+)|[0-8]+[OQ]|0[BY][01_]+|[01_]+[BY]|0[DT][0-9_]+|[0-9_]+[DT]|[0-9_]+)\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// Command line regex for NOT instruction.
@@ -1397,9 +1398,20 @@ namespace AMx64
                             // Set the right operand.
                             currentExpr.RightOpValue = (UInt64)value;
                         }
-                        // If operand is a numerical value.
-                        else if (Evaluate(currentExpr.RightOp, out var output, out var _))
+                        // If operand is a numerical value or a character constant.
+                        else if (Evaluate(currentExpr.RightOp, out var output, out var charConstant))
                         {
+                            if (!string.IsNullOrEmpty(charConstant))
+                            {
+                                // Character constant is treated as if it was an integer.
+                                var byteArr = Encoding.ASCII.GetBytes(charConstant).Reverse().ToArray();
+
+                                foreach (var el in byteArr)
+                                {
+                                    output = (output << 8) | el;
+                                }
+                            }
+
                             if (currentExpr.ExplicitSize)
                             {
                                 codeSize = currentExpr.CodeSize;
@@ -1471,7 +1483,7 @@ namespace AMx64
                         // Set the left operand.
                         currentExpr.LeftOpValue = output;
                     }
-                    // If operand is a numerical value. Left operand can't be a numberical value with unary instructions.
+                    // If operand is a numerical value. Left operand can't be a numerical value with unary instructions.
                     else if (currentExpr.RightOp != null && Evaluate(currentExpr.LeftOp, out var value, out var _))
                     {
                         var size = codeSize == 3 ? 8 : codeSize == 2 ? 4 : codeSize == 1 ? 2 : 1;
@@ -1600,9 +1612,20 @@ namespace AMx64
                                 // Set the right operand.
                                 currentExpr.RightOpValue = (ulong)value;
                             }
-                            // If operand is a numerical value.
-                            else if (Evaluate(currentExpr.RightOp, out var output, out var _))
+                            // If operand is a numerical value or a character constant.
+                            else if (Evaluate(currentExpr.RightOp, out var output, out var charConstant))
                             {
+                                if (!string.IsNullOrEmpty(charConstant))
+                                {
+                                    // Character constant is treated as if it was an integer.
+                                    var byteArr = Encoding.ASCII.GetBytes(charConstant).Reverse().ToArray();
+
+                                    foreach (var el in byteArr)
+                                    {
+                                        output = (output << 8) | el;
+                                    }
+                                }
+
                                 if (currentExpr.ExplicitSize)
                                 {
                                     codeSize = currentExpr.CodeSize;
@@ -1814,16 +1837,17 @@ namespace AMx64
             // if it's a character constant
             else if (value[0] == '"' || value[0] == '\'' || value[0] == '`')
             {
-                if (!value.TryParseCharacterString(out characters, ref errorMsg))
-                {
-                    return false;
-                }
-
                 if (string.IsNullOrEmpty(value))
                 {
                     errorMsg = $"Ill-formed character string encountered (empty): {value}";
                     return false;
                 }
+
+                if (!value.TryParseCharacterString(out characters, ref errorMsg))
+                {
+                    return false;
+                }
+
                 if (charLimit && characters.Length > 8)
                 {
                     errorMsg = $"Ill-formed character string encountered (too long): {value}";
