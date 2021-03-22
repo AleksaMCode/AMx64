@@ -1033,6 +1033,7 @@ syscall
 ### Github projects
 Some of the projects that helped me create my project.
 - [NASM](https://github.com/netwide-assembler/nasm)
+- [CSX64](https://github.com/dragazo/CSX64)
 - [Asm-Dude](https://github.com/HJLebbink/asm-dude)
 - [binutils-gdb](https://github.com/bminor/binutils-gdb)
 
