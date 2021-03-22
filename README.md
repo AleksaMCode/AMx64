@@ -202,7 +202,7 @@ Some examples (all producing exactly the same code):
 it was an integer. A character constant with more than one byte will be arranged with little−endian order in mind: if you code</p>
 
 ```asm
-mov eax,’abcd’
+mov eax,'abcd'
 ```
 
 <p align="justify">then the constant generated is not 0x61626364, but 0x64636261, so that if you were then to store the value into memory, it would read abcd rather than dcba.</p>
@@ -977,5 +977,5 @@ Some of the projects that helped me create my project.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
 - [ ] Implement C-style character escapes.
-- [ ] Implement Character Constants.
+- [x] Implement Character Constants.
 - [ ] Add pseudo−instruction EQU.
