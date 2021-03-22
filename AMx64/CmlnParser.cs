@@ -86,7 +86,7 @@ Interpret or debug CSX64 asm files.
                     }
                     else
                     {
-                        Console.WriteLine($"Unkown option '{args[i]}'");
+                        Console.WriteLine($"Unknown option '{args[i]}'");
                         return false;
                     }
                 }
