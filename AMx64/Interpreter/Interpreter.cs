@@ -1404,11 +1404,9 @@ namespace AMx64
                             if (!string.IsNullOrEmpty(charConstant))
                             {
                                 // Character constant is treated as if it was an integer.
-                                var byteArr = Encoding.ASCII.GetBytes(charConstant).Reverse().ToArray();
-
-                                foreach (var el in byteArr)
+                                for (var i = charConstant.Length - 1; i >= 0; --i)
                                 {
-                                    output = (output << 8) | el;
+                                    output = (output << 8) | (byte)charConstant[i];
                                 }
                             }
 
@@ -1618,11 +1616,9 @@ namespace AMx64
                                 if (!string.IsNullOrEmpty(charConstant))
                                 {
                                     // Character constant is treated as if it was an integer.
-                                    var byteArr = Encoding.ASCII.GetBytes(charConstant).Reverse().ToArray();
-
-                                    foreach (var el in byteArr)
+                                    for (var i = charConstant.Length - 1; i >= 0; --i)
                                     {
-                                        output = (output << 8) | el;
+                                        output = (output << 8) | (byte)charConstant[i];
                                     }
                                 }
 

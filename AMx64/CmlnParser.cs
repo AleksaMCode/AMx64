@@ -30,7 +30,7 @@ Interpret or debug CSX64 asm files.
 
     -h, --help                prints this help page
     -d, --debug               debuggs AMX64 asm file
-    otherwise                 interprets a AMX64 asm file with provided args
+    otherwise                 interprets an asm file with provided args
 ";
 
             /// <summary>
