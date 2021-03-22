@@ -190,11 +190,31 @@ Some examples (all producing exactly the same code):
 > 
 
 ### Character Strings
-<p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace.<br>A character string consists of up to eight characters enclosed in either single quotes ('...'), double quotes ("...") or backquotes (`...`). Single or double quotes are equivalent to NASM (except of course that surrounding the constant with single quotes allows double quotes to appear within it and vice versa); the contents of those are represented verbatim. The general concept also includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control characters include carriage return or tab.</p>
+<p align="justify">In addition to numeric data, symbolic (non-numeric) data is often required. Consequently, the symbols are represented by assigning numeric values to each symbol or character. A character is typically stored in a byte (8-bits) of space. This works well since memory is byte addressable. Examples of characters include letters, numerical digits, common punctuation marks (such as '.' or '!'), and whitespace.<br>A character string consists of up to eight characters enclosed in either single quotes ('...'), double quotes ("...") or backquotes (`...`). Single or double quotes are equivalent to NASM (except of course that surrounding the constant with single quotes allows double quotes to appear within it and vice versa); the contents of those are represented verbatim. The general concept also includes control characters, which do not correspond to symbols in a particular language, but to other information used to process text. Examples of control characters include carriage return or tab.
+
+Strings enclosed in backquotes support C−style \–escapes for
+special characters. The following escape sequences are recognized by backquoted strings:
+
+\’&emsp;&emsp;single quote (’)<br>
+\"&emsp;&emsp;double quote (")<br>
+\‘&emsp;&emsp;backquote (‘)<br>
+\\\\&emsp;&emsp;backslash (\\)<br>
+\? &emsp;&emsp;question mark (?)<br>
+\a&emsp;&emsp;BEL (ASCII 7)<br>
+\b&emsp;&emsp;BS (ASCII 8)<br>
+\t&emsp;&emsp;TAB (ASCII 9)<br>
+\n&emsp;&emsp;LF (ASCII 10)<br>
+\v&emsp;&emsp;VT (ASCII 11)<br>
+\f&emsp;&emsp;FF (ASCII 12)<br>
+\r&emsp;&emsp;CR (ASCII 13)<br>
+\e&emsp;&emsp;ESC (ASCII 27)<br>
+\377&emsp;Up to 3 octal digits − literal byte<br>
+\xFF &emsp;Up to 2 hexadecimal digits − literal byte<br></p>
 
 > **_NOTE:_**
 > 
-> <ul><li><p align="justify">Character escapes are not currently supported. Character literals do support back quotes '<code>`</code>' however C-style escapes are not enabled.</p></li>
+> <ul><li><p align="justify">Character literals don't currently support quotes '<code>"</code>'.</p></li>
+> <li><p align="justify">Unicode character escapes are not yet supported.</li</p>
 > <li><p align="justify">Characters can be displayed to the console, but cannot be used for calculations. Integers can be used for calculations, but cannot be displayed to the console (without changing the representation).</p></li></ul>
 
 ### Character Constants
