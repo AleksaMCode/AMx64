@@ -91,103 +91,103 @@ namespace AMx64
                 // If backquote is used.
                 if (str[0] == '`' && str[i] == '\\')
                 {
-                    errorMsg = $"Backquote C-style escapes are not yet supported: {str}";
-                    return false;
-                    //if (++i >= str.Length - 1)
-                    //{
-                    //    errorMsg = $"Ill-formed string (ends with beginning of an escape sequence): {str}";
-                    //    return false;
-                    //}
+                    //errorMsg = $"Backquote C-style escapes are not yet supported: {str}";
+                    //return false;
+                    if (++i >= str.Length - 1)
+                    {
+                        errorMsg = $"Ill-formed string (ends with beginning of an escape sequence): {str}";
+                        return false;
+                    }
 
-                    //int temp;
+                    int temp;
 
-                    //switch (str[i])
-                    //{
-                    //    case '\'':
-                    //        temp = '\'';
-                    //        break;
-                    //    case '"':
-                    //        temp = '"';
-                    //        break;
-                    //    case '`':
-                    //        temp = '`';
-                    //        break;
-                    //    case '\\':
-                    //        temp = '\\';
-                    //        break;
-                    //    case '?':
-                    //        temp = '?';
-                    //        break;
-                    //    case 'a':
-                    //        temp = '\a';
-                    //        break;
-                    //    case 'b':
-                    //        temp = '\b';
-                    //        break;
-                    //    case 't':
-                    //        temp = '\t';
-                    //        break;
-                    //    case 'n':
-                    //        temp = '\n';
-                    //        break;
-                    //    case 'v':
-                    //        temp = '\v';
-                    //        break;
-                    //    case 'f':
-                    //        temp = '\f';
-                    //        break;
-                    //    case 'r':
-                    //        temp = '\r';
-                    //        break;
-                    //    case 'e':
-                    //        temp = 27;
-                    //        break;
+                    switch (str[i])
+                    {
+                        case '\'':
+                            temp = '\'';
+                            break;
+                        case '"':
+                            temp = '"';
+                            break;
+                        case '`':
+                            temp = '`';
+                            break;
+                        case '\\':
+                            temp = '\\';
+                            break;
+                        case '?':
+                            temp = '?';
+                            break;
+                        case 'a':
+                            temp = '\a';
+                            break;
+                        case 'b':
+                            temp = '\b';
+                            break;
+                        case 't':
+                            temp = '\t';
+                            break;
+                        case 'n':
+                            temp = '\n';
+                            break;
+                        case 'v':
+                            temp = '\v';
+                            break;
+                        case 'f':
+                            temp = '\f';
+                            break;
+                        case 'r':
+                            temp = '\r';
+                            break;
+                        case 'e':
+                            temp = 27;
+                            break;
 
-                    //    case '0':
-                    //    case '1':
-                    //    case '2':
-                    //    case '3':
-                    //    case '4':
-                    //    case '5':
-                    //    case '6':
-                    //    case '7':
-                    //        temp = 0;
-                    //        // Read the octal value into temp (up to 3 octal digits).
-                    //        for (var octCount = 0; octCount < 3 && str[i] >= '0' && str[i] <= '7'; ++i, ++octCount)
-                    //        {
-                    //            temp = (temp << 3) | (str[i] - '0');
-                    //        }
-                    //        --i;
-                    //        break;
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                            temp = 0;
+                            // Read the octal value into temp (up to 3 octal digits).
+                            for (var octCount = 0; octCount < 3 && str[i] >= '0' && str[i] <= '7'; ++i, ++octCount)
+                            {
+                                temp = (temp << 3) | (str[i] - '0');
+                            }
+                            --i;
+                            break;
 
-                    //    case 'x':
-                    //        // Reads up to 2 hexadecimal digits.
-                    //        // Checks if it's a hex digit.
-                    //        if (!GetHexValue(str[++i], out temp))
-                    //        {
-                    //            errorMsg = $"Ill-formed string (invalid hexadecimal escape): {str}";
-                    //            return false;
-                    //        }
-                    //        // If the next char is also a hex digit.
-                    //        if (GetHexValue(str[i + 1], out var hexValue))
-                    //        {
-                    //            ++i;
-                    //            temp = (temp << 4) | hexValue;
-                    //        }
-                    //        break;
+                        case 'x':
+                            // Reads up to 2 hexadecimal digits.
+                            // Checks if it's a hex digit.
+                            if (!GetHexValue(str[++i], out temp))
+                            {
+                                errorMsg = $"Ill-formed string (invalid hexadecimal escape): {str}";
+                                return false;
+                            }
+                            // If the next char is also a hex digit.
+                            if (GetHexValue(str[i + 1], out var hexValue))
+                            {
+                                ++i;
+                                temp = (temp << 4) | hexValue;
+                            }
+                            break;
 
-                    //    case 'u':
-                    //    case 'U':
-                    //        errorMsg = $"Unicode character escapes are not yet supported: {str}";
-                    //        return false;
+                        case 'u':
+                        case 'U':
+                            errorMsg = $"Unicode character escapes are not yet supported: {str}";
+                            return false;
 
-                    //    default:
-                    //        errorMsg = $"Ill-formed string (escape sequence not recognized): {str}";
-                    //        return false;
-                    //}
+                        default:
+                            errorMsg = $"Ill-formed string (escape sequence not recognized): {str}";
+                            return false;
+                    }
 
-                    //// Append the character.
-                    //b.Append((char)(temp & 0xff));
+                    // Append the character.
+                    b.Append((char)(temp & 0xff));
                 }
                 // Read the character verbatim.
                 else
