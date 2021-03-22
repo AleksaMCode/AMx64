@@ -196,16 +196,16 @@ Strings enclosed in backquotes support C−style \–escapes for
 special characters. The following escape sequences are recognized by backquoted strings:
 
 \’&emsp;&emsp;single quote (’)<br>
-\"&emsp;&emsp;double quote (")<br>
+\" &emsp;&emsp;double quote (")<br>
 \‘&emsp;&emsp;backquote (‘)<br>
 \\\\&emsp;&emsp;backslash (\\)<br>
 \? &emsp;&emsp;question mark (?)<br>
 \a&emsp;&emsp;BEL (ASCII 7)<br>
 \b&emsp;&emsp;BS (ASCII 8)<br>
-\t&emsp;&emsp;TAB (ASCII 9)<br>
+\t &emsp;&emsp;TAB (ASCII 9)<br>
 \n&emsp;&emsp;LF (ASCII 10)<br>
 \v&emsp;&emsp;VT (ASCII 11)<br>
-\f&emsp;&emsp;FF (ASCII 12)<br>
+\f  &emsp;&emsp;FF (ASCII 12)<br>
 \r&emsp;&emsp;CR (ASCII 13)<br>
 \e&emsp;&emsp;ESC (ASCII 27)<br>
 \377&emsp;Up to 3 octal digits − literal byte<br>
@@ -996,6 +996,6 @@ Some of the projects that helped me create my project.
   - [x] Implement push and pop instructions.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
-- [ ] Implement C-style character escapes.
+- [x] Implement C-style character escapes.
 - [x] Implement character constants.
 - [ ] Add pseudo-instruction EQU.
