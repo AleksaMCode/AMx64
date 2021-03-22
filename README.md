@@ -119,7 +119,7 @@ main:
 
 > **_NOTE:_**
 > 
-> <p align="justify">AMx64 require asm file to define the program entry point, where execution will begin when the program is run. In NASM you specify the entry point by declaring the special symbol ..start at the point where you wish execution to begin. In AMASM you can use user defined entry point.</p>
+> <p align="justify">AMx64 require asm file to define the program entry point, where execution will begin when the program is run. In NASM you specify the entry point by declaring the special symbol ..start at the point where you wish execution to begin. In AMASM you can use user-defined entry point.</p>
 
 ### Layout of a AMASM Source Line
 <p align="justify">Like most assemblers, each <b>AMASM</b> source line contains some combination of the four fields</p>
