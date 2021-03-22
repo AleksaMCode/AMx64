@@ -13,7 +13,7 @@
       - [BSS Section (.bss)](#bss-section-bss)
       - [Text Section (.text)](#text-section-text)
     - [Layout of a AMASM Source Line](#layout-of-a-amasm-source-line)
-    - [Pseudo−Instructions](#pseudoinstructions)
+    - [Pseudo-Instructions](#pseudo-instructions)
       - [DB and Friends: Declaring Initialized Data](#db-and-friends-declaring-initialized-data)
       - [RESB and Friends: Declaring Uninitialized Data](#resb-and-friends-declaring-uninitialized-data)
     - [Numeric Constants](#numeric-constants)
@@ -130,14 +130,14 @@ main:
 
 <p align="justify"><b>AMASM</b> places no restrictions on white space within a line: labels may have white space before them, or instructions may have no space before them, or anything. The colon after a label is also optional.</p>
 
-### Pseudo−Instructions
-<p align="justify">Pseudo−instructions are things which, though not real x86 machine instructions, are used in the instruction
-field anyway because that’s the most convenient place to put them. The current pseudo−instructions are DB, DW, DD and DQ; their uninitialized counterparts RESB, RESW, RESD and RESQ.</p>
+### Pseudo-Instructions
+<p align="justify">Pseudo-instructions are things which, though not real x86 machine instructions, are used in the instruction
+field anyway because that’s the most convenient place to put them. The current pseudo-instructions are DB, DW, DD and DQ; their uninitialized counterparts RESB, RESW, RESD and RESQ.</p>
 
 > **_NOTE:_**
 >
 > <ul><li>The INCBIN command, the EQU command, and the TIMES prefix are not currently available.</li>
-> <li>Pseudo−instructions DT, DO, DY, REST, RESO and RESY are also not available.</li></ul>
+> <li>Pseudo-instructions DT, DO, DY, REST, RESO and RESY are also not available.</li></ul>
 
 #### DB and Friends: Declaring Initialized Data
 <p align="justify">DB, DW, DD and DQ are used, much as in MASM, to declare initialized data in the output file. They can be invoked in a wide range of ways:</p>
@@ -977,5 +977,5 @@ Some of the projects that helped me create my project.
 - [x] Implement 64-bit addressable memory.
 - [x] Implement assembler sections (.data, .bss, .text).
 - [ ] Implement C-style character escapes.
-- [x] Implement Character Constants.
-- [ ] Add pseudo−instruction EQU.
+- [x] Implement character constants.
+- [ ] Add pseudo-instruction EQU.
