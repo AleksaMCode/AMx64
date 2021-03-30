@@ -156,12 +156,11 @@ field anyway because that’s the most convenient place to put them. The current
 ```
 
 #### RESB and Friends: Declaring Uninitialized Data
-<p align="justify">RESB, RESW, RESD, RESQ, REST, RESO and RESY are designed to be used in the BSS section of a module: they declare uninitialized storage space. Each takes a single operand, which is the number of bytes, words, doublewords or whatever to reserve. For example:</p>
+<p align="justify">RESB, RESW, RESD and RESQ are designed to be used in the BSS section of a module: they declare uninitialized storage space. Each takes a single operand, which is the number of bytes, words, doublewords or whatever to reserve. For example:</p>
 
 ```asm
   buffer resb 64 ; reserve 64 bytes
   wordvar resw 1 ; reserve a word
-  realarray resq 10 ; array of ten reals
 ```
 
 ### Numeric Constants
