@@ -313,7 +313,7 @@ db 'h','e','l','l','o'   ; equivalent character constants
   <tr>
     <td>WORD</td>
     <td>16-bits</td>
-    <td>21 byte</td>
+    <td>2 byte</td>
   </tr>
   <tr>
     <td>DWORD<br>(Double-word)</td>
