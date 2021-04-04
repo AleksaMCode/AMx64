@@ -26,7 +26,7 @@ namespace AMx64
 
             private const string HelpMessage =
 @"Usage: amx64 [OPTION].... [ARG]....
-Interpret or debug CSX64 asm files.
+Interpret or debug AMX64 asm files.
 
     -h, --help                prints this help page
     -d, --debug               debuggs AMX64 asm file
