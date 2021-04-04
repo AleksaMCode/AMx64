@@ -299,9 +299,9 @@ namespace AMx64
                 $"RFLAGS:   0x{RFLAGS:x16}\n\n" +
                 $"CF:   {(CF ? 1 : 0)}\n" +
                 $"PF:   {(PF ? 1 : 0)}\n" +
-                $"ZF    {(ZF ? 1 : 0)}\n" +
-                $"SF    {(SF ? 1 : 0)}\n" +
-                $"OF    {(OF ? 1 : 0)}"
+                $"ZF:   {(ZF ? 1 : 0)}\n" +
+                $"SF:   {(SF ? 1 : 0)}\n" +
+                $"OF:   {(OF ? 1 : 0)}"
                 );
         }
     }
