@@ -1,5 +1,7 @@
+<img width="150" align="right" title="PI icon" src="./resources/AMx64/../../AMx64/resources/amx64.png" alt_text="[CPU icons created by Freepik - Flaticon](https://www.flaticon.com/free-icon/cpu_911259)"></img>
+
 # AMx64
-<p align="justify"><b>AMx64</b> was created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka.</p>
+<p align="justify"><b>AMx64</b> was originally created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka. The project has been since expanded and updated. The motivation behind this project was a better understanding of NASM and assembly language.</p>
 
 ## Table of contents
 - [AMx64](#amx64)
