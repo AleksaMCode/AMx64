@@ -1049,4 +1049,5 @@ Some of the projects that helped me create my project.
 - [x] Implement C-style character escapes.
 - [x] Implement character constants.
 - [ ] Add pseudo-instruction EQU.
+- [ ] Build an amdbui.
 - [ ] Implement paging memory management.
