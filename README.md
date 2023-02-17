@@ -1051,3 +1051,4 @@ Some of the projects that helped me create my project.
 - [ ] Add pseudo-instruction EQU.
 - [ ] Build an amdbui.
 - [ ] Implement paging memory management.
+- [ ] Implement Debugging with step-back.
