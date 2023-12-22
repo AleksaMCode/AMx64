@@ -1,12 +1,11 @@
 <img width="150" align="right" title="PI icon" src="./resources/AMx64/../../AMx64/resources/amx64.png" alt_text="[CPU icons created by Freepik - Flaticon](https://www.flaticon.com/free-icon/cpu_911259)"></img>
 
 # AMx64
-<p align="justify"><b>AMx64</b> was originally created for a <i>Computer Architecture</i> course project, as taught at the Faculty of Electrical Engineering Banja Luka. The project has been since expanded and updated. The motivation behind this project was a better understanding of NASM and assembly language.</p>
+<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a built-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations. The motivation behind this project was a better understanding of NASM and assembly language.</p>
 
 ## Table of contents
 - [AMx64](#amx64)
   - [Table of contents](#table-of-contents)
-  - [Introduction](#introduction)
   - [Usage](#usage)
   - [CPU details](#cpu-details)
   - [The AMASM Language (AMx64 Assembly Language)](#the-amasm-language-amx64-assembly-language)
@@ -66,12 +65,8 @@
     - [Github projects](#github-projects)
   - [To-Do List](#to-do-list)
 
-
-## Introduction
-<p align="justify"><b>AMx64</b> is a simplified 64-bit processor simulator implemented in C#. It comes with a build-in, assembly language loosely based around <a href="https://www.nasm.us">NASM</a>. The processor acts as 64-bit machine code interpreter with its own instruction set that includes integer computations.</p>
-
 ## Usage
-<p align="justify">To start the interpreter all you need to do is run the following command: </p>
+<p align="justify">To start the interpreter, all you need to do is run the following command: </p>
 
 ```powershell
 .\AMx64.exe program.asm
@@ -95,7 +90,7 @@ General-purpose registers are used for processing integral instructions (the mos
 > If you modify a subdivision of a register, the other subdivisions of that register will see the change.
 
 ## The AMASM Language (AMx64 Assembly Language)
-<p align="justify"><b>AMx64</b> comes with build-in assembly language loosely based around NASM or Intel syntax. Before we describe the syntax of operations and other utilities, we need to go over some of the basics of <b>AMx64</b> assembly language.</p>
+<p align="justify"><b>AMx64</b> comes with built-in assembly language loosely based around NASM or Intel syntax. Before we describe the syntax of operations and other utilities, we need to go over some of the basics of <b>AMx64</b> assembly language.</p>
 
 ### Sections
 <p align="justify">In a typical assembly language, your program is broken up into several sections.</p>
@@ -112,7 +107,7 @@ General-purpose registers are used for processing integral instructions (the mos
 <p align="justify">The BSS section (Block Started by Symbol) is a section that has no contents in terms of data or instructions. It consists only of a number that represents its length that the operating system then expands upon program initialization to a zero-filled, contiguous block of memory with said length (hence the name). This is used when you would ordinarily put something in the data section, but you don’t care about initializing it to a specific value. Uninitialized data must be declared in the <code>section .bss</code> section. There must be a space after the word <i>section</i>. All uninitialized variables are declared in this section. Variable names must start with a letter, followed by letters or numbers, including a special character, underscore. Variable definitions must include the name, the data type, and the count.</p>
 
 #### Text Section (.text)
-<p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size. The code is placed in the <code>section .text</code> section. There must be a space after the word <i>section</i>. The instructions are specified one per line and each must be a valid instruction with the appropriate required operands. The text section will include some headers or labels that define the initial program entrypoint. The following declarations must be included.</p>
+<p align="justify">The text section holds all of your executable code and will typically dwarf the other sections in terms of size. The code is placed in the <code>section .text</code> section. There must be a space after the word <i>section</i>. The instructions are specified one per line, and each must be a valid instruction with the appropriate required operands. The text section will include some headers or labels that define the initial program entry point. The following declarations must be included.</p>
 
 ```asm
 global main
@@ -289,7 +284,7 @@ db 'h','e','l','l','o'   ; equivalent character constants
 > When used in a string−supporting context, quoted strings are treated as a string constants even if they are short enough to be a character constant, because otherwise db ’ab’ would have the same effect as db ’a’, which would be silly.
 
 ### Comments
-<p align="justify">The semicolon (';') is used to note program comments. Comments (using the ';') may be placed anywhere, including after an instruction. Any characters after the ';' are ignoredby the interpreter. This can be used to explain steps taken in the code or to comment out sections of code.</p>
+<p align="justify">The semicolon (';') is used to note program comments. Comments (using the ';') may be placed anywhere, including after an instruction. Any characters after the ';' are ignored by the interpreter. This can be used to explain steps taken in the code or to comment out sections of code.</p>
 
 ### Labels
 <p align="justify">A program label is the target, or a location to jump to, for control statements. For example, the start of a loop might be marked with a label such as “<i>loopStart</i>”. The code may be re-executed by jumping to the label. Generally, a label starts with a letter, followed by letters, numbers, or symbols (limited to '_'), terminated with a colon (':').</p>
@@ -300,7 +295,7 @@ db 'h','e','l','l','o'   ; equivalent character constants
 > <li>Program labels may be defined only once.</li></ul>
 
 ### Operand/Address Size (Data Storage Sizes)
- <p align="justify">The x86-64 architecture supports a specific set of data storage size elements, all based on powers of two. To specify a size of operand, simply preface the operands or operand with mnemonic for the size you want. In situation when you have for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). The supported storage sizes are as follows:</p>
+ <p align="justify">The x86-64 architecture supports a specific set of data storage size elements, all based on powers of two. To specify a size of an operand, simply preface the operands or operand with a mnemonic for the size you want. In a situation when you have, for instance <code>add qword rax, rbx</code>, size is perfectly valid but redundant. These sizes are not case-sensitive. You should already be quite aware that addresses can have different sizes. Almost any instruction that references memory must use one of the prefixes BYTE, WORD, DWORD or QWORD to indicate what size of memory operand it refers to (e.q. <code>add byte rax, [rbx]</code>). The supported storage sizes are as follows:</p>
  <table>
   <tr>
     <th>Storage</th>
@@ -330,7 +325,7 @@ db 'h','e','l','l','o'   ; equivalent character constants
 </table>
  
 ### Supported instructions
-<p align="justify">This chapter provides a basic overview for a simple subset of the x86-64 instruction setfocusing on the integer operation. This section summarizes the notation used is fairly common in the technical literature. In general, an instruction will consist of the instruction or operation itself (e.q., add, sub, etc.) and the operands. The operands refer to where the data (to be operated on) is coming from and/or where the result is to be placed.</p>
+<p align="justify">This chapter provides a basic overview for a simple subset of the x86-64 instruction set, focusing on the integer operation. This section summarizes the notation used, is fairly common in the technical literature. In general, an instruction will consist of the instruction or operation itself (e.q., add, sub, etc.) and the operands. The operands refer to where the data (to be operated on) is coming from and/or where the result is to be placed.</p>
 
 > **_NOTE:_**
 >
@@ -355,7 +350,7 @@ Flags affected:
 1. **ZF** is set if the result is zero; it's cleared otherwise.
 2. **SF** is set if the result is negative; it's cleared otherwise.
 3. **PF** is set if the result has even parity in the low 8 bits; it's cleared otherwise.
-4. **CF** is set if the addition caused a carry out from the high bit; it's cleared otherwise.
+4. **CF** is set if the addition caused a carry-out from the high bit; it's cleared otherwise.
 5. **OF** is set if the addition resulted in arithmetic under/overflow; it's cleared otherwise.
 
 > **_NOTE:_**
@@ -489,7 +484,7 @@ Flags affected:
 5. **OF** is set if the subtraction resulted in arithmetic under/overflow; it's cleared otherwise.
 
 #### JMP - Unconditional Jump
-<p align="justify">Jumps execution to the provided location in a program denoted with a program label. This instruction does not depend on the current conditions of the flag bits in the EFLAG register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
+<p align="justify">Jumps execution to the provided location in a program, denoted with a program label. This instruction does not depend on the current conditions of the flag bits in the EFLAG register. Transfer of control may be forward, to execute a new set of instructions or backward, to re-execute the same steps.</p>
 Usage:
 
 ```asm
@@ -501,16 +496,16 @@ JMP label
 >  It doesn't affect flags.
 
 #### Jcc - Jump if Condition Is Met (Conditional Jump)
-<p align="justify">Jcc is not a single instruction, it describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.<br>
+<p align="justify">Jcc is not a single instruction, it describes the jump mnemonics that checks the condition code before jumping. If some specified condition is satisfied in a conditional jump, the control flow is transferred to a target instruction. These instructions form the basis for all conditional branching. There are numerous conditional jump instructions depending upon the condition and data.<br>
 
-Two steps are required for a Jcc; the compare instruction and the conditional jump instruction. The conditional jump instruction will jump or not jump to the provided label based on the result of the previous comparison operation. The compare instruction will compare two operands and store the results of the comparison in the EFLAG register. This requires that the compare instruction is immediately followed by the conditional jump instruction. If other instructions are placed between the compare and conditional jump, the EFLAG register will be altered and the conditional jump may not reflect the correct condition.</p>
+Two steps are required for a Jcc; the compare instruction and the conditional jump instruction. The conditional jump instruction will jump or not jump to the provided label based on the result of the previous comparison operation. The compare instruction will compare two operands and store the results of the comparison in the EFLAG register. This requires that the compare instruction is immediately followed by the conditional jump instruction. If other instructions are placed between the compare and conditional jump, the EFLAG register will be altered, and the conditional jump may not reflect the correct condition.</p>
 Usage:
 
 ```asm
 Jcc label
 ```
 
-Intruction | Description | Flags tested | Condition
+Instruction | Description | Flags tested | Condition
 | - | - | :-: | :-:
 JE | Jump Equal | ZF | ZF == 1
 JNE | Jump not Equal | ZF | ZF == 0
@@ -574,7 +569,7 @@ The stack is managed by RBP and RSP (base pointer and stack pointer). Upon progr
 > <li>RSP can modified directly without damaging the stack structure, but care should be taken when doing so.</li></ul>
 
 ### Registers
-<p align="justify">Register operand refers to the contents of a register. <b>AMx64</b> has a total of 16 registers, but not all of the currently in use. To refer to one of the avaliable registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. <code>mov eax, [var]</code>) loads a 32-bit value from memory into the 32-bit partition of RAX.
+<p align="justify">Register operand refers to the contents of a register. <b>AMx64</b> has a total of 16 registers, but not all of them are currently in use. To refer to one of the available registers, you simply need to designate the name of the partition you want to use (e.q. RAX, RBX, etc.). The register name you use indicates the size of the operand (i.e. how much data is moved, processed, etc.). For instance, using EAX to load a value from memory (e.g. <code>mov eax, [var]</code>) loads a 32-bit value from memory into the 32-bit partition of RAX.
 
 <b>AMx64</b> uses the following names for general-purpose registers in 64-bit mode. This is consistent with the AMD/Intel documentation and most other assemblers.</p>
 
@@ -656,7 +651,7 @@ The stack is managed by RBP and RSP (base pointer and stack pointer). Upon progr
 > 
 >  Some of the GPR registers are used for dedicated purposes as described inthe later sections. 
 #### FLAGS register
-<p align="justify">Status register contains the current state of processor. This register stores status information about the instruction that was justexecuted. It's 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
+<p align="justify">Status register contains the current state of the processor. This register stores status information about the instruction that was just executed. It's 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors, as it is the case with the other registers. <b>AMx64</b> flags register conforms to Intel x86_64 standard; not all bits are used in the current version.</p>
 
 <table style="width:100%">
   <tr>
@@ -770,7 +765,7 @@ The stack is managed by RBP and RSP (base pointer and stack pointer). Upon progr
 </table>
 
 ### Addressing modes for data
-<p align="justify">The addressing mode indicates the manner in which the operand is presented or the addressing modes are the supported methods for accessing a value in memory usingthe address of a data item being accessed (read or written). This might include the nameof a variable or the location in an array.<p>
+<p align="justify">The addressing mode indicates the manner in which the operand is presented, or the addressing modes are the supported methods for accessing a value in memory using the address of a data item being accessed (read or written). This might include the name of a variable or the location in an array.<p>
 
 > **_NOTE:_**
 > 
@@ -799,7 +794,7 @@ mov ax, bx  ; moves contents of register bx into ax
 ```asm
 mov ax, 1 ; moves value of 1 into register ax
 ```
-<p align="justify">moves value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
+<p align="justify">moves a value of 1 into register ax. Instead of using an operand from memory, the value of the operand is held within the instruction itself.</p>
 
 #### Direct Memory Addressing
 <p align="justify">Direct memory mode addressing means that the operand is a location in memory (accessed via an address). This is also referred to as indirection or dereferencing.</p>
@@ -807,7 +802,7 @@ mov ax, 1 ; moves value of 1 into register ax
 ```asm
 mov qword rax, [var] ; copy var content into rax
 ```
-<p align="justify">This instruction will access the memory location of the variable <i>var</i> and retrieve the value stored there. This requires that the CPU wait until the value is retrieved before completing the operation and thus might take slightly longer to complete than a similar operation using an immediate value.</p>
+<p align="justify">This instruction will access the memory location of the variable <i>var</i> and retrieve the value stored there. This requires that the CPU wait until the value is retrieved before completing the operation, and thus might take slightly longer to complete than a similar operation using an immediate value.</p>
 
 > **_NOTE:_**
 > 
@@ -822,7 +817,7 @@ mov dword eax, [rbx]
 ```
 
 ## Calling System Services
-<p align="justify">When calling system services, arguments are placed in the standard argument registers. System services do not typically use stack-based arguments. This limits the arguments of a system services to six. To call a system service, the first step is to determine which system service is desired. The general process is that the system service call code is placed in the RAX register. The call code is a number that has been assigned for the specific system service being requested. These are assigned as part of the operating system and cannot be changed by application programs.  <b>AMx64</b> uses a very small subset of system service call codes to a set of constants. If any are needed, the arguments for system services are placed in the RDI, RSI, RDX, RCX, R8 and R9 registers (in that order). The following table shows the argument locations which are consistent with the standard calling convention.</p>
+<p align="justify">When calling system services, arguments are placed in the standard argument registers. System services do not typically use stack-based arguments. This limits the arguments of system services to six. To call a system service, the first step is to determine which system service is desired. The general process is that the system service call code is placed in the RAX register. The call code is a number that has been assigned for the specific system service being requested. These are assigned as part of the operating system and cannot be changed by application programs. <b>AMx64</b> uses a very small subset of system service call codes as a set of constants. If any are needed, the arguments for system services are placed in the RDI, RSI, RDX, RCX, R8 and R9 registers (in that order). The following table shows the argument locations which are consistent with the standard calling convention.</p>
 
 <table style="width:30%">
   <tr>
@@ -877,12 +872,12 @@ mov dword eax, [rbx]
   <tr>
     <td><p align="center">0</p></td>
     <td><p align="center">sys_read</p></td>
-    <td><p align="justify">Read characters - If unsuccessful, returns negative value. If successful, returns count of characters actually read.<br>RDI - file descriptor<br>RSI - address of where to store characters<br>RDX - number of characters to read</p></td>
+    <td><p align="justify">Read characters - If unsuccessful, returns negative value. If successful, returns a count of characters actually read.<br>RDI - file descriptor<br>RSI - address of where to store characters<br>RDX - number of characters to read</p></td>
   </tr>
   <tr>
     <td><p align="center">1</p></td>
     <td><p align="center">sys_write</p></td>
-    <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns count of characters actually written.<br>RDI - file descriptor<br>RSI - address of characters  where to write<br>RDX - number of characters to write</p></td>
+    <td><p align="justify">Write characters - If unsuccessful, returns negative value. If successful, returns a count of characters actually written.<br>RDI - file descriptor<br>RSI - address of characters where to write<br>RDX - number of characters to write</p></td>
   </tr>
   <tr>
     <td><p align="center">60</p></td>
@@ -892,7 +887,7 @@ mov dword eax, [rbx]
 </table>
 
 ### Console Output
-<p align="justify">The system service to output characters to the console is the system write (sys_write). Like a high-level language characters are written to standard out (stdout) which is the console.   The stdout is the default file descriptor for the console. The file descriptor is already opened and available for use in programs (assembly and high-level languages). The arguments for the write system service are as follows:</p>
+<p align="justify">The system service to output characters to the console is the system write (sys_write). Like a high-level language, characters are written to standard out (stdout) which is the console. The stdout is the default file descriptor for the console. The file descriptor is already opened and available for use in programs (assembly and high-level languages). The arguments for the write system service are as follows:</p>
 
 <table style="width:40%">
   <tr>
@@ -953,10 +948,10 @@ mov rax, 60
 mov rdi, 0
 syscall
 ```
-<p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully it should store value 1 inside of the RDI register.</p>
+<p align="justify">These instructions indicate that the program ends correctly. If the program terminates unsuccessfully, it should store value 1 inside the RDI register.</p>
 
 ## Debug - AMDB
-<p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger   is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
+<p align="justify">A debugger allows the user to control execution of a program, examine variables and other memory. <b>AMDB</b> is loosely based on <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a>. Once the debugger is started, in order to effectively use the debugger, an initial breakpoint must be set. Once a breakpoint is set, the <code>run</code> (or <code>r</code>) command can be performed. The breakpoint is indicated with a red line number on the left, and the current location is indicated with a green asm line (see example below).  Specifically, the green line points to the next instruction to be executed. That is, the green asm line has not yet been executed.</p>
 <p><img src="./AMx64/resources/list_command.jpg" title="amdb list command" align="center"></p>
 
 ### Getting Help
@@ -982,7 +977,7 @@ syscall
 </dl>
 
 ### Display Source Code
-<p align="justify">You can display your source code inside <i>amdb</i> using the <code>l</code> (or <code>list</code>) command. <i>amdb</i> will print 7 lines of source code at a time, with a line number at the start of each line. Current line is always highlighted with a green color.</p>
+<p align="justify">You can display your source code inside <i>amdb</i> using the <code>l</code> (or <code>list</code>) command. <i>amdb</i> will print 7 lines of source code at a time, with a line number at the start of each line. The current line is always highlighted with a green color.</p>
 
 ### Examine Memory (Display Memory/Register Contents)
 <p align="justify">Once you have paused a interpretation, you can use the <code>p</code> (or <code>print</code>) command to print the values of variables, specified memory locations or registers.</p>
@@ -998,10 +993,10 @@ syscall
 </dl>
 
 ### Continuing and Stepping
-<p align="justify">Continuing means resuming file interpretation until your it completes normally. In contrast, stepping means executing just one more “step” of your interpreter, where “step” means one line of source code. When continuing, interpreter may stop even sooner, due to a breakpoint.</p>
+<p align="justify">Continuing means resuming file interpretation until your it completes normally. In contrast, stepping means executing just one more “step” of your interpreter, where “step” means one line of source code. When continuing, the interpreter may stop even sooner, due to a breakpoint.</p>
 <dl>
   <dt><b>continue</b> or <b>c</b></dt>
-  <dd>Continues interpretation until the end of the file or unitil it reaches the next breakpoint.</dd>
+  <dd>Continues interpretation until the end of the file or until it reaches the next breakpoint.</dd>
   <dt><b>step</b> or <b>s</b></dt>
   <dd>Interprets the current and stops interpretation on the next line.<p><img src="./AMx64/resources/step_command.jpg" title="amdb step command" align="center"></p></dd>
 </dl>
